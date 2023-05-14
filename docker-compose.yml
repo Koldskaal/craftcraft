@@ -8,10 +8,18 @@
 version: '3'
 services:
   ac-database:
+<<<<<<< HEAD
     container_name: ac-database
     image: mysql:8.0
     networks:
       - ac-network
+=======
+    <<: *networks
+    image: mysql:8.0.32
+    restart: unless-stopped
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+>>>>>>> changes I forgot
     ports:
       - ${DOCKER_DB_EXTERNAL_PORT:-3306}:3306
     environment:
