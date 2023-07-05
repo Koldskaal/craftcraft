@@ -17101,21 +17101,25 @@ void Unit::RestoreDisplayId()
 
 void Unit::AddComboPoints(Unit* target, int8 count)
 {
+    // Craftcraft 
+    /*
     if (!count)
     {
+        if (target) SendComboPoints();
         return;
     }
+    */
 
     if (target && target != m_comboTarget)
     {
-        if (m_comboTarget)
-        {
-            m_comboTarget->RemoveComboPointHolder(this);
-        }
+        // if (m_comboTarget)
+        // {
+        //     m_comboTarget->RemoveComboPointHolder(this);
+        // }
 
         m_comboTarget = target;
-        m_comboPoints = count;
-        target->AddComboPointHolder(this);
+        m_comboPoints = m_comboPoints = std::max<int8>(std::min<int8>(m_comboPoints + count, 5), 0);
+        // target->AddComboPointHolder(this);
     }
     else
     {

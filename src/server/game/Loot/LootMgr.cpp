@@ -813,6 +813,17 @@ void Loot::NotifyQuestItemRemoved(uint8 questIndex)
     }
 }
 
+bool Loot::IsLooting(ObjectGuid GUID) {
+    for (GuidSet::iterator itr = PlayersLooting.begin(); itr != PlayersLooting.end();)
+    {
+        if (*itr == GUID)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Loot::generateMoneyLoot(uint32 minAmount, uint32 maxAmount)
 {
     if (maxAmount > 0)
