@@ -607,8 +607,8 @@ Spell::Spell(Unit* caster, SpellInfo const* info, TriggerCastFlags triggerFlags,
     m_spellSchoolMask = info->GetSchoolMask();           // Can be override for some spell (wand shoot for example)
 
     if (m_attackType == RANGED_ATTACK)
-        // wand case
-        if ((m_caster->getClassMask() & CLASSMASK_WAND_USERS) != 0 && m_caster->GetTypeId() == TYPEID_PLAYER)
+        // wand case (CRAFTCRAFT FIX)
+        if ((m_caster->getClassMask() & CLASSMASK_ALL_PLAYABLE) != 0 && m_caster->GetTypeId() == TYPEID_PLAYER)
             if (Item* pItem = m_caster->ToPlayer()->GetWeaponForAttack(RANGED_ATTACK))
                 m_spellSchoolMask = SpellSchoolMask(1 << pItem->GetTemplate()->Damage[0].DamageType);
 
@@ -5640,6 +5640,17 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (res != SPELL_CAST_OK)
         return res;
+
+    // CRAFTCRAFT wand flick
+    if (this->GetSpellInfo()->Id == 201075) // wand flick
+    {
+        if (m_caster->GetAura(201073))
+        {
+            return SPELL_CAST_OK;
+        } else {
+            return SPELL_FAILED_NOT_READY;
+        }
+    }
 
     // check cooldowns to prevent cheating
     if (!m_spellInfo->HasAttribute(SPELL_ATTR0_PASSIVE))
