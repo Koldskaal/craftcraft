@@ -815,8 +815,12 @@ void Loot::NotifyQuestItemRemoved(uint8 questIndex)
     }
 }
 
+<<<<<<< HEAD
 bool Loot::IsLooting(ObjectGuid GUID)
 {
+=======
+bool Loot::IsLooting(ObjectGuid GUID) {
+>>>>>>> combo points retained and wand flick
     for (GuidSet::iterator itr = PlayersLooting.begin(); itr != PlayersLooting.end();)
     {
         if (*itr == GUID)

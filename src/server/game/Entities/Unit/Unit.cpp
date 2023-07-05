@@ -17075,7 +17075,11 @@ void Unit::RestoreDisplayId()
 
 void Unit::AddComboPoints(Unit *target, int8 count)
 {
+<<<<<<< HEAD
     // Craftcraft
+=======
+    // Craftcraft 
+>>>>>>> combo points retained and wand flick
     /*
     if (!count)
     {

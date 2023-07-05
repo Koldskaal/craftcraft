@@ -2014,7 +2014,7 @@ void Player::RegenerateHealth()
     if (addvalue < 0)
         addvalue = 0;
 
-    ModifyHealth(int32(addvalue));
+    //ModifyHealth(int32(addvalue));
 }
 
 void Player::ResetAllPowers()
@@ -5125,7 +5125,11 @@ float Player::GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const
 
 float Player::OCTRegenHPPerSpirit()
 {
+<<<<<<< HEAD
     // return 0;
+=======
+    //return 0;
+>>>>>>> combo points retained and wand flick
     uint8 level = GetLevel();
     uint32 pclass = getClass();
 
@@ -5149,7 +5153,11 @@ float Player::OCTRegenHPPerSpirit()
 
 float Player::OCTRegenMPPerSpirit()
 {
+<<<<<<< HEAD
     // return 0;
+=======
+    //return 0;
+>>>>>>> combo points retained and wand flick
     uint8 level = GetLevel();
     // uint32 pclass = getClass();
 
