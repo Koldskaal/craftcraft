@@ -3619,9 +3619,25 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
         if (Unit* owner = m_caster->GetOwner())
             weaponDamage = owner->CalculateDamage(m_attackType, normalized, true);
     }
-    else if (m_spellInfo->Id == 5019) // Wands
+    else if (m_spellInfo->Id == 5019 || m_spellInfo->Id == 201075) // Wands and wand flick
     {
-        weaponDamage = m_caster->CalculateDamage(m_attackType, true, false);
+        // CRAFTCRAFT changed to 2
+        weaponDamage = m_caster->CalculateDamage((WeaponAttackType)2, true, false);
+
+        float coeff = m_spellInfo->Effects[effIndex].BonusMultiplier;
+        SpellBonusEntry const* bonus = sSpellMgr->GetSpellBonusData(m_spellInfo->Id);
+        if (bonus)
+        {
+            coeff = bonus->direct_damage;
+        }
+        
+        if (Item* pItem = m_caster->ToPlayer()->GetWeaponForAttack(RANGED_ATTACK)) 
+        {
+            m_spellSchoolMask = SpellSchoolMask(1 << pItem->GetTemplate()->Damage[0].DamageType);
+            spell_bonus += int32(coeff * m_caster->SpellBaseDamageBonusDone(
+                m_spellSchoolMask));
+            
+        }
     }
     else
     {

@@ -11,8 +11,6 @@ local function item_roll_bonus(event, player, item, count)
     -- if (math.random() < roll_chance) then
     --     player:AddItem(item);
     -- end
-	print (item)
-    print("triggerred")
 	
 end
 
