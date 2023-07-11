@@ -2807,7 +2807,8 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(Unit const* victim, WeaponAttackTy
     {
         // Reduce dodge chance by attacker expertise rating
         if (GetTypeId() == TYPEID_PLAYER)
-            dodge_chance -= int32(ToPlayer()->GetExpertiseDodgeOrParryReduction(attType) * 100);
+        // Craftcraft expertise delete
+            dodge_chance -= m_modMeleeHitChance;
         else
             dodge_chance -= GetTotalAuraModifier(SPELL_AURA_MOD_EXPERTISE) * 25;
 
@@ -2841,7 +2842,8 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(Unit const* victim, WeaponAttackTy
     {
         // Reduce parry chance by attacker expertise rating
         if (GetTypeId() == TYPEID_PLAYER)
-            parry_chance -= int32(ToPlayer()->GetExpertiseDodgeOrParryReduction(attType) * 100);
+            // Craftcraft expertise delete
+            parry_chance -= m_modMeleeHitChance;
         else
             parry_chance -= GetTotalAuraModifier(SPELL_AURA_MOD_EXPERTISE) * 25;
 
@@ -3230,7 +3232,8 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit* victim, SpellInfo const* spellInfo
         dodgeChance = int32(float(dodgeChance) * GetTotalAuraMultiplier(SPELL_AURA_MOD_ENEMY_DODGE));
         // Reduce dodge chance by attacker expertise rating
         if (GetTypeId() == TYPEID_PLAYER)
-            dodgeChance -= int32(ToPlayer()->GetExpertiseDodgeOrParryReduction(attType) * 100.0f);
+            // Craftcraft expertise delete
+            dodgeChance -= m_modMeleeHitChance;
         else
             dodgeChance -= GetTotalAuraModifier(SPELL_AURA_MOD_EXPERTISE) * 25;
 
@@ -3249,7 +3252,8 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit* victim, SpellInfo const* spellInfo
         int32 parryChance = int32(victim->GetUnitParryChance() * 100.0f)  - skillDiff * 4;
         // Reduce parry chance by attacker expertise rating
         if (GetTypeId() == TYPEID_PLAYER)
-            parryChance -= int32(ToPlayer()->GetExpertiseDodgeOrParryReduction(attType) * 100.0f);
+            // Craftcraft expertise delete
+            parryChance -= m_modMeleeHitChance;
         else
             parryChance -= GetTotalAuraModifier(SPELL_AURA_MOD_EXPERTISE) * 25;
 
@@ -6971,7 +6975,44 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                             break;
                         }
                 }
+                
+                // CRAFTCRAFT LIGHTNING OVERLOAD
+                // Lightning Overload
+                if (dummySpell->SpellIconID == 2018)            // only this spell have SpellFamily Shaman SpellIconID == 2018 and dummy aura
+                {
+                    
+                    if(!procSpell || GetTypeId() != TYPEID_PLAYER || !victim)
+                        return false;
+
+                    if (procEx & PROC_EX_CRITICAL_HIT)
+                        damage /= 2;
+
+                    // do not proc off from itself
+                    if (procSpell->Id == 45297 || procSpell->Id == 45284)
+                    {
+                        LOG_DEBUG("module", "TRIGGERED");
+                        return false;
+                    }
+
+                    do
+                    {
+                        uint32 spell = 0;
+                        // CRAFTCRAFT 
+                        spell = procSpell->Id;
+
+                        // do not reduce damage-spells have correct basepoints
+                        damage /= 2;
+                        int32 dmg = damage;
+                        LOG_DEBUG("module", std::to_string(spell));
+                        // Cast
+                        CastCustomSpell(victim, spell, &dmg, 0, 0, true, castItem, triggeredByAura);
+                    } while (roll_chance_i(33));
+                    return true;
+                }
+                
                 break;
+
+                
             }
         case SPELLFAMILY_MAGE:
             {
@@ -8330,45 +8371,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     }
                     return false;
                 }
-                // Lightning Overload
-                if (dummySpell->SpellIconID == 2018)            // only this spell have SpellFamily Shaman SpellIconID == 2018 and dummy aura
-                {
-                    if(!procSpell || GetTypeId() != TYPEID_PLAYER || !victim)
-                        return false;
-
-                    if (procEx & PROC_EX_CRITICAL_HIT)
-                        damage /= 2;
-
-                    // do not proc off from itself
-                    if (procSpell->Id == 45297 || procSpell->Id == 45284)
-                    {
-                        return false;
-                    }
-
-                    do
-                    {
-                        uint32 spell = 0;
-
-                        if (procSpell->SpellFamilyFlags[0] & 0x2)
-                        {
-                            // 1/3 of 33% if 11%
-                            if (!roll_chance_i(33))
-                                return false;
-
-                            spell = 45297;
-                        }
-                        else
-                            spell = 45284;
-
-                        // do not reduce damage-spells have correct basepoints
-                        damage /= 2;
-                        int32 dmg = damage;
-
-                        // Cast
-                        CastCustomSpell(victim, spell, &dmg, 0, 0, true, castItem, triggeredByAura);
-                    } while (roll_chance_i(33));
-                    return true;
-                }
+                
                 // Static Shock
                 if (dummySpell->SpellIconID == 3059)
                 {
@@ -16394,7 +16397,6 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
     Unit* actionTarget = !isVictim ? target : this;
 
     ProcEventInfo eventInfo = ProcEventInfo(actor, actionTarget, target, procFlag, 0, procPhase, procExtra, procSpell, damageInfo, healInfo, procAura, procAuraEffectIndex);
-
     ProcTriggeredList procTriggered;
     // Fill procTriggered list
     for (AuraApplicationMap::const_iterator itr = GetAppliedAuras().begin(); itr != GetAppliedAuras().end(); ++itr)
@@ -16520,11 +16522,11 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
             }
         }
     }
-
+    
     // Nothing found
     if (procTriggered.empty())
         return;
-
+    
     // Note: must SetCantProc(false) before return
     if (procExtra & (PROC_EX_INTERNAL_TRIGGERED | PROC_EX_INTERNAL_CANT_PROC))
         SetCantProc(true);
@@ -16532,6 +16534,7 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
     // Handle effects proceed this time
     for (ProcTriggeredList::const_iterator i = procTriggered.begin(); i != procTriggered.end(); ++i)
     {
+        
         // look for aura in auras list, it may be removed while proc event processing
         if (i->aura->IsRemoved())
             continue;
@@ -16573,9 +16576,10 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
         if (!handled)
             for (uint8 effIndex = 0; effIndex < MAX_SPELL_EFFECTS; ++effIndex)
             {
+
                 if (!(i->effMask & (1 << effIndex)))
                     continue;
-
+ 
                 AuraEffect* triggeredByAura = i->aura->GetEffect(effIndex);
                 ASSERT(triggeredByAura);
 
@@ -16585,7 +16589,7 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
                     takeCharges = true;
                     continue;
                 }
-
+          
                 switch (triggeredByAura->GetAuraType())
                 {
                     case SPELL_AURA_PROC_TRIGGER_SPELL:
