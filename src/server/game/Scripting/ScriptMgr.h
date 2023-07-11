@@ -552,6 +552,9 @@ protected:
     AllCreatureScript(const char* name);
 
 public:
+    // Called from End of Creature Respawn
+    virtual void OnCreatureRespawned(Creature* /*creature*/) { }
+
     // Called from End of Creature Update.
     virtual void OnAllCreatureUpdate(Creature* /*creature*/, uint32 /*diff*/) { }
 
@@ -2477,6 +2480,7 @@ public: /* MovementHandlerScript */
 public: /* AllCreatureScript */
     //listener function (OnAllCreatureUpdate) is called by OnCreatureUpdate
     //void OnAllCreatureUpdate(Creature* creature, uint32 diff);
+    void OnCreatureRespawned(Creature* creature);
     void Creature_SelectLevel(const CreatureTemplate* cinfo, Creature* creature);
     void OnCreatureSaveToDB(Creature* creature);
 

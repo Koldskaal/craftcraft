@@ -2005,7 +2005,6 @@ void Creature::setDeathState(DeathState s, bool despawn)
 void Creature::Respawn(bool force)
 {
     //DestroyForNearbyPlayers(); // pussywizard: not needed
-
     if (force)
     {
         if (IsAlive())
@@ -2039,6 +2038,7 @@ void Creature::Respawn(bool force)
         }
 
         LOG_DEBUG("entities.unit", "Respawning creature {} (SpawnId: {}, {})", GetName(), GetSpawnId(), GetGUID().ToString());
+        
         m_respawnTime = 0;
         ResetPickPocketLootTime();
         loot.clear();
@@ -2081,6 +2081,8 @@ void Creature::Respawn(bool force)
     // xinef: relocate notifier, fixes npc appearing in corpse position after forced respawn (instead of spawn)
     m_last_notify_position.Relocate(-5000.0f, -5000.0f, -5000.0f, 0.0f);
     UpdateObjectVisibility(false);
+
+    sScriptMgr->OnCreatureRespawned(this);
 }
 
 void Creature::ForcedDespawn(uint32 timeMSToDespawn, Seconds forceRespawnTimer)
