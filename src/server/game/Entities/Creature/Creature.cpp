@@ -2059,7 +2059,6 @@ void Creature::Respawn(bool force)
         }
 
         LOG_DEBUG("entities.unit", "Respawning creature {} (SpawnId: {}, {})", GetName(), GetSpawnId(), GetGUID().ToString());
-
         m_respawnTime = 0;
         ResetPickPocketLootTime();
         loot.clear();

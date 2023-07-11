@@ -16519,7 +16519,6 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit *target, uint32 procFlag, u
     // Handle effects proceed this time
     for (ProcTriggeredList::const_iterator i = procTriggered.begin(); i != procTriggered.end(); ++i)
     {
-
         // look for aura in auras list, it may be removed while proc event processing
         if (i->aura->IsRemoved())
             continue;
@@ -17075,11 +17074,7 @@ void Unit::RestoreDisplayId()
 
 void Unit::AddComboPoints(Unit *target, int8 count)
 {
-<<<<<<< HEAD
     // Craftcraft
-=======
-    // Craftcraft 
->>>>>>> combo points retained and wand flick
     /*
     if (!count)
     {

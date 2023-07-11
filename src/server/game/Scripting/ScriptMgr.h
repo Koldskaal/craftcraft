@@ -2577,7 +2577,11 @@ public: /* AllCreatureScript */
     //listener function (OnAllCreatureUpdate) is called by OnCreatureUpdate
     //void OnAllCreatureUpdate(Creature* creature, uint32 diff);
 <<<<<<< HEAD
+<<<<<<< HEAD
     void OnBeforeCreatureSelectLevel(const CreatureTemplate* cinfo, Creature* creature, uint8& level);
+=======
+    void OnCreatureRespawned(Creature* creature);
+>>>>>>> Added random buffs to creatures on respawn (elite chance) and made lightning overload proc on any spell
 =======
     void OnCreatureRespawned(Creature* creature);
 >>>>>>> Added random buffs to creatures on respawn (elite chance) and made lightning overload proc on any spell

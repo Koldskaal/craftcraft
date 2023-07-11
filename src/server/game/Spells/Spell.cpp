@@ -5649,11 +5649,16 @@ SpellCastResult Spell::CheckCast(bool strict)
             return SPELL_CAST_OK;
         } else {
 <<<<<<< HEAD
+<<<<<<< HEAD
             m_customError = SPELL_CUSTOM_ERROR_80;
             return SPELL_FAILED_CUSTOM_ERROR;
 =======
             return SPELL_FAILED_NOT_READY;
 >>>>>>> combo points retained and wand flick
+=======
+            m_customError = SPELL_CUSTOM_ERROR_80;
+            return SPELL_FAILED_CUSTOM_ERROR;
+>>>>>>> Added random buffs to creatures on respawn (elite chance) and made lightning overload proc on any spell
         }
     }
 
