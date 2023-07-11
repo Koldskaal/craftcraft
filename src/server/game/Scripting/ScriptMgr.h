@@ -552,6 +552,9 @@ protected:
     AllCreatureScript(const char* name);
 
 public:
+    // Called from End of Creature Respawn
+    virtual void OnCreatureRespawned(Creature* /*creature*/) { }
+
     // Called from End of Creature Update.
     virtual void OnAllCreatureUpdate(Creature* /*creature*/, uint32 /*diff*/) { }
 
@@ -2573,7 +2576,11 @@ public: /* MovementHandlerScript */
 public: /* AllCreatureScript */
     //listener function (OnAllCreatureUpdate) is called by OnCreatureUpdate
     //void OnAllCreatureUpdate(Creature* creature, uint32 diff);
+<<<<<<< HEAD
     void OnBeforeCreatureSelectLevel(const CreatureTemplate* cinfo, Creature* creature, uint8& level);
+=======
+    void OnCreatureRespawned(Creature* creature);
+>>>>>>> Added random buffs to creatures on respawn (elite chance) and made lightning overload proc on any spell
     void Creature_SelectLevel(const CreatureTemplate* cinfo, Creature* creature);
     void OnCreatureSaveToDB(Creature* creature);
 

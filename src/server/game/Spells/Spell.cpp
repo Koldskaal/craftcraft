@@ -5648,7 +5648,8 @@ SpellCastResult Spell::CheckCast(bool strict)
         {
             return SPELL_CAST_OK;
         } else {
-            return SPELL_FAILED_NOT_READY;
+            m_customError = SPELL_CUSTOM_ERROR_80;
+            return SPELL_FAILED_CUSTOM_ERROR;
         }
     }
 

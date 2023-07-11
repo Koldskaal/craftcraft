@@ -2011,7 +2011,7 @@ void Player::RegenerateHealth()
     if (addvalue < 0)
         addvalue = 0;
 
-    //ModifyHealth(int32(addvalue));
+    ModifyHealth(int32(addvalue));
 }
 
 void Player::ResetAllPowers()
