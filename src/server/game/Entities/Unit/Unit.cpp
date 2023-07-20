@@ -929,8 +929,8 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
             // if (victim->getPowerType() == POWER_RAGE)
             victim->RewardRage(cleanDamage->absorbed_damage, 0, false);
 
-            // if (attacker && attacker->getPowerType() == POWER_RAGE)
-            attacker->RewardRage(cleanDamage->absorbed_damage, 0, true);
+            if (attacker && attacker->getPowerType() == POWER_RAGE)
+                attacker->RewardRage(cleanDamage->absorbed_damage, 0, true);
         }
 
         return 0;
@@ -9069,7 +9069,6 @@ bool Unit::HandleProcTriggerSpell(Unit *victim, uint32 damage, AuraEffect *trigg
                 CastDelayedSpellWithPeriodicAmount(this, trigger_spell_id, SPELL_AURA_PERIODIC_HEAL, basepoints0);
                 return true;
             }
-            break;
         }
         case SPELLFAMILY_DRUID:
         {
@@ -9182,6 +9181,9 @@ bool Unit::HandleProcTriggerSpell(Unit *victim, uint32 damage, AuraEffect *trigg
                 case CLASS_SHAMAN:
                     trigger_spell_id = 60515;
                     break;
+                default:
+                    LOG_ERROR("entities.unit", "Unit::HandleProcTriggerSpell: Spell {} miss posibly Piercing Shots", auraSpellInfo->Id);
+                    return false;
                 }
 
                 target = this;
