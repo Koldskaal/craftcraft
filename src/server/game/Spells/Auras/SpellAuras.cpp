@@ -214,6 +214,7 @@ void AuraApplication::_HandleEffect(uint8 effIndex, bool apply)
                     // xinef: otherwise just save new aura;
                     if (strongestApp && strongestEff && strongestApp->IsActive(strongestEff->GetEffIndex()))
                     {
+                        // CRAFTCRAFT Aura stack (not implemented yet)
                         strongestEff->HandleEffect(strongestApp, AURA_EFFECT_HANDLE_CHANGE_AMOUNT, false);
                         if (!strongestEff->GetSpellInfo()->HasAreaAuraEffect())
                             strongestEff->SetEnabled(false);
@@ -226,9 +227,11 @@ void AuraApplication::_HandleEffect(uint8 effIndex, bool apply)
                 // xinef: itered aura is weaker, deactivate if active
                 else if (aurApp->IsActive((*iter)->GetEffIndex()))
                 {
+                    // CRAFTCRAFT Aura stack (not implemented yet)
                     (*iter)->HandleEffect(aurApp, AURA_EFFECT_HANDLE_CHANGE_AMOUNT, false);
                     if (!(*iter)->GetSpellInfo()->HasAreaAuraEffect())
                         (*iter)->SetEnabled(false);
+                    
                     aurApp->SetDisableMask((*iter)->GetEffIndex());
                 }
             }
