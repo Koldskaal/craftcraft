@@ -5126,10 +5126,14 @@ float Player::GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const
 float Player::OCTRegenHPPerSpirit()
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     // return 0;
 =======
-    //return 0;
+    // return 0;
 >>>>>>> combo points retained and wand flick
+=======
+    // return 0;
+>>>>>>> dual classing continued
     uint8 level = GetLevel();
     uint32 pclass = getClass();
 
@@ -5154,10 +5158,14 @@ float Player::OCTRegenHPPerSpirit()
 float Player::OCTRegenMPPerSpirit()
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     // return 0;
 =======
-    //return 0;
+    // return 0;
 >>>>>>> combo points retained and wand flick
+=======
+    // return 0;
+>>>>>>> dual classing continued
     uint8 level = GetLevel();
     // uint32 pclass = getClass();
 
@@ -5165,7 +5173,10 @@ float Player::OCTRegenMPPerSpirit()
         level = GT_MAX_LEVEL;
 
     //    GtOCTRegenMPEntry     const* baseRatio = sGtOCTRegenMPStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
+<<<<<<< HEAD
     // CRAFTCRAFT paladin regen for all
+=======
+>>>>>>> dual classing continued
     GtRegenMPPerSptEntry const *moreRatio = sGtRegenMPPerSptStore.LookupEntry(GT_MAX_LEVEL + level - 1);
     if (!moreRatio)
         return 0.0f;
@@ -5588,7 +5599,11 @@ void Player::SaveRecallPosition()
     m_recallO = GetOrientation();
 }
 
+<<<<<<< HEAD
 void Player::SendMessageToSetInRange(WorldPacket const *data, float dist, bool self, Player const *skipped_rcvr) const
+=======
+void Player::SendMessageToSetInRange(WorldPacket const *data, float dist, bool self, bool includeMargin, Player const *skipped_rcvr) const
+>>>>>>> dual classing continued
 {
     if (self)
         GetSession()->SendPacket(data);
@@ -5863,7 +5878,11 @@ float Player::CalculateReputationGain(ReputationSource source, uint32 creatureOr
 }
 
 // Calculates how many reputation points player gains in victim's enemy factions
+<<<<<<< HEAD
 void Player::RewardReputation(Unit *victim)
+=======
+void Player::RewardReputation(Unit *victim, float rate)
+>>>>>>> dual classing continued
 {
     if (!victim || victim->GetTypeId() == TYPEID_PLAYER)
         return;
@@ -6706,11 +6725,14 @@ void Player::_ApplyItemBonuses(ItemTemplate const *proto, uint8 slot, bool apply
         case ITEM_MOD_BLOCK_VALUE:
             HandleBaseModValue(SHIELD_BLOCK_VALUE, FLAT_MOD, float(val), apply);
             break;
+<<<<<<< HEAD
         case ITEM_MOD_FIRE_SPELL_DAMAGE:
         case ITEM_MOD_FERAL_ATTACK_POWER:
             ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FIRE, val, apply);
             break;
 
+=======
+>>>>>>> dual classing continued
         /// @deprecated item mods
         case ITEM_MOD_SPELL_HEALING_DONE:
         case ITEM_MOD_SPELL_DAMAGE_DONE:
@@ -11341,7 +11363,11 @@ WorldLocation Player::GetStartPosition() const
     return WorldLocation(mapId, info->positionX, info->positionY, info->positionZ, 0);
 }
 
+<<<<<<< HEAD
 bool Player::HaveAtClient(Object const *u) const
+=======
+bool Player::HaveAtClient(WorldObject const *u) const
+>>>>>>> dual classing continued
 {
     if (u == this)
     {
@@ -13114,11 +13140,21 @@ void Player::SetViewpoint(WorldObject *target, bool apply)
         UpdateVisibilityOf(target);
 
         if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
+<<<<<<< HEAD
             static_cast<Unit *>(target)->AddPlayerToVision(this);
+=======
+            ((Unit *)target)->AddPlayerToVision(this);
+>>>>>>> dual classing continued
         SetSeer(target);
     }
     else
     {
+<<<<<<< HEAD
+=======
+        // must immediately set seer back otherwise may crash
+        m_seer = this;
+
+>>>>>>> dual classing continued
         LOG_DEBUG("maps", "Player::CreateViewpoint: Player {} remove seer", GetName());
 
         if (!RemoveGuidValue(PLAYER_FARSIGHT, target->GetGUID()))
@@ -13571,7 +13607,11 @@ uint32 Player::CalculateTalentsPoints() const
     return uint32(talentPointsForLevel * sWorld->getRate(RATE_TALENT));
 }
 
+<<<<<<< HEAD
 bool Player::canFlyInZone(uint32 mapid, uint32 zone, SpellInfo const *bySpell)
+=======
+bool Player::canFlyInZone(uint32 mapid, uint32 zone, SpellInfo const *bySpell) const
+>>>>>>> dual classing continued
 {
     if (!sScriptMgr->OnCanPlayerFlyInZone(this, mapid, zone, bySpell))
     {
@@ -14955,7 +14995,11 @@ void Player::_SaveSecondaryClass(CharacterDatabaseTransaction trans)
 void Player::SetClassSecondary(uint8 _class)
 {
     static const int classToSKilllineIDs[11][3] = {
+<<<<<<< HEAD
         {26, 257, 256},
+=======
+        {26, 257, 256}, 
+>>>>>>> dual classing continued
         {267, 184, 594},
         {50, 51, 163},
         {38, 39, 253},
@@ -14964,11 +15008,19 @@ void Player::SetClassSecondary(uint8 _class)
         {373, 374, 375},
         {6, 8, 237},
         {354, 355, 593},
+<<<<<<< HEAD
         {0, 0, 0}, // Empty
         {134, 573, 574}};
 
     if (_class == getClass())
         return;
+=======
+        {0, 0, 0}, // Empty
+        {134, 573, 574}};
+
+    if (_class == getClass())
+        return;
+>>>>>>> dual classing continued
     if (_class >= MAX_CLASSES)
         return;
 
@@ -14976,7 +15028,11 @@ void Player::SetClassSecondary(uint8 _class)
     {
         for (size_t i = 0; i < 3; i++)
         {
+<<<<<<< HEAD
             auto skillID = classToSKilllineIDs[m_secondaryClass - 1][i];
+=======
+            auto skillID = classToSKilllineIDs[m_secondaryClass - 1][i];
+>>>>>>> dual classing continued
             SetSkill(skillID, 0, 0, 0);
         }
     }
@@ -14984,7 +15040,11 @@ void Player::SetClassSecondary(uint8 _class)
     m_secondaryClass = _class;
     for (size_t i = 0; i < 3; i++)
     {
+<<<<<<< HEAD
         auto skillID = classToSKilllineIDs[m_secondaryClass - 1][i];
+=======
+        auto skillID = classToSKilllineIDs[m_secondaryClass - 1][i];
+>>>>>>> dual classing continued
         SetSkill(skillID, 1, 1, 1);
     }
 }

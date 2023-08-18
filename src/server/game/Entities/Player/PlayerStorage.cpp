@@ -4948,9 +4948,12 @@ bool Player::LoadFromDB(ObjectGuid playerGuid, CharacterDatabaseQueryHolder cons
     //  55      56      57      58      59      60      61      62      63           64                 65                 66             67              68      69
     //"health, power1, power2, power3, power4, power5, power6, power7, instance_id, talentGroupsCount, activeTalentGroup, exploredZones, equipmentCache, ammoId, knownTitles,
 <<<<<<< HEAD
+<<<<<<< HEAD
     // 70          71               72            73                     74
     //"actionBars, grantableLevels, innTriggerId, extraBonusTalentCount, UNIX_TIMESTAMP(creation_date) FROM characters WHERE guid = '{}'", guid);
 =======
+=======
+>>>>>>> dual classing continued
     //  70          71               72            73
     //"actionBars, grantableLevels, innTriggerId, extraBonusTalentCount FROM characters WHERE guid = '{}'", guid);
 >>>>>>> dual classing continued
@@ -5129,9 +5132,15 @@ bool Player::LoadFromDB(ObjectGuid playerGuid, CharacterDatabaseQueryHolder cons
     {
         Field *secondFields = result2->Fetch();
         m_secondaryClass = secondFields[0].Get<uint8>();
+<<<<<<< HEAD
     }
     else
     {
+=======
+    }
+    else
+    {
+>>>>>>> dual classing continued
         m_secondaryClass = 0;
     }
 
@@ -6893,7 +6902,7 @@ bool Player::Satisfy(DungeonProgressionRequirements const *ar, uint32 target_map
                     {
                         LocaleConstant loc_idx = GetSession()->GetSessionDbLocaleIndex();
                         std::string name = sObjectMgr->GetItemTemplate(missingPlayerItems[0]->id)->Name1;
-                        if (ItemLocale const* il = sObjectMgr->GetItemLocale(missingPlayerItems[0]->id))
+                        if (ItemLocale const *il = sObjectMgr->GetItemLocale(missingPlayerItems[0]->id))
                         {
                             ObjectMgr::GetLocaleString(il->Name, loc_idx, name);
                         }

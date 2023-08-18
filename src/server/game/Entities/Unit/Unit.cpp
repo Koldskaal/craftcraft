@@ -929,8 +929,8 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
             // if (victim->getPowerType() == POWER_RAGE)
             victim->RewardRage(cleanDamage->absorbed_damage, 0, false);
 
-            if (attacker && attacker->getPowerType() == POWER_RAGE)
-                attacker->RewardRage(cleanDamage->absorbed_damage, 0, true);
+            // if (attacker && attacker->getPowerType() == POWER_RAGE)
+            attacker->RewardRage(cleanDamage->absorbed_damage, 0, true);
         }
 
         return 0;
