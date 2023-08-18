@@ -64,6 +64,8 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     PrepareStatement(CHAR_DEL_QUEST_STATUS_SEASONAL_CHAR, "DELETE FROM character_queststatus_seasonal WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_DEL_BATTLEGROUND_RANDOM, "DELETE FROM character_battleground_random", CONNECTION_ASYNC);
     PrepareStatement(CHAR_INS_BATTLEGROUND_RANDOM, "INSERT INTO character_battleground_random (guid) VALUES (?)", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_DEL_SECOND_CLASS, "DELETE FROM craftcraft_secondary_character_class WHERE guid = ?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_INS_SECOND_CLASS, "INSERT INTO craftcraft_secondary_character_class (guid, class) VALUES (?, ?)", CONNECTION_ASYNC);
 
     // Start LoginQueryHolder content
     PrepareStatement(CHAR_SEL_CHARACTER, "SELECT guid, account, name, race, class, gender, level, xp, money, skin, face, hairStyle, hairColor, facialStyle, bankSlots, restState, playerFlags, "

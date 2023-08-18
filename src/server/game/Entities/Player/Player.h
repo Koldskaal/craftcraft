@@ -1102,6 +1102,9 @@ public:
     void RemovePlayerFlag(PlayerFlags flags) { RemoveFlag(PLAYER_FLAGS, flags); }
     void ReplaceAllPlayerFlags(PlayerFlags flags) { SetUInt32Value(PLAYER_FLAGS, flags); }
 
+    // CRAFTCRAFT secondary class
+    void SetClassSecondary(uint8 _class);
+
     static bool BuildEnumData(PreparedQueryResult result, WorldPacket* data);
 
     void SetInWater(bool apply);
@@ -2705,6 +2708,7 @@ public:
     void _SaveCharacter(bool create, CharacterDatabaseTransaction trans);
     void _SaveInstanceTimeRestrictions(CharacterDatabaseTransaction trans);
     void _SavePlayerSettings(CharacterDatabaseTransaction trans);
+    void _SaveSecondaryClass(CharacterDatabaseTransaction trans);
 
     /*********************************************************/
     /***              ENVIRONMENTAL SYSTEM                 ***/
