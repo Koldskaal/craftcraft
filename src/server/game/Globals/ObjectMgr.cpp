@@ -850,6 +850,7 @@ void ObjectMgr::LoadCreatureTemplateAddons()
 {
     uint32 oldMSTime = getMSTime();
 
+    _creatureTemplateAddonStore.clear();
     //                                                0       1       2      3       4       5              6               7
     QueryResult result = WorldDatabase.Query("SELECT entry, path_id, mount, bytes1, bytes2, emote, visibilityDistanceType, auras FROM creature_template_addon");
 
@@ -858,7 +859,7 @@ void ObjectMgr::LoadCreatureTemplateAddons()
         LOG_WARN("server.loading", ">> Loaded 0 creature template addon definitions. DB table `creature_template_addon` is empty.");
         LOG_INFO("server.loading", " ");
         return;
-    }
+    }                                                   
 
     uint32 count = 0;
     do
@@ -907,6 +908,10 @@ void ObjectMgr::LoadCreatureTemplateAddons()
             {
                 LOG_DEBUG/*ERROR*/("sql.sql", "Creature (Entry: {}) has temporary aura (spell {}) in `auras` field in `creature_template_addon`.", entry, spellInfo->Id);
                 // continue;
+            }
+
+            if (entry == 9698) {
+                LOG_DEBUG("module", "{}", spellInfo->Id);
             }
 
             creatureAddon.auras.push_back(spellInfo->Id);

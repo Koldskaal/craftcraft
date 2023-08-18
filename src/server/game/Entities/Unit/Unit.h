@@ -1436,7 +1436,9 @@ public:
     void setRace(uint8 race);
     [[nodiscard]] uint32 getRaceMask() const { return 1 << (getRace(true) - 1); }
     [[nodiscard]] uint8 getClass() const { return GetByteValue(UNIT_FIELD_BYTES_0, 1); }
-    [[nodiscard]] uint32 getClassMask() const { return 1 << (getClass() - 1); }
+    [[nodiscard]] uint8 getClassSecondary() const { return m_secondaryClass; }
+    void setClassSecondary(uint8 _class);
+    [[nodiscard]] uint32 getClassMask() const { return 1 << (getClass() - 1) | 1 << (getClassSecondary() - 1); }
     [[nodiscard]] uint8 getGender() const { return GetByteValue(UNIT_FIELD_BYTES_0, 2); }
 
     [[nodiscard]] float GetStat(Stats stat) const { return float(GetUInt32Value(static_cast<uint16>(UNIT_FIELD_STAT0) + stat)); }
@@ -2578,6 +2580,9 @@ protected:
     void SetRooted(bool apply, bool isStun = false);
 
     uint32 m_rootTimes;
+
+    //////////////// CRAFTCRAFT //////////////////
+    uint8 m_secondaryClass = 0;
 
 private:
     uint32 m_state;                                     // Even derived shouldn't modify
