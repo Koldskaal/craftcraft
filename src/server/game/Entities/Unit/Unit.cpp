@@ -924,8 +924,8 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
         }
     }
 
-    // Rage from Damage made (only from direct weapon damage)
-    if (attacker && cleanDamage && damagetype == DIRECT_DAMAGE && attacker != victim && attacker->getPowerType() == POWER_RAGE)
+    // Rage from Damage made (only from direct weapon damage) // CRAFTCRAFT ALL GET RAGE REGEN
+    if (attacker && cleanDamage && damagetype == DIRECT_DAMAGE && attacker != victim) //&& attacker->getPowerType() == POWER_RAGE)
     {
         uint32 weaponSpeedHitFactor;
 
@@ -953,10 +953,11 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
         // Rage from absorbed damage
         if (cleanDamage && cleanDamage->absorbed_damage)
         {
-            if (victim->getPowerType() == POWER_RAGE)
+            // CRAFTCRAFT ALL GET RAGE REGEN
+            // if (victim->getPowerType() == POWER_RAGE)
                 victim->RewardRage(cleanDamage->absorbed_damage, 0, false);
 
-            if (attacker && attacker->getPowerType() == POWER_RAGE)
+            // if (attacker && attacker->getPowerType() == POWER_RAGE)
                 attacker->RewardRage(cleanDamage->absorbed_damage, 0, true);
         }
 
@@ -1078,8 +1079,8 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
             }
         }
 
-        // Rage from damage received
-        if (attacker != victim && victim->getPowerType() == POWER_RAGE)
+        // Rage from damage received // CRAFTCRAFT ALL GET RAGE REGEN
+        if (attacker != victim) //&& victim->getPowerType() == POWER_RAGE)
         {
             uint32 rageDamage = damage + (cleanDamage ? cleanDamage->absorbed_damage : 0);
             victim->RewardRage(rageDamage, 0, false);
@@ -6965,7 +6966,6 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
             // do not proc off from itself
             if (procSpell->Id == 45297 || procSpell->Id == 45284)
             {
-                LOG_DEBUG("module", "TRIGGERED");
                 return false;
             }
 
@@ -21572,3 +21572,5 @@ std::string Unit::GetDebugInfo() const
          << " Class: " << std::to_string(getClass());
     return sstr.str();
 }
+
+
