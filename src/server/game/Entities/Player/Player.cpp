@@ -314,6 +314,9 @@ Player::Player(WorldSession *session) : Unit(true), m_mover(this)
     for (uint8 i = 0; i < MAX_COMBAT_RATING; i++)
         m_baseRatingValue[i] = 0;
 
+    for (uint8 i = 0; i < MAX_SPELL_SCHOOL; i++)
+        m_schoolSpellPower[i] = 0;
+
     m_baseSpellPower = 0;
     m_baseFeralAP = 0;
     m_baseManaRegen = 0;
@@ -5148,12 +5151,13 @@ float Player::OCTRegenMPPerSpirit()
 {
     // return 0;
     uint8 level = GetLevel();
-    uint32 pclass = getClass();
+    // uint32 pclass = getClass();
 
     if (level > GT_MAX_LEVEL)
         level = GT_MAX_LEVEL;
 
     //    GtOCTRegenMPEntry     const* baseRatio = sGtOCTRegenMPStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
+    // CRAFTCRAFT paladin regen for all
     GtRegenMPPerSptEntry const *moreRatio = sGtRegenMPPerSptStore.LookupEntry(GT_MAX_LEVEL + level - 1);
     if (!moreRatio)
         return 0.0f;
@@ -5851,7 +5855,7 @@ float Player::CalculateReputationGain(ReputationSource source, uint32 creatureOr
 }
 
 // Calculates how many reputation points player gains in victim's enemy factions
-void Player::RewardReputation(Unit *victim, float rate)
+void Player::RewardReputation(Unit *victim)
 {
     if (!victim || victim->GetTypeId() == TYPEID_PLAYER)
         return;
@@ -6694,6 +6698,11 @@ void Player::_ApplyItemBonuses(ItemTemplate const *proto, uint8 slot, bool apply
         case ITEM_MOD_BLOCK_VALUE:
             HandleBaseModValue(SHIELD_BLOCK_VALUE, FLAT_MOD, float(val), apply);
             break;
+        case ITEM_MOD_FIRE_SPELL_DAMAGE:
+        case ITEM_MOD_FERAL_ATTACK_POWER:
+            ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FIRE, val, apply);
+            break;
+
         /// @deprecated item mods
         case ITEM_MOD_SPELL_HEALING_DONE:
         case ITEM_MOD_SPELL_DAMAGE_DONE:
@@ -13407,6 +13416,9 @@ void Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore cons
     {
         LootItem *lootItem = loot.LootItemInSlot(i, this);
 
+        // #CRAFTCRAFTTODO: fix master loot group leader getting useless recipes
+        if (!lootItem->AllowedForPlayer(this, loot.sourceWorldObjectGUID))
+            continue;
         ItemPosCountVec dest;
         InventoryResult msg = CanStoreNewItem(bag, slot, dest, lootItem->itemid, lootItem->count);
         if (msg != EQUIP_ERR_OK && slot != NULL_SLOT)

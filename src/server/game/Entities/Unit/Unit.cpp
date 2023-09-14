@@ -70,7 +70,6 @@
 #include "WorldPacket.h"
 #include "Tokenize.h"
 #include "StringConvert.h"
-#include <math.h>
 
 float baseMoveSpeed[MAX_MOVE_TYPE] =
     {
@@ -928,10 +927,10 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
         {
             // CRAFTCRAFT ALL GET RAGE REGEN
             // if (victim->getPowerType() == POWER_RAGE)
-                victim->RewardRage(cleanDamage->absorbed_damage, 0, false);
+            victim->RewardRage(cleanDamage->absorbed_damage, 0, false);
 
             // if (attacker && attacker->getPowerType() == POWER_RAGE)
-                attacker->RewardRage(cleanDamage->absorbed_damage, 0, true);
+            attacker->RewardRage(cleanDamage->absorbed_damage, 0, true);
         }
 
         return 0;
@@ -11905,8 +11904,23 @@ int32 Unit::SpellBaseDamageBonusDone(SpellSchoolMask schoolMask)
 
     if (GetTypeId() == TYPEID_PLAYER)
     {
+        Player *player = ToPlayer();
         // Base value
-        DoneAdvertisedBenefit += ToPlayer()->GetBaseSpellPowerBonus();
+        DoneAdvertisedBenefit += player->GetBaseSpellPowerBonus();
+
+        // CRAFTCRAFT SPELL POWER FROM INT AND SPI
+        DoneAdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_INTELLECT) - 20, 0);
+        DoneAdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_SPIRIT) - 20, 0) * 0.5f;
+
+        // CRAFTCRAFT specific spellpower
+        for (uint8 i = 0; i < MAX_SPELL_SCHOOL; i++)
+        {
+            if (((1 << i) & schoolMask) != 0)
+            {
+                LOG_DEBUG("module", "ENTERED {}", 1 << i);
+                DoneAdvertisedBenefit += player->GetSchoolSpellPowerBonus((SpellSchools)i);
+            }
+        }
 
         // Damage bonus from stats
         AuraEffectList const &mDamageDoneOfStatPercent = GetAuraEffectsByType(SPELL_AURA_MOD_SPELL_DAMAGE_OF_STAT_PERCENT);
@@ -12693,6 +12707,10 @@ int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask)
     {
         // Base value
         AdvertisedBenefit += ToPlayer()->GetBaseSpellPowerBonus();
+
+        // CRAFTCRAFT HEALING POWER FROM INT AND SPI
+        AdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_INTELLECT) - 20, 0);
+        AdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_SPIRIT) - 20, 0) * 0.5f;
 
         // Healing bonus from stats
         AuraEffectList const &mHealingDoneOfStatPercent = GetAuraEffectsByType(SPELL_AURA_MOD_SPELL_HEALING_OF_STAT_PERCENT);
@@ -21431,5 +21449,3 @@ std::string Unit::GetDebugInfo() const
          << " Class: " << std::to_string(getClass());
     return sstr.str();
 }
-
-

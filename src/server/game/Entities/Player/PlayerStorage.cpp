@@ -4621,6 +4621,9 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
                     ApplySpellPowerBonus(enchant_amount, apply);
                     LOG_DEBUG("entities.player.items", "+ {} SPELL_POWER", enchant_amount);
                     break;
+                case ITEM_MOD_FIRE_SPELL_DAMAGE:
+                    ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FIRE, enchant_amount, apply);
+                    break;
                 case ITEM_MOD_HEALTH_REGEN:
                     ApplyHealthRegenBonus(enchant_amount, apply);
                     LOG_DEBUG("entities.player.items", "+ {} HEALTH_REGENERATION", enchant_amount);
@@ -5126,7 +5129,9 @@ bool Player::LoadFromDB(ObjectGuid playerGuid, CharacterDatabaseQueryHolder cons
     {
         Field *secondFields = result2->Fetch();
         m_secondaryClass = secondFields[0].Get<uint8>();
-    }else {
+    }
+    else
+    {
         m_secondaryClass = 0;
     }
 
