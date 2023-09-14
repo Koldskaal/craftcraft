@@ -174,6 +174,16 @@ void Player::ApplySpellPowerBonus(int32 amount, bool apply)
         ApplyModInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + i, amount, apply);
 }
 
+void Player::ApplySchoolSpellPowerBonus(SpellSchools spellSchool, int32 amount, bool apply)
+{
+    apply = _ModifyUInt32(apply, m_schoolSpellPower[spellSchool], amount);
+    LOG_DEBUG("module", "spell bonus apllyied: {} {}", apply, m_schoolSpellPower[spellSchool]);
+    // For speed just update for client
+    // ApplyModUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, amount, apply);
+    // for (int i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
+    ApplyModInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + (uint8)spellSchool, amount, apply);
+}
+
 void Player::UpdateSpellDamageAndHealingBonus()
 {
     // Magic damage modifiers implemented in Unit::SpellDamageBonusDone
@@ -346,7 +356,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
         index = UNIT_FIELD_RANGED_ATTACK_POWER;
         index_mod = UNIT_FIELD_RANGED_ATTACK_POWER_MODS;
         index_mult = UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER;
-        val2 = level * 3.0f + GetStat(STAT_STRENGTH) * 2.0f + GetStat(STAT_AGILITY) - 20.0f;
+        val2 = GetStat(STAT_STRENGTH) * 2.0f + GetStat(STAT_AGILITY) - 20.0f;
         if (GetShapeshiftForm())
         {
             val2 += m_baseFeralAP;
@@ -354,7 +364,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
     }
     else
     {
-        val2 = level * 3.0f + GetStat(STAT_STRENGTH) * 2.0f + GetStat(STAT_AGILITY) - 20.0f + m_baseFeralAP;
+        val2 = GetStat(STAT_STRENGTH) * 2.0f + GetStat(STAT_AGILITY) - 20.0f + m_baseFeralAP;
         if (GetShapeshiftForm())
         {
             val2 += m_baseFeralAP;
@@ -398,8 +408,8 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
             UpdateDamagePhysical(OFF_ATTACK);
 
         // CRAFTCRAFT secondary class
-        if (getClass() == CLASS_SHAMAN || getClass() == CLASS_PALADIN || 
-        getClassSecondary() == CLASS_SHAMAN || getClassSecondary() == CLASS_PALADIN ) // mental quickness
+        if (getClass() == CLASS_SHAMAN || getClass() == CLASS_PALADIN ||
+            getClassSecondary() == CLASS_SHAMAN || getClassSecondary() == CLASS_PALADIN) // mental quickness
             UpdateSpellDamageAndHealingBonus();
     }
 }
@@ -580,7 +590,7 @@ const float m_diminishing_k = 0.9560f; // Warrior
 
 float Player::GetMissPercentageFromDefence() const
 {
-    //CRAFTCRAFT STAT PARRY
+    // CRAFTCRAFT STAT PARRY
     float miss_cap = 16.00f;
 
     float diminishing = 0.0f, nondiminishing = 0.0f;
@@ -626,8 +636,8 @@ void Player::UpdateParryPercentage()
 
 void Player::UpdateDodgePercentage()
 {
-    //CRAFTCRAFT
-    const float dodge_cap = 88.129021f;  // Warrior
+    // CRAFTCRAFT
+    const float dodge_cap = 88.129021f; // Warrior
 
     float diminishing = 0.0f, nondiminishing = 0.0f;
     GetDodgeFromAgility(diminishing, nondiminishing);
