@@ -76,7 +76,7 @@ typedef void (*bgZoneRef)(Battleground *, WorldPacket &);
 #define DEATH_EXPIRE_STEP (5 * MINUTE)
 #define MAX_DEATH_COUNT 3
 
-#define PLAYER_SKILL_INDEX(x) (PLAYER_SKILL_INFO_1_1 + ((x)*3))
+#define PLAYER_SKILL_INDEX(x) (PLAYER_SKILL_INFO_1_1 + ((x) * 3))
 #define PLAYER_SKILL_VALUE_INDEX(x) (PLAYER_SKILL_INDEX(x) + 1)
 #define PLAYER_SKILL_BONUS_INDEX(x) (PLAYER_SKILL_INDEX(x) + 2)
 

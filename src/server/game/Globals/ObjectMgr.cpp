@@ -849,6 +849,8 @@ void ObjectMgr::LoadCreatureTemplateAddons()
     uint32 oldMSTime = getMSTime();
 
     _creatureTemplateAddonStore.clear();
+
+    _creatureTemplateAddonStore.clear();
     //                                                0       1       2      3       4       5              6               7
     QueryResult result = WorldDatabase.Query("SELECT entry, path_id, mount, bytes1, bytes2, emote, visibilityDistanceType, auras FROM creature_template_addon");
 
@@ -2734,7 +2736,7 @@ void ObjectMgr::LoadItemTemplates()
         0,     // 27	Quiver
         0.3f,  // 28	Relic (class = armor, not weapon even if in weapon slot)
     };
-    
+
     uint32 oldMSTime = getMSTime();
 
     //                                                 0      1       2               3              4        5        6       7          8         9        10        11           12
