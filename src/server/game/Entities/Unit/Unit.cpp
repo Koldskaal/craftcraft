@@ -952,12 +952,25 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
         // Rage from absorbed damage
         if (cleanDamage && cleanDamage->absorbed_damage)
         {
+            float attackerIncrease = 1;
+            if (Player *p = attacker->ToPlayer())
+            {
+                float spr = p->GetStat(STAT_SPIRIT);
+                attackerIncrease = 1 + (spr - p->getLevel() - 20) / 100 / 2;
+            }
+            float victimIncrease = 1;
+            if (Player *p = victim->ToPlayer())
+            {
+                float spr = p->GetStat(STAT_SPIRIT);
+                victimIncrease = 1 + (spr - p->getLevel() - 20) / 100 / 2;
+            }
+
             // CRAFTCRAFT ALL GET RAGE REGEN
             // if (victim->getPowerType() == POWER_RAGE)
-            victim->RewardRage(cleanDamage->absorbed_damage, 0, false);
+            victim->RewardRage(cleanDamage->absorbed_damage * victimIncrease, 0, false);
 
             // if (attacker && attacker->getPowerType() == POWER_RAGE)
-            attacker->RewardRage(cleanDamage->absorbed_damage, 0, true);
+            attacker->RewardRage(cleanDamage->absorbed_damage * attackerIncrease, 0, true);
         }
 
         return 0;
@@ -2986,6 +2999,16 @@ uint32 Unit::CalculateDamage(WeaponAttackType attType, bool normalized, bool add
     if (minDamage > maxDamage)
     {
         std::swap(minDamage, maxDamage);
+    }
+
+    if (Player *p = this->ToPlayer())
+    {
+        if (p->IsLuckyHit())
+        {
+            uint32 roll1 = urand(uint32(minDamage), uint32(maxDamage));
+            uint32 roll2 = urand(uint32(minDamage), uint32(maxDamage));
+            return uint32(std::max(roll1, roll2));
+        }
     }
 
     return urand(uint32(minDamage), uint32(maxDamage));
@@ -11942,9 +11965,9 @@ int32 Unit::SpellBaseDamageBonusDone(SpellSchoolMask schoolMask)
         // Base value
         DoneAdvertisedBenefit += player->GetBaseSpellPowerBonus();
 
-        // CRAFTCRAFT SPELL POWER FROM INT AND SPI
+        // CRAFTCRAFT SPELL POWER FROM INT AND (spirit removed)
         DoneAdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_INTELLECT) - 20, 0);
-        DoneAdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_SPIRIT) - 20, 0) * 0.5f;
+        // DoneAdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_SPIRIT) - 20, 0) * 0.5f;
 
         // CRAFTCRAFT specific spellpower
         for (uint8 i = 0; i < MAX_SPELL_SCHOOL; i++)

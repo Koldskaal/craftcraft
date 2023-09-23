@@ -1770,13 +1770,14 @@ void Player::RegenerateAll()
 
     if (m_regenTimerCount >= 2000)
     {
-        // Not in combat or they have regeneration
-        if (!IsInCombat() || IsPolymorphed() || m_baseHealthRegen ||
-            HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
-            HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT))
-        {
-            RegenerateHealth();
-        }
+        // CRAFTCRAFT health regen
+        // // Not in combat or they have regeneration
+        // if (!IsInCombat() || IsPolymorphed() || m_baseHealthRegen ||
+        //     HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
+        //     HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT))
+        // {
+        // }
+        RegenerateHealth();
 
         Regenerate(POWER_RAGE);
         if (getClass() == CLASS_DEATH_KNIGHT)
@@ -1875,8 +1876,13 @@ void Player::Regenerate(Powers power)
     }
     break;
     case POWER_ENERGY: // Regenerate energy (rogue)
-        addvalue += 0.01f * m_regenTimer * sWorld->getRate(RATE_POWER_ENERGY);
-        break;
+    {
+        // CRAFTCRAFT Spirit energy regen
+        // addvalue += 0.01f * m_regenTimer * sWorld->getRate(RATE_POWER_ENERGY);
+        float spiritincrease = 1 + (GetStat(STAT_SPIRIT) - getLevel() - 20) / 100 / 2;
+        addvalue += 0.01f * m_regenTimer * sWorld->getRate(RATE_POWER_ENERGY) * spiritincrease;
+    }
+    break;
     case POWER_RUNIC_POWER:
     {
         if (!IsInCombat() && !HasAuraType(SPELL_AURA_INTERRUPT_REGEN))
@@ -1985,13 +1991,25 @@ void Player::RegenerateHealth()
     if (IsPolymorphed())
         addvalue = (float)GetMaxHealth() / 3;
     // normal regen case (maybe partly in combat case)
-    else if (!IsInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT))
+    // CRAFTCRAFT In Combat HP regen
+    // else if (!IsInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT))
+    else
     {
         addvalue = OCTRegenHPPerSpirit() * HealthIncreaseRate;
+        if (!IsInCombat()) // CRAFTCRAFT super dumb look below
+        {
+            addvalue += GetTotalAuraModifier(SPELL_AURA_MOD_REGEN) * 2 * IN_MILLISECONDS / (5 * IN_MILLISECONDS);
+        }
+        else if (HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT))
+        {
+            // ApplyPct(addvalue, GetTotalAuraModifier(SPELL_AURA_MOD_REGEN_DURING_COMBAT));
+        }
 
         if (!IsStandState())
         {
-            addvalue *= 1.33f;
+            // CRAFTCRAFT Up to 3
+            // addvalue *= 1.33f;
+            addvalue *= 3.0f;
         }
 
         AuraEffectList const &mModHealthRegenPct = GetAuraEffectsByType(SPELL_AURA_MOD_HEALTH_REGEN_PERCENT);
@@ -2000,9 +2018,10 @@ void Player::RegenerateHealth()
             AddPct(addvalue, (*i)->GetAmount());
         }
 
+        // CRAFTCRAFT super dumb look above
         if (!IsInCombat())
         {
-            addvalue += GetTotalAuraModifier(SPELL_AURA_MOD_REGEN) * 2 * IN_MILLISECONDS / (5 * IN_MILLISECONDS);
+            // addvalue += GetTotalAuraModifier(SPELL_AURA_MOD_REGEN) * 2 * IN_MILLISECONDS / (5 * IN_MILLISECONDS);
         }
         else if (HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT))
         {
@@ -4997,23 +5016,24 @@ float Player::GetTotalBaseModValue(BaseModGroup modGroup) const
 
 uint32 Player::GetShieldBlockValue() const
 {
-    float value = (m_auraBaseMod[SHIELD_BLOCK_VALUE][FLAT_MOD] + GetStat(STAT_STRENGTH) * 0.5f - 10) * m_auraBaseMod[SHIELD_BLOCK_VALUE][PCT_MOD];
+    float value = (m_auraBaseMod[SHIELD_BLOCK_VALUE][FLAT_MOD] + GetStat(STAT_STAMINA) * 0.5f - 10) * m_auraBaseMod[SHIELD_BLOCK_VALUE][PCT_MOD];
 
     value = (value < 0) ? 0 : value;
 
     return uint32(value);
 }
 
-float Player::GetMeleeCritFromAgility()
+float Player::GetMeleeCritFromAgility() // CRAFTCRAFT Normalized melee crit to DK/Warrior scaling from Agility
 {
     uint8 level = GetLevel();
     uint32 pclass = getClass();
+    uint8 useDeathKnightScaling = 5;
 
     if (level > GT_MAX_LEVEL)
         level = GT_MAX_LEVEL;
 
     GtChanceToMeleeCritBaseEntry const *critBase = sGtChanceToMeleeCritBaseStore.LookupEntry(pclass - 1);
-    GtChanceToMeleeCritEntry const *critRatio = sGtChanceToMeleeCritStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
+    GtChanceToMeleeCritEntry const *critRatio = sGtChanceToMeleeCritStore.LookupEntry((useDeathKnightScaling)*GT_MAX_LEVEL + level - 1);
     if (!critBase || !critRatio)
         return 0.0f;
 
@@ -5021,7 +5041,7 @@ float Player::GetMeleeCritFromAgility()
     return crit * 100.0f;
 }
 
-void Player::GetDodgeFromAgility(float &diminishing, float &nondiminishing)
+void Player::GetDodgeFromAgility(float &diminishing, float &nondiminishing) // CRAFTCRAFT Normalized class dodge to Rogue values
 {
     // Table for base dodge values
     const float dodge_base[MAX_CLASSES] =
@@ -5056,12 +5076,13 @@ void Player::GetDodgeFromAgility(float &diminishing, float &nondiminishing)
 
     uint8 level = GetLevel();
     uint32 pclass = getClass();
+    uint8 useRogueAsStandard = 4;
 
     if (level > GT_MAX_LEVEL)
         level = GT_MAX_LEVEL;
 
     // Dodge per agility is proportional to crit per agility, which is available from DBC files
-    GtChanceToMeleeCritEntry const *dodgeRatio = sGtChanceToMeleeCritStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
+    GtChanceToMeleeCritEntry const *dodgeRatio = sGtChanceToMeleeCritStore.LookupEntry((useRogueAsStandard)*GT_MAX_LEVEL + level - 1);
     if (!dodgeRatio || pclass > MAX_CLASSES)
         return;
 
@@ -5070,24 +5091,25 @@ void Player::GetDodgeFromAgility(float &diminishing, float &nondiminishing)
     float bonus_agility = GetStat(STAT_AGILITY) - base_agility;
 
     // calculate diminishing (green in char screen) and non-diminishing (white) contribution
-    diminishing = 100.0f * bonus_agility * dodgeRatio->ratio * crit_to_dodge[pclass - 1];
-    nondiminishing = 100.0f * (dodge_base[pclass - 1] + base_agility * dodgeRatio->ratio * crit_to_dodge[pclass - 1]);
+    diminishing = 100.0f * bonus_agility * dodgeRatio->ratio * crit_to_dodge[useRogueAsStandard];
+    nondiminishing = 100.0f * (dodge_base[useRogueAsStandard] + base_agility * dodgeRatio->ratio * crit_to_dodge[useRogueAsStandard]);
 }
 
-float Player::GetSpellCritFromIntellect()
+float Player::GetSpellCritFromIntellect() // CRAFTCRAFT Changed to work from agility instead of int.
 {
     uint8 level = GetLevel();
     uint32 pclass = getClass();
+    uint8 useWarriorCritFromAgi = 0;
 
     if (level > GT_MAX_LEVEL)
         level = GT_MAX_LEVEL;
 
     GtChanceToSpellCritBaseEntry const *critBase = sGtChanceToSpellCritBaseStore.LookupEntry(pclass - 1);
-    GtChanceToSpellCritEntry const *critRatio = sGtChanceToSpellCritStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
+    GtChanceToMeleeCritEntry const *critRatio = sGtChanceToMeleeCritStore.LookupEntry((useWarriorCritFromAgi * GT_MAX_LEVEL) + level - 1);
     if (!critBase || !critRatio)
         return 0.0f;
 
-    float crit = critBase->base + GetStat(STAT_INTELLECT) * critRatio->ratio;
+    float crit = critBase->base + GetStat(STAT_AGILITY) * critRatio->ratio;
     return crit * 100.0f;
 }
 
@@ -5130,23 +5152,25 @@ float Player::OCTRegenHPPerSpirit()
 {
     // return 0;
     uint8 level = GetLevel();
-    uint32 pclass = getClass();
 
     if (level > GT_MAX_LEVEL)
         level = GT_MAX_LEVEL;
-
-    GtOCTRegenHPEntry const *baseRatio = sGtOCTRegenHPStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
-    GtRegenHPPerSptEntry const *moreRatio = sGtRegenHPPerSptStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
+    // CraftCraft Warrior regen for all
+    // GtOCTRegenHPEntry const *baseRatio = sGtOCTRegenHPStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
+    // GtRegenHPPerSptEntry const *moreRatio = sGtRegenHPPerSptStore.LookupEntry((pclass - 1) * GT_MAX_LEVEL + level - 1);
+    GtOCTRegenHPEntry const *baseRatio = sGtOCTRegenHPStore.LookupEntry(level - 1);
+    GtRegenHPPerSptEntry const *moreRatio = sGtRegenHPPerSptStore.LookupEntry(level - 1);
     if (!baseRatio || !moreRatio)
         return 0.0f;
 
     // Formula from PaperDollFrame script
     float spirit = GetStat(STAT_SPIRIT);
     float baseSpirit = spirit;
-    if (baseSpirit > 50)
-        baseSpirit = 50;
+    // CraftCraft changed the spirit "first 50 doesn't do anything" to 20 as this is our new base
+    if (baseSpirit > 20)
+        baseSpirit = 20;
     float moreSpirit = spirit - baseSpirit;
-    float regen = (baseSpirit * baseRatio->ratio + moreSpirit * moreRatio->ratio) * 2;
+    float regen = 1 + moreSpirit * moreRatio->ratio;
     return regen;
 }
 
@@ -5167,7 +5191,8 @@ float Player::OCTRegenMPPerSpirit()
 
     // Formula get from PaperDollFrame script
     float spirit = GetStat(STAT_SPIRIT);
-    float regen = spirit * moreRatio->ratio;
+    // CRAFTCRAFT Mana Regen from spirit *2
+    float regen = spirit * moreRatio->ratio * 2;
     return regen;
 }
 
@@ -16350,4 +16375,10 @@ std::string Player::GetDebugInfo() const
 void Player::SendSystemMessage(std::string_view msg, bool escapeCharacters)
 {
     ChatHandler(GetSession()).SendSysMessage(msg, escapeCharacters);
+}
+
+// CRAFTCRAFT lucky hit
+bool Player::IsLuckyHit()
+{
+    return urand(uint32(0), uint32(100)) < GetUInt32Value(PLAYER_EXPERTISE);
 }
