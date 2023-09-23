@@ -1972,6 +1972,8 @@ public:
     uint32 GetSchoolSpellPowerBonus(SpellSchools spellSchool) { return m_schoolSpellPower[spellSchool]; }
     [[nodiscard]] int32 GetSpellPenetrationItemMod() const { return m_spellPenetrationItemMod; }
 
+    // CRAFTCRAFT lucky hit calc
+    bool IsLuckyHit();
     [[nodiscard]] float GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const;
     void UpdateBlockPercentage();
     void UpdateCritPercentage(WeaponAttackType attType);

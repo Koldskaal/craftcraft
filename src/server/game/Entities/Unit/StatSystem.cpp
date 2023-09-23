@@ -107,7 +107,8 @@ bool Player::UpdateStats(Stats stat)
     switch (stat)
     {
     case STAT_STRENGTH:
-        UpdateShieldBlockValue();
+        // CRAFTCRAFT UpdateShieldBlockValue
+        // UpdateShieldBlockValue();
         break;
     case STAT_AGILITY:
         UpdateArmor();
@@ -116,6 +117,8 @@ bool Player::UpdateStats(Stats stat)
         break;
     case STAT_STAMINA:
         UpdateMaxHealth();
+        // CRAFTCRAFT UpdateShieldBlockValue
+        UpdateShieldBlockValue();
         break;
     case STAT_INTELLECT:
         UpdateMaxPower(POWER_MANA);
@@ -356,19 +359,12 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
         index = UNIT_FIELD_RANGED_ATTACK_POWER;
         index_mod = UNIT_FIELD_RANGED_ATTACK_POWER_MODS;
         index_mult = UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER;
-        val2 = GetStat(STAT_STRENGTH) * 2.0f + GetStat(STAT_AGILITY) - 20.0f;
-        if (GetShapeshiftForm())
-        {
-            val2 += m_baseFeralAP;
-        }
     }
-    else
+
+    val2 = GetStat(STAT_STRENGTH) * 2.0f - 20.0f;
+    if (GetShapeshiftForm())
     {
-        val2 = GetStat(STAT_STRENGTH) * 2.0f + GetStat(STAT_AGILITY) - 20.0f + m_baseFeralAP;
-        if (GetShapeshiftForm())
-        {
-            val2 += m_baseFeralAP;
-        }
+        val2 += m_baseFeralAP;
     }
 
     SetModifierValue(unitMod, BASE_VALUE, val2);
@@ -454,7 +450,10 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bo
 
     float attackSpeedMod = GetAPMultiplier(attType, normalized);
 
-    float baseValue = GetModifierValue(unitMod, BASE_VALUE) + GetTotalAttackPowerValue(attType) / 14.0f * attackSpeedMod;
+    // CRAFTCRAFT dps AP scaling change
+    float nikoMult = sGtChanceToMeleeCritStore.LookupEntry((9) * GT_MAX_LEVEL + getLevel() - 1)->ratio;
+
+    float baseValue = GetModifierValue(unitMod, BASE_VALUE);
     float basePct = GetModifierValue(unitMod, BASE_PCT);
     float totalValue = GetModifierValue(unitMod, TOTAL_VALUE);
     float totalPct = addTotalPct ? GetModifierValue(unitMod, TOTAL_PCT) : 1.0f;
@@ -489,8 +488,10 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bo
         weaponMaxDamage += GetAmmoDPS() * attackSpeedMod;
     }
 
-    minDamage = ((weaponMinDamage + baseValue) * basePct + totalValue) * totalPct;
-    maxDamage = ((weaponMaxDamage + baseValue) * basePct + totalValue) * totalPct;
+    float APBonusMult = 1 + GetTotalAttackPowerValue(attType) * nikoMult;
+
+    minDamage = ((weaponMinDamage + baseValue) * APBonusMult * basePct + totalValue) * totalPct;
+    maxDamage = ((weaponMaxDamage + baseValue) * APBonusMult * basePct + totalValue) * totalPct;
 
     // pussywizard: crashfix (casting negative to uint => min > max => assertion in urand)
     if (minDamage < 0.0f || minDamage > 1000000000.0f)
