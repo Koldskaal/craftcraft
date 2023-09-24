@@ -2978,6 +2978,7 @@ uint32 Unit::CalculateDamage(WeaponAttackType attType, bool normalized, bool add
     {
         if (p->IsLuckyHit())
         {
+            p->CastSpell(p, 64885, true);
             uint32 roll1 = urand(uint32(minDamage), uint32(maxDamage));
             uint32 roll2 = urand(uint32(minDamage), uint32(maxDamage));
             return uint32(std::max(roll1, roll2));

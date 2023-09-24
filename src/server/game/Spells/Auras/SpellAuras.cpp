@@ -2323,6 +2323,7 @@ bool Aura::IsProcTriggeredOnEvent(AuraApplication *aurApp, ProcEventInfo &eventI
     {
         if (target->ToPlayer()->IsLuckyHit())
         {
+            target->CastSpell(target, 64885, true);
             bool roll1 = roll_chance_f(CalcProcChance(*procEntry, eventInfo));
             bool roll2 = roll_chance_f(CalcProcChance(*procEntry, eventInfo));
             LOG_DEBUG("module", "AURA ROLL: {} | {} | {}", roll1, roll2, roll1 || roll2);
