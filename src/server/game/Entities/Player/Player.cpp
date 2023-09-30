@@ -5106,8 +5106,8 @@ float Player::GetSpellCritFromIntellect() // CRAFTCRAFT Changed to work from agi
 
     GtChanceToSpellCritBaseEntry const *critBase = sGtChanceToSpellCritBaseStore.LookupEntry(pclass - 1);
     GtChanceToMeleeCritEntry const *critRatio = sGtChanceToMeleeCritStore.LookupEntry((useWarriorCritFromAgi * GT_MAX_LEVEL) + level - 1);
-    if (!critBase || !critRatio)
-        return 0.0f;
+    // if (!critBase || !critRatio)
+    //     return 0.0f;
 
     float crit = critBase->base + GetStat(STAT_AGILITY) * critRatio->ratio;
     return crit * 100.0f;
@@ -5166,11 +5166,11 @@ float Player::OCTRegenHPPerSpirit()
     // Formula from PaperDollFrame script
     float spirit = GetStat(STAT_SPIRIT);
     float baseSpirit = spirit;
-    // CraftCraft changed the spirit "first 50 doesn't do anything" to 20 as this is our new base
-    if (baseSpirit > 20)
-        baseSpirit = 20;
+    // CraftCraft changed the spirit back to no changes
+    if (baseSpirit > 50)
+        baseSpirit = 50;
     float moreSpirit = spirit - baseSpirit;
-    float regen = 1 + moreSpirit * moreRatio->ratio;
+    float regen = baseSpirit * baseRatio->ratio + moreSpirit * moreRatio->ratio;
     return regen;
 }
 
@@ -6627,6 +6627,7 @@ void Player::_ApplyItemBonuses(ItemTemplate const *proto, uint8 slot, bool apply
         case ITEM_MOD_BLOCK_RATING:
             ApplyRatingMod(CR_BLOCK, int32(val), apply);
             break;
+        /* CRAFTCRAFT replaced by spell powers
         case ITEM_MOD_HIT_MELEE_RATING:
             ApplyRatingMod(CR_HIT_MELEE, int32(val), apply);
             break;
@@ -6645,12 +6646,13 @@ void Player::_ApplyItemBonuses(ItemTemplate const *proto, uint8 slot, bool apply
         case ITEM_MOD_CRIT_SPELL_RATING:
             ApplyRatingMod(CR_CRIT_SPELL, int32(val), apply);
             break;
+        */
         case ITEM_MOD_HIT_TAKEN_MELEE_RATING:
             ApplyRatingMod(CR_HIT_TAKEN_MELEE, int32(val), apply);
             break;
-        case ITEM_MOD_HIT_TAKEN_RANGED_RATING:
-            ApplyRatingMod(CR_HIT_TAKEN_RANGED, int32(val), apply);
-            break;
+        // case ITEM_MOD_HIT_TAKEN_RANGED_RATING:
+        //     ApplyRatingMod(CR_HIT_TAKEN_RANGED, int32(val), apply);
+        //     break;
         case ITEM_MOD_HIT_TAKEN_SPELL_RATING:
             ApplyRatingMod(CR_HIT_TAKEN_SPELL, int32(val), apply);
             break;
@@ -6729,9 +6731,23 @@ void Player::_ApplyItemBonuses(ItemTemplate const *proto, uint8 slot, bool apply
         case ITEM_MOD_BLOCK_VALUE:
             HandleBaseModValue(SHIELD_BLOCK_VALUE, FLAT_MOD, float(val), apply);
             break;
+        case ITEM_MOD_HOLY_SPELL_DAMAGE:
+            ApplySchoolSpellPowerBonus(SPELL_SCHOOL_HOLY, val, apply);
+            break;
         case ITEM_MOD_FIRE_SPELL_DAMAGE:
-        case ITEM_MOD_FERAL_ATTACK_POWER:
             ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FIRE, val, apply);
+            break;
+        case ITEM_MOD_NATURE_SPELL_DAMAGE:
+            ApplySchoolSpellPowerBonus(SPELL_SCHOOL_NATURE, val, apply);
+            break;
+        case ITEM_MOD_FROST_SPELL_DAMAGE:
+            ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FROST, val, apply);
+            break;
+        case ITEM_MOD_SHADOW_SPELL_DAMAGE:
+            ApplySchoolSpellPowerBonus(SPELL_SCHOOL_SHADOW, val, apply);
+            break;
+        case ITEM_MOD_ARCANE_SPELL_DAMAGE:
+            ApplySchoolSpellPowerBonus(SPELL_SCHOOL_ARCANE, val, apply);
             break;
 
         /// @deprecated item mods
@@ -7223,7 +7239,7 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
                 chance = GetWeaponProcChance();
             }
 
-            if (roll_chance_f(chance) && sScriptMgr->OnCastItemCombatSpell(this, target, spellInfo, item))
+            if (roll_lucky_f(chance) && sScriptMgr->OnCastItemCombatSpell(this, target, spellInfo, item))
                 CastSpell(target, spellInfo->Id, TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_IGNORE_SPELL_AND_CATEGORY_CD), item);
         }
     }
@@ -7291,7 +7307,7 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
             if (FindCurrentSpellBySpellId(5938) && e_slot == TEMP_ENCHANTMENT_SLOT)
                 chance = 100.0f;
 
-            if (roll_chance_f(chance))
+            if (roll_lucky_f(chance))
             {
                 // Xinef: implement enchant charges
                 if (uint32 charges = item->GetEnchantmentCharges(EnchantmentSlot(e_slot)))
@@ -10930,6 +10946,14 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
             }
         }
 
+        // CRAFTCRAFT CDR
+        if (!itemId)
+        {
+            rec *= 100.0f / (100.0f + GetBaseRating(CR_HIT_TAKEN_MELEE));
+            catrec *= 100.0f / (100.0f + GetBaseRating(CR_HIT_TAKEN_MELEE));
+            needsCooldownPacket = true;
+        }
+
         // replace negative cooldowns by 0
         if (rec < 0)
             rec = 0;
@@ -10940,18 +10964,22 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
         if (rec == 0 && catrec == 0)
             return;
 
-        catrecTime = catrec ? catrec : 0;
-        recTime = rec ? rec : catrecTime;
+        catrecTime = catrec ? catrec : 0; // 25 + 60
+        recTime = rec ? rec : catrecTime; // 60
     }
 
     // category spells
     if (cat && catrec > 0)
     {
+        if (!itemId)
+        {
+            RemoveSpellCooldown(spellInfo->Id, true);
+        }
         _AddSpellCooldown(spellInfo->Id, 0, itemId, recTime, true, true);
-        if (needsCooldownPacket)
+        if (needsCooldownPacket && !itemId)
         {
             WorldPacket data;
-            BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_NONE, spellInfo->Id, recTime);
+            BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_INCLUDE_GCD, spellInfo->Id, recTime);
             SendDirectMessage(&data);
         }
 
@@ -10981,11 +11009,7 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
                 }
 
                 _AddSpellCooldown(i_scset->second, cat, itemId, catrecTime, !spellInfo->IsCooldownStartedOnEvent() && catrec && rec && catrec != rec);
-
-                if (spellInfo->HasAttribute(SPELL_ATTR0_CU_FORCE_SEND_CATEGORY_COOLDOWNS))
-                {
-                    forcedCategoryCooldowns[i_scset->second] = catrecTime;
-                }
+                forcedCategoryCooldowns[i_scset->second] = catrecTime;
             }
         }
 
@@ -11001,18 +11025,22 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
         // self spell cooldown
         if (recTime > 0)
         {
-            _AddSpellCooldown(spellInfo->Id, 0, itemId, recTime, true, true);
-
-            if (needsCooldownPacket)
+            if (!itemId)
             {
+                RemoveSpellCooldown(spellInfo->Id, true);
+            }
+            _AddSpellCooldown(spellInfo->Id, 0, itemId, recTime, true, true);
+            if (needsCooldownPacket && !itemId)
+            {
+
                 WorldPacket data;
-                BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_NONE, spellInfo->Id, rec);
+                BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_INCLUDE_GCD, spellInfo->Id, rec);
                 SendDirectMessage(&data);
             }
         }
     }
 }
-
+// CRAFTCRAFT CDR
 void Player::_AddSpellCooldown(uint32 spellid, uint16 categoryId, uint32 itemid, uint32 end_time, bool needSendToClient, bool forceSendToSpectator)
 {
     SpellCooldown sc;
@@ -11020,6 +11048,7 @@ void Player::_AddSpellCooldown(uint32 spellid, uint16 categoryId, uint32 itemid,
     sc.category = categoryId;
     sc.itemid = itemid;
     sc.maxduration = end_time;
+    ;
     sc.sendToSpectator = false;
     sc.needSendToClient = needSendToClient;
 
@@ -12597,7 +12626,7 @@ uint32 Player::GetResurrectionSpellId()
             prio = 3;
         }
         // Twisting Nether                                  // prio: 2 (max)
-        else if ((*itr)->GetId() == 23701 && roll_chance_i(10))
+        else if ((*itr)->GetId() == 23701 && GetOwner()->roll_lucky_i(10))
         {
             prio = 2;
             spell_id = 23700;

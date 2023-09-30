@@ -4510,35 +4510,35 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
                     ApplyRatingMod(CR_BLOCK, enchant_amount, apply);
                     LOG_DEBUG("entities.player.items", "+ {} SHIELD_BLOCK", enchant_amount);
                     break;
-                case ITEM_MOD_HIT_MELEE_RATING:
-                    ApplyRatingMod(CR_HIT_MELEE, enchant_amount, apply);
-                    LOG_DEBUG("entities.player.items", "+ {} MELEE_HIT", enchant_amount);
-                    break;
-                case ITEM_MOD_HIT_RANGED_RATING:
-                    ApplyRatingMod(CR_HIT_RANGED, enchant_amount, apply);
-                    LOG_DEBUG("entities.player.items", "+ {} RANGED_HIT", enchant_amount);
-                    break;
-                case ITEM_MOD_HIT_SPELL_RATING:
-                    ApplyRatingMod(CR_HIT_SPELL, enchant_amount, apply);
-                    LOG_DEBUG("entities.player.items", "+ {} SPELL_HIT", enchant_amount);
-                    break;
-                case ITEM_MOD_CRIT_MELEE_RATING:
-                    ApplyRatingMod(CR_CRIT_MELEE, enchant_amount, apply);
-                    LOG_DEBUG("entities.player.items", "+ {} MELEE_CRIT", enchant_amount);
-                    break;
-                case ITEM_MOD_CRIT_RANGED_RATING:
-                    ApplyRatingMod(CR_CRIT_RANGED, enchant_amount, apply);
-                    LOG_DEBUG("entities.player.items", "+ {} RANGED_CRIT", enchant_amount);
-                    break;
-                case ITEM_MOD_CRIT_SPELL_RATING:
-                    ApplyRatingMod(CR_CRIT_SPELL, enchant_amount, apply);
-                    LOG_DEBUG("entities.player.items", "+ {} SPELL_CRIT", enchant_amount);
-                    break;
+                    // case ITEM_MOD_HIT_MELEE_RATING:
+                    //     ApplyRatingMod(CR_HIT_MELEE, enchant_amount, apply);
+                    //     LOG_DEBUG("entities.player.items", "+ {} MELEE_HIT", enchant_amount);
+                    //     break;
+                    // case ITEM_MOD_HIT_RANGED_RATING:
+                    //     ApplyRatingMod(CR_HIT_RANGED, enchant_amount, apply);
+                    //     LOG_DEBUG("entities.player.items", "+ {} RANGED_HIT", enchant_amount);
+                    //     break;
+                    // case ITEM_MOD_HIT_SPELL_RATING:
+                    //     ApplyRatingMod(CR_HIT_SPELL, enchant_amount, apply);
+                    //     LOG_DEBUG("entities.player.items", "+ {} SPELL_HIT", enchant_amount);
+                    //     break;
+                    // case ITEM_MOD_CRIT_MELEE_RATING:
+                    //     ApplyRatingMod(CR_CRIT_MELEE, enchant_amount, apply);
+                    //     LOG_DEBUG("entities.player.items", "+ {} MELEE_CRIT", enchant_amount);
+                    //     break;
+                    // case ITEM_MOD_CRIT_RANGED_RATING:
+                    //     ApplyRatingMod(CR_CRIT_RANGED, enchant_amount, apply);
+                    //     LOG_DEBUG("entities.player.items", "+ {} RANGED_CRIT", enchant_amount);
+                    //     break;
+                    // case ITEM_MOD_CRIT_SPELL_RATING:
+                    //     ApplyRatingMod(CR_CRIT_SPELL, enchant_amount, apply);
+                    //     LOG_DEBUG("entities.player.items", "+ {} SPELL_CRIT", enchant_amount);
+                    //     break;
                     //                        Values from ITEM_STAT_MELEE_HA_RATING to ITEM_MOD_HASTE_RANGED_RATING are never used
                     //                        in Enchantments
-                    //                        case ITEM_MOD_HIT_TAKEN_MELEE_RATING:
-                    //                            ApplyRatingMod(CR_HIT_TAKEN_MELEE, enchant_amount, apply);
-                    //                            break;
+                case ITEM_MOD_HIT_TAKEN_MELEE_RATING: // CRAFTCRAFT CDR
+                    ApplyRatingMod(CR_HIT_TAKEN_MELEE, enchant_amount, apply);
+                    break;
                     //                        case ITEM_MOD_HIT_TAKEN_RANGED_RATING:
                     //                            ApplyRatingMod(CR_HIT_TAKEN_RANGED, enchant_amount, apply);
                     //                            break;
@@ -4627,9 +4627,6 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
                     ApplySpellPowerBonus(enchant_amount, apply);
                     LOG_DEBUG("entities.player.items", "+ {} SPELL_POWER", enchant_amount);
                     break;
-                case ITEM_MOD_FIRE_SPELL_DAMAGE:
-                    ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FIRE, enchant_amount, apply);
-                    break;
                 case ITEM_MOD_HEALTH_REGEN:
                     ApplyHealthRegenBonus(enchant_amount, apply);
                     LOG_DEBUG("entities.player.items", "+ {} HEALTH_REGENERATION", enchant_amount);
@@ -4641,6 +4638,24 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
                 case ITEM_MOD_BLOCK_VALUE:
                     HandleBaseModValue(SHIELD_BLOCK_VALUE, FLAT_MOD, float(enchant_amount), apply);
                     LOG_DEBUG("entities.player.items", "+ {} BLOCK_VALUE", enchant_amount);
+                    break;
+                case ITEM_MOD_HOLY_SPELL_DAMAGE:
+                    ApplySchoolSpellPowerBonus(SPELL_SCHOOL_HOLY, enchant_amount, apply);
+                    break;
+                case ITEM_MOD_FIRE_SPELL_DAMAGE:
+                    ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FIRE, enchant_amount, apply);
+                    break;
+                case ITEM_MOD_NATURE_SPELL_DAMAGE:
+                    ApplySchoolSpellPowerBonus(SPELL_SCHOOL_NATURE, enchant_amount, apply);
+                    break;
+                case ITEM_MOD_FROST_SPELL_DAMAGE:
+                    ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FROST, enchant_amount, apply);
+                    break;
+                case ITEM_MOD_SHADOW_SPELL_DAMAGE:
+                    ApplySchoolSpellPowerBonus(SPELL_SCHOOL_SHADOW, enchant_amount, apply);
+                    break;
+                case ITEM_MOD_ARCANE_SPELL_DAMAGE:
+                    ApplySchoolSpellPowerBonus(SPELL_SCHOOL_ARCANE, enchant_amount, apply);
                     break;
                 case ITEM_MOD_SPELL_HEALING_DONE: // deprecated
                 case ITEM_MOD_SPELL_DAMAGE_DONE:  // deprecated

@@ -1964,6 +1964,7 @@ public:
     float OCTRegenMPPerSpirit();
     [[nodiscard]] float GetRatingMultiplier(CombatRating cr) const;
     [[nodiscard]] float GetRatingBonusValue(CombatRating cr) const;
+    [[nodiscard]] float GetBaseRating(CombatRating cr) const { return m_baseRatingValue[cr]; }
     uint32 GetBaseSpellPowerBonus() { return m_baseSpellPower; }
     // CRAFTCRAFT specific spell power
     uint32 GetSchoolSpellPowerBonus(SpellSchools spellSchool) { return m_schoolSpellPower[spellSchool]; }

@@ -132,8 +132,9 @@ bool Player::UpdateStats(Stats stat)
     if (stat == STAT_STRENGTH)
     {
         UpdateAttackPowerAndDamage(false);
-        if (HasAuraTypeWithMiscvalue(SPELL_AURA_MOD_RANGED_ATTACK_POWER_OF_STAT_PERCENT, stat))
-            UpdateAttackPowerAndDamage(true);
+        // CRAFTCRAFT RAP update fix
+        // if (HasAuraTypeWithMiscvalue(SPELL_AURA_MOD_RANGED_ATTACK_POWER_OF_STAT_PERCENT, stat))
+        UpdateAttackPowerAndDamage(true);
     }
     else if (stat == STAT_AGILITY)
     {
@@ -262,13 +263,13 @@ void Player::UpdateResistances(uint32 school)
         UpdateArmor();
 }
 
-void Player::UpdateArmor()
+void Player::UpdateArmor() // CRAFTCRAFT Removed armor from agility
 {
     UnitMods unitMod = UNIT_MOD_ARMOR;
 
     float value = GetModifierValue(unitMod, BASE_VALUE); // base armor (from items)
     value *= GetModifierValue(unitMod, BASE_PCT);        // armor percent from items
-    value += GetStat(STAT_AGILITY) * 2.0f;               // armor bonus from stats
+    value += GetStat(STAT_AGILITY) * 0.0f;               // armor bonus from stats
     value += GetModifierValue(unitMod, TOTAL_VALUE);
 
     // add dynamic flat mods
@@ -391,6 +392,9 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
     SetInt32Value(index, (uint32)base_attPower);   // UNIT_FIELD_(RANGED)_ATTACK_POWER field
     SetInt32Value(index_mod, (uint32)attPowerMod); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MODS field
     SetFloatValue(index_mult, attPowerMultiplier); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MULTIPLIER field
+    
+    m_baseRatingValue[CR_HIT_TAKEN_RANGED] = 1;
+    ApplyRatingMod(CR_HIT_TAKEN_RANGED, 0, true);
 
     // automatically update weapon damage after attack power modification
     if (ranged)
@@ -450,8 +454,8 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bo
 
     float attackSpeedMod = GetAPMultiplier(attType, normalized);
 
-    // CRAFTCRAFT dps AP scaling change
-    float nikoMult = sGtChanceToMeleeCritStore.LookupEntry((9) * GT_MAX_LEVEL + getLevel() - 1)->ratio;
+    // CRAFTCRAFT dps AP scaling change USING 1200-1299 Combat ratings store (Ranged hit taken)
+    float nikoMult = sGtCombatRatingsStore.LookupEntry(CR_HIT_TAKEN_RANGED * GT_MAX_LEVEL + getLevel() - 1)->ratio;
 
     float baseValue = GetModifierValue(unitMod, BASE_VALUE);
     float basePct = GetModifierValue(unitMod, BASE_PCT);
@@ -580,6 +584,7 @@ void Player::UpdateAllCritPercentages()
     SetBaseModValue(CRIT_PERCENTAGE, PCT_MOD, value);
     SetBaseModValue(OFFHAND_CRIT_PERCENTAGE, PCT_MOD, value);
     SetBaseModValue(RANGED_CRIT_PERCENTAGE, PCT_MOD, value);
+    LOG_DEBUG("module", "melee | crit {}", value);
 
     UpdateCritPercentage(BASE_ATTACK);
     UpdateCritPercentage(OFF_ATTACK);
@@ -676,6 +681,7 @@ void Player::UpdateSpellCritChance(uint32 school)
     float crit = 0.0f;
     // Crit from Intellect
     crit += GetSpellCritFromIntellect();
+    LOG_DEBUG("module", "School {} | crit {}", school, crit);
     // Increase crit from SPELL_AURA_MOD_SPELL_CRIT_CHANCE
     crit += GetTotalAuraModifierAreaExclusive(SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
     // Increase crit from SPELL_AURA_MOD_CRIT_PCT
@@ -684,7 +690,7 @@ void Player::UpdateSpellCritChance(uint32 school)
     crit += GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL, 1 << school);
     // Increase crit from spell crit ratings
     crit += GetRatingBonusValue(CR_CRIT_SPELL);
-
+    
     // Store crit value
     SetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + school, crit);
 }

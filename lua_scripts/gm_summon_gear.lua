@@ -2,11 +2,17 @@ require("SMH")
 local command = "gimme"
 local setclass = "setclass"
 
-local items = { 205016, 205017, 205018, 205019, 205020, 205021, 205022, 205023,
-	205024, 23162, 23162, 23162, 23162, 205000, 205008, 205014, 205006 }
+local items = { 205016, 205017, 205018, 205019, 205020,
+	205021, 205022, 205023,
+	205024, 205000, 205008, 205014, 205006, 350054 }
 local stacks = { 2516 }
 
 local function summon_stuff(event, player)
+	player:EquipItem(player:AddItem(23162), 19)
+	player:EquipItem(player:AddItem(23162), 20)
+	player:EquipItem(player:AddItem(23162), 21)
+	player:EquipItem(player:AddItem(23162), 22)
+
 	for i, v in pairs(items) do player:AddItem(v) end
 	for i, v in pairs(stacks) do player:AddItem(v, 200) end
 end

@@ -338,6 +338,9 @@ public:
     void HandleProcTriggerDamageAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo);
     void HandleRaidProcFromChargeAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo);
     void HandleRaidProcFromChargeWithValueAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo);
+
+    // CRAFTCRAFT Learn Spell from set
+    void HandleAuraLearnSpell(AuraApplication const* aurApp, uint8 mode, bool apply) const;
 };
 
 namespace Acore
