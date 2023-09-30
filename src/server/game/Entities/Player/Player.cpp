@@ -13491,7 +13491,7 @@ void Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore cons
     }
 }
 
-LootItem *Player::StoreLootItem(uint8 lootSlot, Loot *loot, InventoryResult &msg)
+LootItem *Player::StoreLootItem(uint8 lootSlot, Loot *loot, InventoryResult &msg, bool suppressErrorMsg = false)
 {
     QuestItem *qitem = nullptr;
     QuestItem *ffaitem = nullptr;
@@ -13502,7 +13502,7 @@ LootItem *Player::StoreLootItem(uint8 lootSlot, Loot *loot, InventoryResult &msg
     LootItem *item = loot->LootItemInSlot(lootSlot, this, &qitem, &ffaitem, &conditem);
     if (!item || item->is_looted)
     {
-        if (!sScriptMgr->CanSendErrorAlreadyLooted(this))
+        if (!sScriptMgr->CanSendErrorAlreadyLooted(this) || !suppressErrorMsg)
         {
             SendEquipError(EQUIP_ERR_ALREADY_LOOTED, nullptr, nullptr);
         }
@@ -13588,7 +13588,8 @@ LootItem *Player::StoreLootItem(uint8 lootSlot, Loot *loot, InventoryResult &msg
     }
     else
     {
-        SendEquipError(msg, nullptr, nullptr, item->itemid);
+        if (!suppressErrorMsg)
+            SendEquipError(msg, nullptr, nullptr, item->itemid);
     }
 
     return item;
