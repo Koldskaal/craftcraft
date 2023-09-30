@@ -1057,7 +1057,7 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
         else // victim is a player
         {
             // random durability for items (HIT TAKEN)
-            if (roll_chance_f(sWorld->getRate(RATE_DURABILITY_LOSS_DAMAGE)))
+            if (victim->roll_lucky_f(sWorld->getRate(RATE_DURABILITY_LOSS_DAMAGE)))
             {
                 EquipmentSlots slot = EquipmentSlots(urand(0, EQUIPMENT_SLOT_END - 1));
                 victim->ToPlayer()->DurabilityPointLossForEquipSlot(slot);
@@ -1074,7 +1074,7 @@ uint32 Unit::DealDamage(Unit *attacker, Unit *victim, uint32 damage, CleanDamage
         if (attacker && attacker->GetTypeId() == TYPEID_PLAYER)
         {
             // random durability for items (HIT DONE)
-            if (roll_chance_f(sWorld->getRate(RATE_DURABILITY_LOSS_DAMAGE)))
+            if (attacker->roll_lucky_f(sWorld->getRate(RATE_DURABILITY_LOSS_DAMAGE)))
             {
                 EquipmentSlots slot = EquipmentSlots(urand(0, EQUIPMENT_SLOT_END - 1));
                 attacker->ToPlayer()->DurabilityPointLossForEquipSlot(slot);
@@ -1884,7 +1884,7 @@ void Unit::DealMeleeDamage(CalcDamageInfo *damageInfo, bool durabilityLoss)
         if (Probability > 40.0f)
             Probability = 40.0f;
 
-        if (roll_chance_f(std::max(0.0f, Probability)))
+        if (roll_lucky_f(std::max(0.0f, Probability)))
             CastSpell(victim, 1604, true);
     }
 
@@ -2978,7 +2978,7 @@ uint32 Unit::CalculateDamage(WeaponAttackType attType, bool normalized, bool add
     {
         if (p->IsLuckyHit())
         {
-            p->CastSpell(p, 64885, true);
+            // p->CastSpell(p, 64885, true);
             uint32 roll1 = urand(uint32(minDamage), uint32(maxDamage));
             uint32 roll2 = urand(uint32(minDamage), uint32(maxDamage));
             return uint32(std::max(roll1, roll2));
@@ -3060,7 +3060,7 @@ bool Unit::isSpellBlocked(Unit *victim, SpellInfo const *spellProto, WeaponAttac
         if (blockChance < 0.0f || victim->IsNonMeleeSpellCast(false, false, true) || victim->HasUnitState(UNIT_STATE_CONTROLLED))
             blockChance = 0.0f;
 
-        if (roll_chance_f(blockChance))
+        if (roll_lucky_f(blockChance))
             return true;
     }
     return false;
@@ -3068,7 +3068,7 @@ bool Unit::isSpellBlocked(Unit *victim, SpellInfo const *spellProto, WeaponAttac
 
 bool Unit::isBlockCritical()
 {
-    if (roll_chance_i(GetTotalAuraModifier(SPELL_AURA_MOD_BLOCK_CRIT_CHANCE)))
+    if (this->roll_lucky_i(GetTotalAuraModifier(SPELL_AURA_MOD_BLOCK_CRIT_CHANCE)))
         return true;
     return false;
 }
@@ -3793,6 +3793,7 @@ void Unit::_UpdateSpells(uint32 time)
     {
         if (m_currentSpells[i] && m_currentSpells[i]->getState() == SPELL_STATE_FINISHED)
         {
+            // m_currentSpells[i]->SendSpellCooldown();
             m_currentSpells[i]->SetReferencedFromCurrent(false);
             m_currentSpells[i] = nullptr; // remove pointer
         }
@@ -6744,7 +6745,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
         case 31872:
         {
             // Roll chane
-            if (!victim || !victim->IsAlive() || !roll_chance_i(triggerAmount))
+            if (!victim || !victim->IsAlive() || !GetOwner()->roll_lucky_i(triggerAmount))
                 return false;
 
             // Remove any stun effect on target
@@ -6953,6 +6954,9 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
         if (dummySpell->SpellIconID == 2018) // only this spell have SpellFamily Shaman SpellIconID == 2018 and dummy aura
         {
 
+            Unit *owner = triggeredByAura->GetCaster();
+            if (!owner)
+                return false;
             if (!procSpell || GetTypeId() != TYPEID_PLAYER || !victim)
                 return false;
 
@@ -6978,7 +6982,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
                 // Cast
                 CastCustomSpell(victim, spell, &dmg, 0, 0, true, castItem, triggeredByAura);
                 // spell queue
-            } while (roll_chance_i(33));
+            } while (owner->roll_lucky_i(33));
             return true;
         }
 
@@ -7014,7 +7018,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
                 if (counter->GetAmount() < 100) // not enough
                     return true;
                 // Crititcal counted -> roll chance
-                if (roll_chance_i(triggerAmount))
+                if (triggeredByAura->GetCaster()->roll_lucky_i(triggerAmount))
                     CastSpell(this, 48108, true, castItem, triggeredByAura);
             }
             counter->SetAmount(25);
@@ -7254,7 +7258,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
         if (dummySpell->SpellIconID == 2218)
         {
             // Proc only from Abolish desease on self cast
-            if (procSpell->Id != 552 || victim != this || !roll_chance_i(triggerAmount))
+            if (procSpell->Id != 552 || victim != this || !triggeredByAura->GetCaster()->roll_lucky_i(triggerAmount))
                 return false;
             triggered_spell_id = 64136;
             target = this;
@@ -7294,7 +7298,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
         case 47570:
         case 47569:
         {
-            if (!roll_chance_i(triggerAmount))
+            if (!triggeredByAura->GetCaster()->roll_lucky_i(triggerAmount))
                 return false;
 
             RemoveMovementImpairingAuras(true);
@@ -7500,7 +7504,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
             else
                 return false;
 
-            if (!roll_chance_f(chance))
+            if (!roll_lucky_f(chance))
                 return false;
 
             target = this;
@@ -7538,7 +7542,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
 
             bool isWrathSpell = (procSpell->SpellFamilyFlags[0] & 1);
 
-            if (!roll_chance_f(dummySpell->ProcChance * (isWrathSpell ? 0.6f : 1.0f)))
+            if (!roll_chance_f(dummySpell->ProcChance * (isWrathSpell ? 1.0f : 1.0f)))
                 return false;
 
             target = this;
@@ -7926,7 +7930,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
             else
                 return false;
 
-            if (!roll_chance_f(chance))
+            if (!roll_lucky_f(chance))
                 return false;
 
             break;
@@ -8137,7 +8141,8 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
                 return false;
 
             // apply cooldown before cast to prevent processing itself
-            player->AddSpellCooldown(dummySpell->Id, 0, 3 * IN_MILLISECONDS);
+            // CRAFTCRAFT Windfury cooldown from 3 to 0.3
+            player->AddSpellCooldown(dummySpell->Id, 0, 0.3 * IN_MILLISECONDS);
 
             // Attack Twice
             for (uint32 i = 0; i < 2; ++i)
@@ -8170,7 +8175,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
             else
                 return false;
 
-            if (!roll_chance_f(chance))
+            if (!roll_lucky_f(chance))
                 return false;
 
             target = this;
@@ -8242,7 +8247,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
             if (GetDistance(target) < 15.0f)
                 return false;
             float chance = (float)triggerAmount;
-            if (!roll_chance_f(chance))
+            if (!roll_lucky_f(chance))
                 return false;
 
             triggered_spell_id = 63685;
@@ -8316,7 +8321,7 @@ bool Unit::HandleDummyAuraProc(Unit *victim, uint32 damage, AuraEffect *triggere
                 // Chain heal - 0.3 of default
                 chance *= 0.3f;
 
-            if (!roll_chance_f(chance))
+            if (!roll_lucky_f(chance))
                 return false;
 
             // Water Shield
@@ -9519,7 +9524,7 @@ bool Unit::HandleProcTriggerSpell(Unit *victim, uint32 damage, AuraEffect *trigg
             return false;
 
         if (procSpell->SpellFamilyFlags[0] & 0x800000)
-            if ((procSpell->Id != 58381) || !roll_chance_i(50))
+            if ((procSpell->Id != 58381) || !triggeredByAura->GetCaster()->roll_lucky_i(50))
                 return false;
 
         target = victim;
@@ -9746,7 +9751,7 @@ bool Unit::HandleProcTriggerSpell(Unit *victim, uint32 damage, AuraEffect *trigg
         // PPM = 2.5 * (rank of talent),
         uint32 rank = auraSpellInfo->GetRank();
         // 5 rank -> 100% 4 rank -> 80% and etc from full rate
-        if (!roll_chance_i(20 * rank))
+        if (!this->roll_lucky_i(20 * rank))
             return false;
 
         // Item - Shaman T10 Enhancement 4P Bonus
@@ -9830,7 +9835,7 @@ bool Unit::HandleProcTriggerSpell(Unit *victim, uint32 damage, AuraEffect *trigg
                 uint8 fbRank = sSpellMgr->GetSpellRank(aurEff->GetId());
                 uint8 chance = uint8(std::ceil(fofRank * fbRank * 16.6f));
 
-                if (roll_chance_i(chance))
+                if (this->roll_lucky_i(chance))
                     CastSpell(victim, aurEff->GetSpellInfo()->Effects[EFFECT_0].TriggerSpell, true);
             }
         }
@@ -9926,7 +9931,7 @@ bool Unit::HandleOverrideClassScriptAuraProc(Unit *victim, uint32 /*damage*/, Au
     case 7011:
     case 7012:
     {
-        if (!roll_chance_i(triggeredByAura->GetAmount()))
+        if (!this->roll_lucky_i(triggeredByAura->GetAmount()))
             return false;
         switch (victim->getPowerType())
         {
@@ -11943,7 +11948,6 @@ int32 Unit::SpellBaseDamageBonusDone(SpellSchoolMask schoolMask)
         {
             if (((1 << i) & schoolMask) != 0)
             {
-                LOG_DEBUG("module", "ENTERED {}", 1 << i);
                 DoneAdvertisedBenefit += player->GetSchoolSpellPowerBonus((SpellSchools)i);
             }
         }
@@ -12734,9 +12738,18 @@ int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask)
         // Base value
         AdvertisedBenefit += ToPlayer()->GetBaseSpellPowerBonus();
 
-        // CRAFTCRAFT HEALING POWER FROM INT AND SPI
+        // CRAFTCRAFT HEALING POWER FROM INT (AND SPI REMOVED)
         AdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_INTELLECT) - 20, 0);
-        AdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_SPIRIT) - 20, 0) * 0.5f;
+        // AdvertisedBenefit += std::max<uint32>((uint32)GetStat(STAT_SPIRIT) - 20, 0) * 0.5f;
+
+        // CRAFTCRAFT specific spellpower
+        for (uint8 i = 0; i < MAX_SPELL_SCHOOL; i++)
+        {
+            if (((1 << i) & schoolMask) != 0)
+            {
+                AdvertisedBenefit += ToPlayer()->GetSchoolSpellPowerBonus((SpellSchools)i);
+            }
+        }
 
         // Healing bonus from stats
         AuraEffectList const &mHealingDoneOfStatPercent = GetAuraEffectsByType(SPELL_AURA_MOD_SPELL_HEALING_OF_STAT_PERCENT);
@@ -15253,9 +15266,8 @@ bool Unit::HandleStatModifier(UnitMods unitMod, UnitModifierType modifierType, f
         break;
 
     case UNIT_MOD_ATTACK_POWER:
-        UpdateAttackPowerAndDamage();
-        break;
     case UNIT_MOD_ATTACK_POWER_RANGED:
+        UpdateAttackPowerAndDamage();
         UpdateAttackPowerAndDamage(true);
         break;
 
@@ -17819,7 +17831,7 @@ bool Unit::IsTriggeredAtSpellProcEvent(Unit *victim, Aura *aura, WeaponAttackTyp
         modOwner->ApplySpellMod(spellProto->Id, SPELLMOD_CHANCE_OF_SUCCESS, chance);
     }
 
-    return roll_chance_f(chance);
+    return roll_lucky_f(chance);
 }
 
 bool Unit::HandleAuraRaidProcFromChargeWithValue(AuraEffect *triggeredByAura)
@@ -21163,6 +21175,7 @@ void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer *data, Player *target)
 
 void Unit::BuildCooldownPacket(WorldPacket &data, uint8 flags, uint32 spellId, uint32 cooldown)
 {
+
     data.Initialize(SMSG_SPELL_COOLDOWN, 8 + 1 + 4 + 4);
     data << GetGUID();
     data << uint8(flags);
@@ -21175,6 +21188,7 @@ void Unit::BuildCooldownPacket(WorldPacket &data, uint8 flags, PacketCooldowns c
     data.Initialize(SMSG_SPELL_COOLDOWN, 8 + 1 + (4 + 4) * cooldowns.size());
     data << GetGUID();
     data << uint8(flags);
+
     for (std::unordered_map<uint32, uint32>::const_iterator itr = cooldowns.begin(); itr != cooldowns.end(); ++itr)
     {
         data << uint32(itr->first);
@@ -21473,4 +21487,41 @@ std::string Unit::GetDebugInfo() const
          << " UnitMovementFlags: " << GetUnitMovementFlags() << " ExtraUnitMovementFlags: " << GetExtraUnitMovementFlags()
          << " Class: " << std::to_string(getClass());
     return sstr.str();
+}
+
+// CRAFTCRAFT lucky hit
+bool Unit::roll_lucky_f(float chance)
+{
+    if (this->IsPlayer())
+    {
+        Player *p = ToPlayer();
+        if (p->IsLuckyHit())
+        {
+            bool roll1 = roll_chance_f(chance);
+            bool roll2 = roll_chance_f(chance);
+            if (!(roll1 && roll2) && (roll1 || roll2))
+                p->CastSpell(p, 64885, true);
+            return roll1 || roll2;
+        }
+    }
+
+    return roll_chance_f(chance);
+}
+
+bool Unit::roll_lucky_i(int chance)
+{
+    if (this->IsPlayer())
+    {
+        Player *p = ToPlayer();
+        if (p->IsLuckyHit())
+        {
+            bool roll1 = roll_chance_i(chance);
+            bool roll2 = roll_chance_i(chance);
+            if (!(roll1 && roll2) && (roll1 || roll2))
+                p->CastSpell(p, 64885, true);
+            return roll1 || roll2;
+        }
+    }
+
+    return roll_chance_i(chance);
 }

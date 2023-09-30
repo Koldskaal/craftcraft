@@ -377,6 +377,8 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS] =
         &AuraEffect::HandlePreventResurrection,                   // 314 SPELL_AURA_PREVENT_RESURRECTION todo
         &AuraEffect::HandleNoImmediateEffect,                     // 315 SPELL_AURA_UNDERWATER_WALKING todo
         &AuraEffect::HandleNoImmediateEffect,                     // 316 SPELL_AURA_PERIODIC_HASTE implemented in AuraEffect::CalculatePeriodic
+        &AuraEffect::HandleAuraLearnSpell,                        // 317 CRAFTCRAFT
+
 };
 
 AuraEffect::AuraEffect(Aura *base, uint8 effIndex, int32 *baseAmount, Unit *caster) : m_base(base), m_spellInfo(base->GetSpellInfo()),
@@ -4110,6 +4112,31 @@ void AuraEffect::HandleModHealingDone(AuraApplication const *aurApp, uint8 mode,
     // implemented in Unit::SpellHealingBonus
     // this information is for client side only
     target->ToPlayer()->UpdateSpellDamageAndHealingBonus();
+}
+
+// CRAFTCRAFT Learn Spell From Set Bonus
+void AuraEffect::HandleAuraLearnSpell(AuraApplication const *aurApp, uint8 mode, bool apply) const
+{
+    Unit *target = aurApp->GetTarget();
+    int32 spellID = GetMiscValue();
+    SpellInfo const *spellEntry = sSpellMgr->GetSpellInfo(spellID);
+    if (!spellEntry)
+        return;
+
+    if(apply)
+    {
+        target->ToPlayer()->learnSpell(spellID);
+    }
+    else 
+    {
+        /*if(target->ToPlayer()->HasAura(spellID))
+        {
+            target->ToPlayer()->RemoveAura(spellID);
+        }*/
+        
+        target->ToPlayer()->removeSpell(spellID, SPEC_MASK_ALL, false);
+    }
+
 }
 
 void AuraEffect::HandleModTotalPercentStat(AuraApplication const *aurApp, uint8 mode, bool apply) const

@@ -1463,7 +1463,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const *aurApp, Unit *caster, b
                         uint8 fofRank = sSpellMgr->GetSpellRank(aurEff->GetId());
                         uint8 chance = uint8(std::ceil(fofRank * fbRank * 16.6f));
 
-                        if (roll_chance_i(chance))
+                        if (caster->roll_lucky_i(chance))
                         {
                             caster->CastSpell(caster, aurEff->GetSpellInfo()->Effects[EFFECT_0].TriggerSpell, true);
                         }
@@ -1688,7 +1688,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const *aurApp, Unit *caster, b
                 if (AuraEffect *absorb = GetEffect(EFFECT_0))
                     if (absorb->GetAmount() <= 0) // removed by damage, not dispel
                         if (AuraEffect *dummy = caster->GetDummyAuraEffect(SPELLFAMILY_MAGE, 2945, 0))
-                            if (roll_chance_i(dummy->GetSpellInfo()->ProcChance))
+                            if (caster->roll_lucky_i(dummy->GetSpellInfo()->ProcChance))
                                 caster->CastSpell(target, 55080, true, nullptr, GetEffect(0));
             }
             break;
@@ -1769,7 +1769,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const *aurApp, Unit *caster, b
                     // effect on aura target
                     if (AuraEffect const *aurEff = aura->GetEffect(1))
                     {
-                        if (!roll_chance_i(aurEff->GetAmount()))
+                        if (!caster->roll_lucky_i(aurEff->GetAmount()))
                             break;
 
                         int32 triggeredSpellId = 0;
@@ -2319,19 +2319,7 @@ bool Aura::IsProcTriggeredOnEvent(AuraApplication *aurApp, ProcEventInfo &eventI
         }
     }
 
-    if (target->GetTypeId() == TYPEID_PLAYER)
-    {
-        if (target->ToPlayer()->IsLuckyHit())
-        {
-            target->CastSpell(target, 64885, true);
-            bool roll1 = roll_chance_f(CalcProcChance(*procEntry, eventInfo));
-            bool roll2 = roll_chance_f(CalcProcChance(*procEntry, eventInfo));
-            LOG_DEBUG("module", "AURA ROLL: {} | {} | {}", roll1, roll2, roll1 || roll2);
-            return roll1 || roll2;
-        }
-    }
-
-    return roll_chance_f(CalcProcChance(*procEntry, eventInfo));
+    return target->roll_lucky_f(CalcProcChance(*procEntry, eventInfo));
 }
 
 float Aura::CalcProcChance(SpellProcEntry const &procEntry, ProcEventInfo &eventInfo) const

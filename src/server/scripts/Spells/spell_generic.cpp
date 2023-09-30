@@ -55,7 +55,7 @@ class spell_gen_5000_gold : public SpellScript
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        if (Player* target = GetHitPlayer())
+        if (Player *target = GetHitPlayer())
         {
             target->ModifyMoney(5000 * GOLD);
         }
@@ -73,14 +73,14 @@ class spell_gen_model_visible : public AuraScript
 public:
     PrepareAuraScript(spell_gen_model_visible)
 
-    bool Load() override
+        bool Load() override
     {
         _modelId = 0;
         _hasFlag = false;
         return true;
     }
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         _modelId = GetUnitOwner()->GetDisplayId();
         _hasFlag = GetUnitOwner()->HasUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
@@ -93,7 +93,7 @@ public:
             GetUnitOwner()->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, 0);
     }
 
-    void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         GetUnitOwner()->SetDisplayId(_modelId);
         if (!_hasFlag)
@@ -109,7 +109,7 @@ public:
     }
 
 private:
-    std::array<uint32, 3> _itemId = { {0, 0, 0} };
+    std::array<uint32, 3> _itemId = {{0, 0, 0}};
     uint32 _modelId;
     bool _hasFlag;
 };
@@ -126,12 +126,12 @@ class spell_the_flag_of_ownership : public SpellScript
         return true;
     }
 
-    void HandleScript(SpellEffIndex  /*effIndex*/)
+    void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        Unit* caster = GetCaster();
+        Unit *caster = GetCaster();
         if (!caster || caster->GetTypeId() != TYPEID_PLAYER)
             return;
-        Player* target = GetHitPlayer();
+        Player *target = GetHitPlayer();
         if (!target)
             return;
         caster->CastSpell(target, 52605, true);
@@ -141,9 +141,9 @@ class spell_the_flag_of_ownership : public SpellScript
         haveTarget = true;
     }
 
-    void FilterTargets(std::list<WorldObject*>& targets)
+    void FilterTargets(std::list<WorldObject *> &targets)
     {
-        for( std::list<WorldObject*>::iterator itr = targets.begin(); itr != targets.end(); )
+        for (std::list<WorldObject *>::iterator itr = targets.begin(); itr != targets.end();)
         {
             if ((*itr)->GetTypeId() != TYPEID_PLAYER || (*itr)->ToPlayer()->IsAlive())
             {
@@ -157,7 +157,7 @@ class spell_the_flag_of_ownership : public SpellScript
 
     void HandleFinish()
     {
-        Unit* caster = GetCaster();
+        Unit *caster = GetCaster();
         if (!caster || !caster->ToPlayer())
             return;
 
@@ -184,26 +184,26 @@ class spell_gen_have_item_auras : public AuraScript
 {
     PrepareAuraScript(spell_gen_have_item_auras)
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         if (target && target->ToPlayer())
         {
             uint32 entry = 0;
             switch (GetSpellInfo()->Id)
             {
-                case 51060: // Have Withered Batwing
-                    entry = 28294;
-                    break;
-                case 51068: // Have Muddy Mire Maggot
-                    entry = 28293;
-                    break;
-                case 51094: // Have Chilled Serpent Mucus
-                    entry = 28296;
-                    break;
-                case 51088: // Have Amberseed
-                    entry = 28295;
-                    break;
+            case 51060: // Have Withered Batwing
+                entry = 28294;
+                break;
+            case 51068: // Have Muddy Mire Maggot
+                entry = 28293;
+                break;
+            case 51094: // Have Chilled Serpent Mucus
+                entry = 28296;
+                break;
+            case 51088: // Have Amberseed
+                entry = 28295;
+                break;
             }
 
             if (entry)
@@ -229,15 +229,15 @@ class spell_gen_mine_sweeper : public SpellScript
 {
     PrepareSpellScript(spell_gen_mine_sweeper);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_LAND_MINE_KNOCKBACK, SPELL_LANDMINE_KNOCKBACK_ACHIEVEMENT});
+        return ValidateSpellInfo({SPELL_LAND_MINE_KNOCKBACK, SPELL_LANDMINE_KNOCKBACK_ACHIEVEMENT});
     }
 
-    void HandleSchoolDMG(SpellEffIndex  /*effIndex*/)
+    void HandleSchoolDMG(SpellEffIndex /*effIndex*/)
     {
-        Unit* caster = GetCaster();
-        Player* target = GetHitPlayer();
+        Unit *caster = GetCaster();
+        Player *target = GetHitPlayer();
         if (!target)
             return;
 
@@ -245,10 +245,10 @@ class spell_gen_mine_sweeper : public SpellScript
         caster->CastSpell(target, SPELL_LAND_MINE_KNOCKBACK, true);
     }
 
-    void HandleScriptEffect(SpellEffIndex  /*effIndex*/)
+    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
     {
-        if (Unit* target = GetHitPlayer())
-            if (Aura* aur = target->GetAura(GetSpellInfo()->Id))
+        if (Unit *target = GetHitPlayer())
+            if (Aura *aur = target->GetAura(GetSpellInfo()->Id))
                 if (aur->GetStackAmount() >= 10)
                     target->CastSpell(target, SPELL_LANDMINE_KNOCKBACK_ACHIEVEMENT, true);
     }
@@ -271,7 +271,7 @@ class spell_gen_reduced_above_60 : public SpellScript
 
     void RecalculateDamage()
     {
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
             if (target->GetLevel() > 60)
             {
                 int32 damage = GetHitDamage();
@@ -290,9 +290,9 @@ class spell_gen_reduced_above_60_aura : public AuraScript
 {
     PrepareAuraScript(spell_gen_reduced_above_60_aura);
 
-    void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool&   /*canBeRecalculated*/)
+    void CalculateAmount(AuraEffect const * /*aurEff*/, int32 &amount, bool & /*canBeRecalculated*/)
     {
-        if (Unit* owner = GetUnitOwner())
+        if (Unit *owner = GetUnitOwner())
             if (owner->GetLevel() > 60)
                 AddPct(amount, -4 * int8(std::min(owner->GetLevel(), uint8(85)) - 60)); // prevents reduce by more than 100%
     }
@@ -309,13 +309,14 @@ class spell_gen_reduced_above_60_aura : public AuraScript
 class spell_gen_relocaste_dest : public SpellScript
 {
     PrepareSpellScript(spell_gen_relocaste_dest);
+
 public:
-    spell_gen_relocaste_dest(float x, float y, float z, float o) : _x(x), _y(y), _z(z), _o(o) { }
+    spell_gen_relocaste_dest(float x, float y, float z, float o) : _x(x), _y(y), _z(z), _o(o) {}
 
     void RelocateDest()
     {
         Position const offset = {_x, _y, _z, _o};
-        const_cast<WorldLocation*>(GetExplTargetDest())->RelocateOffset(offset);
+        const_cast<WorldLocation *>(GetExplTargetDest())->RelocateOffset(offset);
     }
 
     void Register() override
@@ -335,9 +336,9 @@ class spell_gen_allow_proc_from_spells_with_cost : public AuraScript
 {
     PrepareAuraScript(spell_gen_allow_proc_from_spells_with_cost);
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
-        SpellInfo const* spellInfo = eventInfo.GetSpellInfo();
+        SpellInfo const *spellInfo = eventInfo.GetSpellInfo();
         if (!spellInfo)
             return false;
 
@@ -365,28 +366,28 @@ class spell_gen_bg_preparation : public AuraScript
 {
     PrepareAuraScript(spell_gen_bg_preparation)
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         GetTarget()->ApplySpellImmune(GetId(), IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ALL, true);
     }
 
-    void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         GetTarget()->ApplySpellImmune(GetId(), IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ALL, false);
     }
 
-    void CalcPeriodic(AuraEffect const* /*effect*/, bool& isPeriodic, int32& amplitude)
+    void CalcPeriodic(AuraEffect const * /*effect*/, bool &isPeriodic, int32 &amplitude)
     {
         isPeriodic = true;
         amplitude = 3 * IN_MILLISECONDS;
     }
 
-    void Update(AuraEffect*  /*effect*/)
+    void Update(AuraEffect * /*effect*/)
     {
-        if (Player* player = GetUnitOwner()->GetCharmerOrOwnerPlayerOrPlayerItself())
-            if (MapEntry const* mapEntry = sMapStore.LookupEntry(player->GetMapId()))
+        if (Player *player = GetUnitOwner()->GetCharmerOrOwnerPlayerOrPlayerItself())
+            if (MapEntry const *mapEntry = sMapStore.LookupEntry(player->GetMapId()))
                 if ((GetId() == 32727 && mapEntry->IsBattleArena()) || (GetId() == 44521 && mapEntry->IsBattleground()))
-                    if (Battleground* bg = player->GetBattleground())
+                    if (Battleground *bg = player->GetBattleground())
                         if (bg->GetStatus() == STATUS_WAIT_JOIN)
                             return;
         SetMaxDuration(1);
@@ -410,12 +411,13 @@ class spell_gen_disabled_above_level : public SpellScript
 {
     PrepareSpellScript(spell_gen_disabled_above_level)
 
-public:
-    spell_gen_disabled_above_level(uint8 level) : SpellScript(), _level(level) { }
+        public : spell_gen_disabled_above_level(uint8 level) : SpellScript(), _level(level)
+    {
+    }
 
     SpellCastResult CheckRequirement()
     {
-        if (Unit* target = GetExplTargetUnit())
+        if (Unit *target = GetExplTargetUnit())
             if (target->GetLevel() >= _level)
                 return SPELL_FAILED_DONT_REPORT;
 
@@ -437,14 +439,14 @@ class spell_pet_hit_expertise_scalling : public AuraScript
 {
     PrepareAuraScript(spell_pet_hit_expertise_scalling)
 
-    int32 CalculatePercent(float hitChance, float cap, float maxChance)
+        int32 CalculatePercent(float hitChance, float cap, float maxChance)
     {
         return (hitChance / cap) * maxChance;
     }
 
-    void CalculateHitAmount(AuraEffect const*  /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
+    void CalculateHitAmount(AuraEffect const * /*aurEff*/, int32 &amount, bool & /*canBeRecalculated*/)
     {
-        if (Player* modOwner = GetUnitOwner()->GetSpellModOwner())
+        if (Player *modOwner = GetUnitOwner()->GetSpellModOwner())
         {
             if (modOwner->getClass() == CLASS_HUNTER)
                 amount = CalculatePercent(modOwner->m_modRangedHitChance, 8.0f, 8.0f);
@@ -455,9 +457,9 @@ class spell_pet_hit_expertise_scalling : public AuraScript
         }
     }
 
-    void CalculateSpellHitAmount(AuraEffect const*  /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
+    void CalculateSpellHitAmount(AuraEffect const * /*aurEff*/, int32 &amount, bool & /*canBeRecalculated*/)
     {
-        if (Player* modOwner = GetUnitOwner()->GetSpellModOwner())
+        if (Player *modOwner = GetUnitOwner()->GetSpellModOwner())
         {
             if (modOwner->getClass() == CLASS_HUNTER)
                 amount = CalculatePercent(modOwner->m_modRangedHitChance, 8.0f, 17.0f);
@@ -468,9 +470,9 @@ class spell_pet_hit_expertise_scalling : public AuraScript
         }
     }
 
-    void CalculateExpertiseAmount(AuraEffect const*  /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
+    void CalculateExpertiseAmount(AuraEffect const * /*aurEff*/, int32 &amount, bool & /*canBeRecalculated*/)
     {
-        if (Player* modOwner = GetUnitOwner()->GetSpellModOwner())
+        if (Player *modOwner = GetUnitOwner()->GetSpellModOwner())
         {
             if (modOwner->getClass() == CLASS_HUNTER)
                 amount = CalculatePercent(modOwner->m_modRangedHitChance, 8.0f, 26.0f);
@@ -481,12 +483,12 @@ class spell_pet_hit_expertise_scalling : public AuraScript
         }
     }
 
-    void HandleEffectApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    void HandleEffectApply(AuraEffect const *aurEff, AuraEffectHandleModes /*mode*/)
     {
         GetUnitOwner()->ApplySpellImmune(GetId(), IMMUNITY_STATE, aurEff->GetAuraType(), true, SPELL_BLOCK_TYPE_POSITIVE);
     }
 
-    void CalcPeriodic(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
+    void CalcPeriodic(AuraEffect const * /*aurEff*/, bool &isPeriodic, int32 &amplitude)
     {
         if (!GetUnitOwner()->IsPet())
             return;
@@ -495,7 +497,7 @@ class spell_pet_hit_expertise_scalling : public AuraScript
         amplitude = 3 * IN_MILLISECONDS;
     }
 
-    void HandlePeriodic(AuraEffect const* aurEff)
+    void HandlePeriodic(AuraEffect const *aurEff)
     {
         PreventDefaultAction();
         GetEffect(aurEff->GetEffIndex())->RecalculateAmount();
@@ -518,7 +520,7 @@ class spell_gen_grow_flower_patch : public SpellScript
 {
     PrepareSpellScript(spell_gen_grow_flower_patch)
 
-    SpellCastResult CheckCast()
+        SpellCastResult CheckCast()
     {
         if (GetCaster()->HasAuraType(SPELL_AURA_MOD_STEALTH) || GetCaster()->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
             return SPELL_FAILED_DONT_REPORT;
@@ -537,7 +539,7 @@ class spell_gen_rallying_cry_of_the_dragonslayer : public SpellScript
 {
     PrepareSpellScript(spell_gen_rallying_cry_of_the_dragonslayer);
 
-    void SelectTarget(std::list<WorldObject*>& targets)
+    void SelectTarget(std::list<WorldObject *> &targets)
     {
         targets.clear();
 
@@ -545,7 +547,7 @@ class spell_gen_rallying_cry_of_the_dragonslayer : public SpellScript
         if (GetCaster()->GetMapId() == 1) // Kalimdor
             zoneId = 1637;
 
-        Map::PlayerList const& pList = GetCaster()->GetMap()->GetPlayers();
+        Map::PlayerList const &pList = GetCaster()->GetMap()->GetPlayers();
         for (Map::PlayerList::const_iterator itr = pList.begin(); itr != pList.end(); ++itr)
             if (itr->GetSource()->GetZoneId() == zoneId)
                 targets.push_back(itr->GetSource());
@@ -562,10 +564,10 @@ class spell_gen_adals_song_of_battle : public SpellScript
 {
     PrepareSpellScript(spell_gen_adals_song_of_battle);
 
-    void SelectTarget(std::list<WorldObject*>& targets)
+    void SelectTarget(std::list<WorldObject *> &targets)
     {
         targets.clear();
-        Map::PlayerList const& pList = GetCaster()->GetMap()->GetPlayers();
+        Map::PlayerList const &pList = GetCaster()->GetMap()->GetPlayers();
         for (Map::PlayerList::const_iterator itr = pList.begin(); itr != pList.end(); ++itr)
             if (itr->GetSource()->GetZoneId() == 3703 /*Shattrath*/)
                 targets.push_back(itr->GetSource());
@@ -583,9 +585,9 @@ class spell_gen_disabled_above_63 : public AuraScript
 {
     PrepareAuraScript(spell_gen_disabled_above_63);
 
-    void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool&   /*canBeRecalculated*/)
+    void CalculateAmount(AuraEffect const * /*aurEff*/, int32 &amount, bool & /*canBeRecalculated*/)
     {
-        Unit* target = GetUnitOwner();
+        Unit *target = GetUnitOwner();
         if (target->GetLevel() <= 63)
             amount = amount * target->GetLevel() / 60;
         else
@@ -603,9 +605,9 @@ class spell_gen_black_magic_enchant : public AuraScript
 {
     PrepareAuraScript(spell_gen_black_magic_enchant);
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
-        SpellInfo const* spellInfo = eventInfo.GetSpellInfo();
+        SpellInfo const *spellInfo = eventInfo.GetSpellInfo();
         if (!spellInfo)
             return false;
 
@@ -632,7 +634,7 @@ class spell_gen_area_aura_select_players : public AuraScript
 {
     PrepareAuraScript(spell_gen_area_aura_select_players);
 
-    bool CheckAreaTarget(Unit* target)
+    bool CheckAreaTarget(Unit *target)
     {
         return target->GetTypeId() == TYPEID_PLAYER;
     }
@@ -667,9 +669,9 @@ class spell_gen_select_target_count : public SpellScript
     PrepareSpellScript(spell_gen_select_target_count);
 
 public:
-    spell_gen_select_target_count(Targets effTarget, uint8 count) : _effTarget(effTarget), _count(count) { }
+    spell_gen_select_target_count(Targets effTarget, uint8 count) : _effTarget(effTarget), _count(count) {}
 
-    void FilterTargets(std::list<WorldObject*>& targets)
+    void FilterTargets(std::list<WorldObject *> &targets)
     {
         targets.remove(GetCaster());
         Acore::Containers::RandomResize(targets, _count);
@@ -690,7 +692,7 @@ class spell_gen_use_spell_base_level_check : public SpellScript
 {
     PrepareSpellScript(spell_gen_use_spell_base_level_check)
 
-    SpellCastResult CheckRequirement()
+        SpellCastResult CheckRequirement()
     {
         if (GetCaster()->GetLevel() < GetSpellInfo()->BaseLevel)
             return SPELL_FAILED_LEVEL_REQUIREMENT;
@@ -709,7 +711,7 @@ class spell_gen_proc_from_direct_damage : public AuraScript
 {
     PrepareAuraScript(spell_gen_proc_from_direct_damage);
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
         return !eventInfo.GetSpellInfo() || !eventInfo.GetSpellInfo()->IsTargetingArea();
     }
@@ -726,7 +728,7 @@ class spell_gen_no_offhand_proc : public AuraScript
 {
     PrepareAuraScript(spell_gen_no_offhand_proc);
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
         return !(eventInfo.GetTypeMask() & PROC_FLAG_DONE_OFFHAND_ATTACK);
     }
@@ -742,7 +744,7 @@ class spell_gen_proc_on_self : public AuraScript
 {
     PrepareAuraScript(spell_gen_proc_on_self);
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
         return eventInfo.GetActor() == eventInfo.GetActionTarget();
     }
@@ -758,25 +760,25 @@ class spell_gen_proc_not_self : public AuraScript
 {
     PrepareAuraScript(spell_gen_proc_not_self);
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
         return eventInfo.GetActor() != eventInfo.GetActionTarget();
     }
 
-    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    void HandleProc(AuraEffect const *aurEff, ProcEventInfo &eventInfo)
     {
         PreventDefaultAction();
-        if (Unit* caster = GetCaster())
-            if (Unit* target = eventInfo.GetActionTarget())
+        if (Unit *caster = GetCaster())
+            if (Unit *target = eventInfo.GetActionTarget())
             {
                 uint32 spellID = aurEff->GetSpellInfo()->Effects[aurEff->GetEffIndex()].TriggerSpell;
                 caster->m_Events.AddEventAtOffset([caster, target, spellID]()
-                {
+                                                  {
                     if (target)
                     {
                         caster->CastSpell(target, spellID, true);
-                    }
-                }, 100ms);
+                    } },
+                                                  100ms);
             }
     }
 
@@ -792,12 +794,12 @@ class spell_gen_baby_murloc_passive : public AuraScript
 {
     PrepareAuraScript(spell_gen_baby_murloc_passive);
 
-    void HandleApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    void HandleApply(AuraEffect const *aurEff, AuraEffectHandleModes /*mode*/)
     {
         GetAura()->GetEffect(aurEff->GetEffIndex())->SetPeriodicTimer(urand(60000, 120000));
     }
 
-    void HandlePeriodicTimer(AuraEffect* aurEff)
+    void HandlePeriodicTimer(AuraEffect *aurEff)
     {
         aurEff->SetPeriodicTimer(urand(120000, 240000));
     }
@@ -814,12 +816,12 @@ class spell_gen_baby_murloc : public AuraScript
 {
     PrepareAuraScript(spell_gen_baby_murloc)
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         GetTarget()->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE);
     }
 
-    void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         GetTarget()->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
     }
@@ -839,7 +841,7 @@ class spell_gen_fixate : public SpellScript
     void HandleScriptEffect(SpellEffIndex effIndex)
     {
         PreventHitDefaultEffect(effIndex);
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
             target->CastSpell(GetCaster(), GetEffectValue(), true);
     }
 
@@ -853,9 +855,9 @@ class spell_gen_fixate_aura : public AuraScript
 {
     PrepareAuraScript(spell_gen_fixate_aura)
 
-    void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Unit* caster = GetCaster())
+        if (Unit *caster = GetCaster())
             caster->RemoveAurasDueToSpell(GetSpellInfo()->Effects[EFFECT_2].CalcValue(), GetTarget()->GetGUID());
     }
 
@@ -873,7 +875,7 @@ class spell_gen_proc_above_75 : public SpellScript
 
     SpellCastResult CheckLevel()
     {
-        Unit* caster = GetCaster();
+        Unit *caster = GetCaster();
         if (caster->GetLevel() < 75)
         {
             return SPELL_FAILED_LOWLEVEL;
@@ -893,10 +895,10 @@ class spell_gen_periodic_knock_away : public AuraScript
 {
     PrepareAuraScript(spell_gen_periodic_knock_away);
 
-    void OnPeriodic(AuraEffect const* aurEff)
+    void OnPeriodic(AuraEffect const *aurEff)
     {
         PreventDefaultAction();
-        if (Unit* victim = GetUnitOwner()->GetVictim())
+        if (Unit *victim = GetUnitOwner()->GetVictim())
             GetUnitOwner()->CastSpell(victim, GetSpellInfo()->Effects[aurEff->GetEffIndex()].TriggerSpell, true);
     }
 
@@ -914,8 +916,8 @@ class spell_gen_knock_away : public SpellScript
     void HandleScriptEffect(SpellEffIndex effIndex)
     {
         PreventHitDefaultEffect(effIndex);
-        if (Unit* target = GetHitUnit())
-            if (Creature* caster = GetCaster()->ToCreature())
+        if (Unit *target = GetHitUnit())
+            if (Creature *caster = GetCaster()->ToCreature())
                 caster->GetThreatMgr().ModifyThreatByPercent(target, -25); // Xinef: amount confirmed by onyxia and void reaver notes
     }
 
@@ -931,7 +933,7 @@ class spell_gen_mod_radius_by_caster_scale : public SpellScript
 {
     PrepareSpellScript(spell_gen_mod_radius_by_caster_scale)
 
-    bool Load() override
+        bool Load() override
     {
         GetSpell()->SetSpellValue(SPELLVALUE_RADIUS_MOD, 10000.0f * GetCaster()->GetFloatValue(OBJECT_FIELD_SCALE_X));
         return true;
@@ -948,11 +950,11 @@ class spell_gen_proc_reduced_above_60 : public AuraScript
 {
     PrepareAuraScript(spell_gen_proc_reduced_above_60);
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
         // Xinef: mostly its 33.(3)% reduce by 70 and 66.(6)% by 80
         if (eventInfo.GetActor() && eventInfo.GetActor()->GetLevel() > 60)
-            if (roll_chance_f((eventInfo.GetActor()->GetLevel() - 60) * 3.33f))
+            if (eventInfo.GetActor()->roll_lucky_f((eventInfo.GetActor()->GetLevel() - 60) * 3.33f))
                 return false;
 
         return true;
@@ -973,15 +975,15 @@ class spell_gen_visual_dummy_stun : public AuraScript
 {
     PrepareAuraScript(spell_gen_visual_dummy_stun);
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->SetControlled(true, UNIT_STATE_STUNNED);
     }
 
-    void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->SetControlled(false, UNIT_STATE_STUNNED);
     }
 
@@ -997,7 +999,7 @@ class spell_gen_random_target32 : public SpellScript
 {
     PrepareSpellScript(spell_gen_random_target32);
 
-    void ModDest(SpellDestination& dest)
+    void ModDest(SpellDestination &dest)
     {
         float dist = GetSpellInfo()->Effects[EFFECT_0].CalcRadius(GetCaster());
         float angle = frand(0.0f, 2 * M_PI);
@@ -1020,8 +1022,8 @@ class spell_gen_hate_to_zero : public SpellScript
     void HandleDummy(SpellEffIndex effIndex)
     {
         PreventHitDefaultEffect(effIndex);
-        if (Unit* target = GetHitUnit())
-            if (Creature* caster = GetCaster()->ToCreature())
+        if (Unit *target = GetHitUnit())
+            if (Creature *caster = GetCaster()->ToCreature())
                 caster->GetThreatMgr().ModifyThreatByPercent(target, -100);
     }
 
@@ -1042,7 +1044,7 @@ class spell_gen_focused_bursts : public SpellScript
         if (effIndex != EFFECT_0)
             return;
 
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
             GetCaster()->CastSpell(target, uint32(GetSpellInfo()->Effects[EFFECT_0].BasePoints) + urand(1, 3), true);
     }
 
@@ -1054,9 +1056,9 @@ class spell_gen_focused_bursts : public SpellScript
 
 enum eFlurryOfClaws
 {
-    NPC_FRENZYHEART_RAVAGER             = 28078,
-    NPC_FRENZYHEART_HUNTER              = 28079,
-    SPELL_FLURRY_OF_CLAWS_DAMAGE        = 53033
+    NPC_FRENZYHEART_RAVAGER = 28078,
+    NPC_FRENZYHEART_HUNTER = 28079,
+    SPELL_FLURRY_OF_CLAWS_DAMAGE = 53033
 };
 
 // 53032 - Flurry of Claws
@@ -1064,10 +1066,10 @@ class spell_gen_flurry_of_claws : public AuraScript
 {
     PrepareAuraScript(spell_gen_flurry_of_claws);
 
-    void OnPeriodic(AuraEffect const*  /*aurEff*/)
+    void OnPeriodic(AuraEffect const * /*aurEff*/)
     {
         PreventDefaultAction();
-        if (Unit* target = GetUnitOwner()->SelectNearbyTarget(nullptr, 7.0f))
+        if (Unit *target = GetUnitOwner()->SelectNearbyTarget(nullptr, 7.0f))
             if (target->GetEntry() == NPC_FRENZYHEART_RAVAGER || target->GetEntry() == NPC_FRENZYHEART_HUNTER)
             {
                 int32 basePoints = irand(1400, 2200);
@@ -1089,7 +1091,7 @@ class spell_gen_throw_back : public SpellScript
     void HandleScriptEffect(SpellEffIndex effIndex)
     {
         PreventHitDefaultEffect(effIndex);
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
             target->CastSpell(GetCaster(), uint32(GetEffectValue()), true);
     }
 
@@ -1113,10 +1115,10 @@ class spell_gen_haunted : public SpellScript
     {
         PreventHitDefaultEffect(effIndex);
 
-        if (Unit* caster = GetCaster())
+        if (Unit *caster = GetCaster())
         {
             Position pos = caster->GetRandomNearPosition(5.0f);
-            if (Creature* haunt = caster->SummonCreature(NPC_SCOURGE_HAUNT, pos, TEMPSUMMON_TIMED_DESPAWN, urand(10, 20) * IN_MILLISECONDS))
+            if (Creature *haunt = caster->SummonCreature(NPC_SCOURGE_HAUNT, pos, TEMPSUMMON_TIMED_DESPAWN, urand(10, 20) * IN_MILLISECONDS))
             {
                 haunt->SetSpeed(MOVE_RUN, 0.5, true);
                 haunt->GetMotionMaster()->MoveFollow(caster, 1, M_PI);
@@ -1134,18 +1136,18 @@ class spell_gen_haunted_aura : public AuraScript
 {
     PrepareAuraScript(spell_gen_haunted_aura);
 
-    void HandleEffectCalcPeriodic(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
+    void HandleEffectCalcPeriodic(AuraEffect const * /*aurEff*/, bool &isPeriodic, int32 &amplitude)
     {
         isPeriodic = true;
-        amplitude  = urand(120, 300) * IN_MILLISECONDS;
+        amplitude = urand(120, 300) * IN_MILLISECONDS;
     }
 
-    void HandleEffectPeriodic(AuraEffect const* /*aurEff*/)
+    void HandleEffectPeriodic(AuraEffect const * /*aurEff*/)
     {
-        if (Unit* caster = GetCaster())
+        if (Unit *caster = GetCaster())
         {
             Position pos = caster->GetRandomNearPosition(5.0f);
-            if (Creature* haunt = caster->SummonCreature(NPC_SCOURGE_HAUNT, pos, TEMPSUMMON_TIMED_DESPAWN, urand(10, 20) * IN_MILLISECONDS))
+            if (Creature *haunt = caster->SummonCreature(NPC_SCOURGE_HAUNT, pos, TEMPSUMMON_TIMED_DESPAWN, urand(10, 20) * IN_MILLISECONDS))
             {
                 haunt->SetSpeed(MOVE_RUN, 0.5, true);
                 haunt->GetMotionMaster()->MoveFollow(caster, 1, M_PI);
@@ -1153,10 +1155,10 @@ class spell_gen_haunted_aura : public AuraScript
         }
     }
 
-    void HandleOnEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleOnEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Unit* caster = GetCaster())
-            if (Creature* haunt = caster->FindNearestCreature(NPC_SCOURGE_HAUNT, 5.0f, true))
+        if (Unit *caster = GetCaster())
+            if (Creature *haunt = caster->FindNearestCreature(NPC_SCOURGE_HAUNT, 5.0f, true))
                 haunt->DespawnOrUnsummon();
     }
 
@@ -1183,7 +1185,7 @@ class spell_gen_absorb0_hitlimit1 : public AuraScript
         return true;
     }
 
-    void Absorb(AuraEffect* /*aurEff*/, DamageInfo& /*dmgInfo*/, uint32& absorbAmount)
+    void Absorb(AuraEffect * /*aurEff*/, DamageInfo & /*dmgInfo*/, uint32 &absorbAmount)
     {
         absorbAmount = std::min(limit, absorbAmount);
     }
@@ -1196,11 +1198,11 @@ class spell_gen_absorb0_hitlimit1 : public AuraScript
 
 enum AdaptiveWarding
 {
-    SPELL_GEN_ADAPTIVE_WARDING_FIRE     = 28765,
-    SPELL_GEN_ADAPTIVE_WARDING_NATURE   = 28768,
-    SPELL_GEN_ADAPTIVE_WARDING_FROST    = 28766,
-    SPELL_GEN_ADAPTIVE_WARDING_SHADOW   = 28769,
-    SPELL_GEN_ADAPTIVE_WARDING_ARCANE   = 28770
+    SPELL_GEN_ADAPTIVE_WARDING_FIRE = 28765,
+    SPELL_GEN_ADAPTIVE_WARDING_NATURE = 28768,
+    SPELL_GEN_ADAPTIVE_WARDING_FROST = 28766,
+    SPELL_GEN_ADAPTIVE_WARDING_SHADOW = 28769,
+    SPELL_GEN_ADAPTIVE_WARDING_ARCANE = 28770
 };
 
 // 28764 - Adaptive Warding (Frostfire Regalia Set)
@@ -1208,19 +1210,17 @@ class spell_gen_adaptive_warding : public AuraScript
 {
     PrepareAuraScript(spell_gen_adaptive_warding);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_GEN_ADAPTIVE_WARDING_FIRE,
-                SPELL_GEN_ADAPTIVE_WARDING_NATURE,
-                SPELL_GEN_ADAPTIVE_WARDING_FROST,
-                SPELL_GEN_ADAPTIVE_WARDING_SHADOW,
-                SPELL_GEN_ADAPTIVE_WARDING_ARCANE
-            });
+            {SPELL_GEN_ADAPTIVE_WARDING_FIRE,
+             SPELL_GEN_ADAPTIVE_WARDING_NATURE,
+             SPELL_GEN_ADAPTIVE_WARDING_FROST,
+             SPELL_GEN_ADAPTIVE_WARDING_SHADOW,
+             SPELL_GEN_ADAPTIVE_WARDING_ARCANE});
     }
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
         if (!eventInfo.GetSpellInfo())
             return false;
@@ -1231,39 +1231,39 @@ class spell_gen_adaptive_warding : public AuraScript
 
         switch (GetFirstSchoolInMask(eventInfo.GetSchoolMask()))
         {
-            case SPELL_SCHOOL_NORMAL:
-            case SPELL_SCHOOL_HOLY:
-                return false;
-            default:
-                break;
+        case SPELL_SCHOOL_NORMAL:
+        case SPELL_SCHOOL_HOLY:
+            return false;
+        default:
+            break;
         }
         return true;
     }
 
-    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    void HandleProc(AuraEffect const *aurEff, ProcEventInfo &eventInfo)
     {
         PreventDefaultAction();
 
         uint32 spellId = 0;
         switch (GetFirstSchoolInMask(eventInfo.GetSchoolMask()))
         {
-            case SPELL_SCHOOL_FIRE:
-                spellId = SPELL_GEN_ADAPTIVE_WARDING_FIRE;
-                break;
-            case SPELL_SCHOOL_NATURE:
-                spellId = SPELL_GEN_ADAPTIVE_WARDING_NATURE;
-                break;
-            case SPELL_SCHOOL_FROST:
-                spellId = SPELL_GEN_ADAPTIVE_WARDING_FROST;
-                break;
-            case SPELL_SCHOOL_SHADOW:
-                spellId = SPELL_GEN_ADAPTIVE_WARDING_SHADOW;
-                break;
-            case SPELL_SCHOOL_ARCANE:
-                spellId = SPELL_GEN_ADAPTIVE_WARDING_ARCANE;
-                break;
-            default:
-                return;
+        case SPELL_SCHOOL_FIRE:
+            spellId = SPELL_GEN_ADAPTIVE_WARDING_FIRE;
+            break;
+        case SPELL_SCHOOL_NATURE:
+            spellId = SPELL_GEN_ADAPTIVE_WARDING_NATURE;
+            break;
+        case SPELL_SCHOOL_FROST:
+            spellId = SPELL_GEN_ADAPTIVE_WARDING_FROST;
+            break;
+        case SPELL_SCHOOL_SHADOW:
+            spellId = SPELL_GEN_ADAPTIVE_WARDING_SHADOW;
+            break;
+        case SPELL_SCHOOL_ARCANE:
+            spellId = SPELL_GEN_ADAPTIVE_WARDING_ARCANE;
+            break;
+        default:
+            return;
         }
         GetTarget()->CastSpell(GetTarget(), spellId, true, nullptr, aurEff);
     }
@@ -1287,25 +1287,25 @@ class spell_gen_av_drekthar_presence : public AuraScript
 {
     PrepareAuraScript(spell_gen_av_drekthar_presence);
 
-    bool CheckAreaTarget(Unit* target)
+    bool CheckAreaTarget(Unit *target)
     {
         switch (target->GetEntry())
         {
-            // alliance
-            case 14762: // Dun Baldar North Marshal
-            case 14763: // Dun Baldar South Marshal
-            case 14764: // Icewing Marshal
-            case 14765: // Stonehearth Marshal
-            case 11948: // Vandar Stormspike
-            // horde
-            case 14772: // East Frostwolf Warmaster
-            case 14776: // Tower Point Warmaster
-            case 14773: // Iceblood Warmaster
-            case 14777: // West Frostwolf Warmaster
-            case 11946: // Drek'thar
-                return true;
-            default:
-                return false;
+        // alliance
+        case 14762: // Dun Baldar North Marshal
+        case 14763: // Dun Baldar South Marshal
+        case 14764: // Icewing Marshal
+        case 14765: // Stonehearth Marshal
+        case 11948: // Vandar Stormspike
+        // horde
+        case 14772: // East Frostwolf Warmaster
+        case 14776: // Tower Point Warmaster
+        case 14773: // Iceblood Warmaster
+        case 14777: // West Frostwolf Warmaster
+        case 11946: // Drek'thar
+            return true;
+        default:
+            return false;
         }
     }
 
@@ -1320,7 +1320,7 @@ class spell_gen_burn_brutallus : public AuraScript
 {
     PrepareAuraScript(spell_gen_burn_brutallus);
 
-    void HandleEffectPeriodicUpdate(AuraEffect* aurEff)
+    void HandleEffectPeriodicUpdate(AuraEffect *aurEff)
     {
         if (aurEff->GetTickNumber() % 11 == 0)
             aurEff->SetAmount(aurEff->GetAmount() * 2);
@@ -1342,16 +1342,16 @@ class spell_gen_cannibalize : public SpellScript
 {
     PrepareSpellScript(spell_gen_cannibalize);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_CANNIBALIZE_TRIGGERED });
+        return ValidateSpellInfo({SPELL_CANNIBALIZE_TRIGGERED});
     }
 
     SpellCastResult CheckIfCorpseNear()
     {
-        Unit* caster = GetCaster();
+        Unit *caster = GetCaster();
         float max_range = GetSpellInfo()->GetMaxRange(false);
-        WorldObject* result = nullptr;
+        WorldObject *result = nullptr;
         // search for nearby enemy corpse in range
         Acore::AnyDeadUnitSpellTargetInRangeCheck check(caster, max_range, GetSpellInfo(), TARGET_CHECK_CORPSE);
         Acore::WorldObjectSearcher<Acore::AnyDeadUnitSpellTargetInRangeCheck> searcher(caster, result, check);
@@ -1386,13 +1386,12 @@ class spell_gen_clear_debuffs : public SpellScript
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
         {
-            target->RemoveOwnedAuras([](Aura const* aura)
-            {
+            target->RemoveOwnedAuras([](Aura const *aura)
+                                     {
                 SpellInfo const* spellInfo = aura->GetSpellInfo();
-                return !spellInfo->IsPositive() && !spellInfo->IsPassive();
-            });
+                return !spellInfo->IsPositive() && !spellInfo->IsPassive(); });
         }
     }
 
@@ -1405,7 +1404,7 @@ class spell_gen_clear_debuffs : public SpellScript
 enum CreateLanceSpells
 {
     SPELL_CREATE_LANCE_ALLIANCE = 63914,
-    SPELL_CREATE_LANCE_HORDE    = 63919
+    SPELL_CREATE_LANCE_HORDE = 63919
 };
 
 // 63845 - Create Lance
@@ -1413,16 +1412,16 @@ class spell_gen_create_lance : public SpellScript
 {
     PrepareSpellScript(spell_gen_create_lance);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_CREATE_LANCE_ALLIANCE, SPELL_CREATE_LANCE_HORDE });
+        return ValidateSpellInfo({SPELL_CREATE_LANCE_ALLIANCE, SPELL_CREATE_LANCE_HORDE});
     }
 
     void HandleScript(SpellEffIndex effIndex)
     {
         PreventHitDefaultEffect(effIndex);
 
-        if (Player* target = GetHitPlayer())
+        if (Player *target = GetHitPlayer())
         {
             if (target->GetTeamId() == TEAM_ALLIANCE)
                 GetCaster()->CastSpell(target, SPELL_CREATE_LANCE_ALLIANCE, true);
@@ -1448,17 +1447,17 @@ class spell_gen_moss_covered_feet : public AuraScript
 {
     PrepareAuraScript(spell_gen_moss_covered_feet);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_FALL_DOWN });
+        return ValidateSpellInfo({SPELL_FALL_DOWN});
     }
 
-    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    void HandleProc(AuraEffect const *aurEff, ProcEventInfo &eventInfo)
     {
         PreventDefaultAction();
         if (eventInfo.GetActionTarget())
         {
-            eventInfo.GetActionTarget()->CastSpell((Unit*)nullptr, SPELL_FALL_DOWN, true, nullptr, aurEff);
+            eventInfo.GetActionTarget()->CastSpell((Unit *)nullptr, SPELL_FALL_DOWN, true, nullptr, aurEff);
         }
     }
 
@@ -1470,7 +1469,7 @@ class spell_gen_moss_covered_feet : public AuraScript
 
 enum Netherbloom
 {
-    SPELL_NETHERBLOOM_POLLEN_1      = 28703
+    SPELL_NETHERBLOOM_POLLEN_1 = 28703
 };
 
 // 28702 - Netherbloom
@@ -1478,7 +1477,7 @@ class spell_gen_netherbloom : public SpellScript
 {
     PrepareSpellScript(spell_gen_netherbloom);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         for (uint8 i = 0; i < 5; ++i)
             if (!sSpellMgr->GetSpellInfo(SPELL_NETHERBLOOM_POLLEN_1 + i))
@@ -1490,7 +1489,7 @@ class spell_gen_netherbloom : public SpellScript
     {
         PreventHitDefaultEffect(effIndex);
 
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
         {
             // 25% chance of casting a random buff
             if (roll_chance_i(75))
@@ -1517,7 +1516,7 @@ class spell_gen_netherbloom : public SpellScript
 
 enum NightmareVine
 {
-    SPELL_NIGHTMARE_POLLEN      = 28721
+    SPELL_NIGHTMARE_POLLEN = 28721
 };
 
 // 28720 - Nightmare Vine
@@ -1525,16 +1524,16 @@ class spell_gen_nightmare_vine : public SpellScript
 {
     PrepareSpellScript(spell_gen_nightmare_vine);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_NIGHTMARE_POLLEN });
+        return ValidateSpellInfo({SPELL_NIGHTMARE_POLLEN});
     }
 
     void HandleScript(SpellEffIndex effIndex)
     {
         PreventHitDefaultEffect(effIndex);
 
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
         {
             // 25% chance of casting Nightmare Pollen
             if (roll_chance_i(25))
@@ -1550,12 +1549,12 @@ class spell_gen_nightmare_vine : public SpellScript
 
 enum ObsidianArmor
 {
-    SPELL_GEN_OBSIDIAN_ARMOR_HOLY       = 27536,
-    SPELL_GEN_OBSIDIAN_ARMOR_FIRE       = 27533,
-    SPELL_GEN_OBSIDIAN_ARMOR_NATURE     = 27538,
-    SPELL_GEN_OBSIDIAN_ARMOR_FROST      = 27534,
-    SPELL_GEN_OBSIDIAN_ARMOR_SHADOW     = 27535,
-    SPELL_GEN_OBSIDIAN_ARMOR_ARCANE     = 27540
+    SPELL_GEN_OBSIDIAN_ARMOR_HOLY = 27536,
+    SPELL_GEN_OBSIDIAN_ARMOR_FIRE = 27533,
+    SPELL_GEN_OBSIDIAN_ARMOR_NATURE = 27538,
+    SPELL_GEN_OBSIDIAN_ARMOR_FROST = 27534,
+    SPELL_GEN_OBSIDIAN_ARMOR_SHADOW = 27535,
+    SPELL_GEN_OBSIDIAN_ARMOR_ARCANE = 27540
 };
 
 // 27539 - Obsidian Armor
@@ -1563,20 +1562,18 @@ class spell_gen_obsidian_armor : public AuraScript
 {
     PrepareAuraScript(spell_gen_obsidian_armor);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_GEN_OBSIDIAN_ARMOR_HOLY,
-                SPELL_GEN_OBSIDIAN_ARMOR_FIRE,
-                SPELL_GEN_OBSIDIAN_ARMOR_NATURE,
-                SPELL_GEN_OBSIDIAN_ARMOR_FROST,
-                SPELL_GEN_OBSIDIAN_ARMOR_SHADOW,
-                SPELL_GEN_OBSIDIAN_ARMOR_ARCANE
-            });
+            {SPELL_GEN_OBSIDIAN_ARMOR_HOLY,
+             SPELL_GEN_OBSIDIAN_ARMOR_FIRE,
+             SPELL_GEN_OBSIDIAN_ARMOR_NATURE,
+             SPELL_GEN_OBSIDIAN_ARMOR_FROST,
+             SPELL_GEN_OBSIDIAN_ARMOR_SHADOW,
+             SPELL_GEN_OBSIDIAN_ARMOR_ARCANE});
     }
 
-    bool CheckProc(ProcEventInfo& eventInfo)
+    bool CheckProc(ProcEventInfo &eventInfo)
     {
         if (eventInfo.GetSpellInfo())
         {
@@ -1589,33 +1586,33 @@ class spell_gen_obsidian_armor : public AuraScript
         return true;
     }
 
-    void OnProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    void OnProc(AuraEffect const *aurEff, ProcEventInfo &eventInfo)
     {
         PreventDefaultAction();
 
         uint32 spellId = 0;
         switch (GetFirstSchoolInMask(eventInfo.GetSchoolMask()))
         {
-            case SPELL_SCHOOL_HOLY:
-                spellId = SPELL_GEN_OBSIDIAN_ARMOR_HOLY;
-                break;
-            case SPELL_SCHOOL_FIRE:
-                spellId = SPELL_GEN_OBSIDIAN_ARMOR_FIRE;
-                break;
-            case SPELL_SCHOOL_NATURE:
-                spellId = SPELL_GEN_OBSIDIAN_ARMOR_NATURE;
-                break;
-            case SPELL_SCHOOL_FROST:
-                spellId = SPELL_GEN_OBSIDIAN_ARMOR_FROST;
-                break;
-            case SPELL_SCHOOL_SHADOW:
-                spellId = SPELL_GEN_OBSIDIAN_ARMOR_SHADOW;
-                break;
-            case SPELL_SCHOOL_ARCANE:
-                spellId = SPELL_GEN_OBSIDIAN_ARMOR_ARCANE;
-                break;
-            default:
-                return;
+        case SPELL_SCHOOL_HOLY:
+            spellId = SPELL_GEN_OBSIDIAN_ARMOR_HOLY;
+            break;
+        case SPELL_SCHOOL_FIRE:
+            spellId = SPELL_GEN_OBSIDIAN_ARMOR_FIRE;
+            break;
+        case SPELL_SCHOOL_NATURE:
+            spellId = SPELL_GEN_OBSIDIAN_ARMOR_NATURE;
+            break;
+        case SPELL_SCHOOL_FROST:
+            spellId = SPELL_GEN_OBSIDIAN_ARMOR_FROST;
+            break;
+        case SPELL_SCHOOL_SHADOW:
+            spellId = SPELL_GEN_OBSIDIAN_ARMOR_SHADOW;
+            break;
+        case SPELL_SCHOOL_ARCANE:
+            spellId = SPELL_GEN_OBSIDIAN_ARMOR_ARCANE;
+            break;
+        default:
+            return;
         }
         GetTarget()->CastSpell(GetTarget(), spellId, true, nullptr, aurEff);
     }
@@ -1629,8 +1626,8 @@ class spell_gen_obsidian_armor : public AuraScript
 
 enum ParachuteSpells
 {
-    SPELL_PARACHUTE         = 45472,
-    SPELL_PARACHUTE_BUFF    = 44795,
+    SPELL_PARACHUTE = 45472,
+    SPELL_PARACHUTE_BUFF = 44795,
 };
 
 // 45472 - Parachute
@@ -1638,14 +1635,14 @@ class spell_gen_parachute : public AuraScript
 {
     PrepareAuraScript(spell_gen_parachute);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_PARACHUTE, SPELL_PARACHUTE_BUFF });
+        return ValidateSpellInfo({SPELL_PARACHUTE, SPELL_PARACHUTE_BUFF});
     }
 
-    void HandleEffectPeriodic(AuraEffect const* /*aurEff*/)
+    void HandleEffectPeriodic(AuraEffect const * /*aurEff*/)
     {
-        if (Player* target = GetTarget()->ToPlayer())
+        if (Player *target = GetTarget()->ToPlayer())
             if (target->IsFalling())
             {
                 target->RemoveAurasDueToSpell(SPELL_PARACHUTE);
@@ -1671,23 +1668,23 @@ class spell_gen_pet_summoned : public SpellScript
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        Player* player = GetCaster()->ToPlayer();
+        Player *player = GetCaster()->ToPlayer();
         if (player->GetLastPetNumber() && player->CanResummonPet(player->GetLastPetSpell()))
         {
             PetType newPetType = (player->getClass() == CLASS_HUNTER) ? HUNTER_PET : SUMMON_PET;
-            Pet* newPet = new Pet(player, newPetType);
+            Pet *newPet = new Pet(player, newPetType);
             if (newPet->LoadPetFromDB(player, 0, player->GetLastPetNumber(), true, 100))
             {
                 newPet->SetPower(newPet->getPowerType(), newPet->GetMaxPower(newPet->getPowerType()));
 
                 switch (newPet->GetEntry())
                 {
-                    case NPC_DOOMGUARD:
-                    case NPC_INFERNAL:
-                        newPet->SetEntry(NPC_IMP);
-                        break;
-                    default:
-                        break;
+                case NPC_DOOMGUARD:
+                case NPC_INFERNAL:
+                    newPet->SetEntry(NPC_IMP);
+                    break;
+                default:
+                    break;
                 }
             }
             else
@@ -1708,7 +1705,7 @@ class spell_gen_remove_flight_auras : public SpellScript
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
         {
             target->RemoveAurasByType(SPELL_AURA_FLY);
             target->RemoveAurasByType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
@@ -1724,30 +1721,28 @@ class spell_gen_remove_flight_auras : public SpellScript
 enum EluneCandle
 {
     // Creatures
-    NPC_OMEN                       = 15467,
+    NPC_OMEN = 15467,
 
     // Spells
-    SPELL_ELUNE_CANDLE_OMEN_HEAD   = 26622,
-    SPELL_ELUNE_CANDLE_OMEN_CHEST  = 26624,
+    SPELL_ELUNE_CANDLE_OMEN_HEAD = 26622,
+    SPELL_ELUNE_CANDLE_OMEN_CHEST = 26624,
     SPELL_ELUNE_CANDLE_OMEN_HAND_R = 26625,
     SPELL_ELUNE_CANDLE_OMEN_HAND_L = 26649,
-    SPELL_ELUNE_CANDLE_NORMAL      = 26636
+    SPELL_ELUNE_CANDLE_NORMAL = 26636
 };
 
 // 26374 - Elune's Candle
 class spell_gen_elune_candle : public SpellScript
 {
     PrepareSpellScript(spell_gen_elune_candle);
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_ELUNE_CANDLE_OMEN_HEAD,
-                SPELL_ELUNE_CANDLE_OMEN_CHEST,
-                SPELL_ELUNE_CANDLE_OMEN_HAND_R,
-                SPELL_ELUNE_CANDLE_OMEN_HAND_L,
-                SPELL_ELUNE_CANDLE_NORMAL
-            });
+            {SPELL_ELUNE_CANDLE_OMEN_HEAD,
+             SPELL_ELUNE_CANDLE_OMEN_CHEST,
+             SPELL_ELUNE_CANDLE_OMEN_HAND_R,
+             SPELL_ELUNE_CANDLE_OMEN_HAND_L,
+             SPELL_ELUNE_CANDLE_NORMAL});
     }
 
     void HandleScript(SpellEffIndex /*effIndex*/)
@@ -1758,18 +1753,18 @@ class spell_gen_elune_candle : public SpellScript
         {
             switch (urand(0, 3))
             {
-                case 0:
-                    spellId = SPELL_ELUNE_CANDLE_OMEN_HEAD;
-                    break;
-                case 1:
-                    spellId = SPELL_ELUNE_CANDLE_OMEN_CHEST;
-                    break;
-                case 2:
-                    spellId = SPELL_ELUNE_CANDLE_OMEN_HAND_R;
-                    break;
-                case 3:
-                    spellId = SPELL_ELUNE_CANDLE_OMEN_HAND_L;
-                    break;
+            case 0:
+                spellId = SPELL_ELUNE_CANDLE_OMEN_HEAD;
+                break;
+            case 1:
+                spellId = SPELL_ELUNE_CANDLE_OMEN_CHEST;
+                break;
+            case 2:
+                spellId = SPELL_ELUNE_CANDLE_OMEN_HAND_R;
+                break;
+            case 3:
+                spellId = SPELL_ELUNE_CANDLE_OMEN_HAND_L;
+                break;
             }
         }
         else
@@ -1801,9 +1796,9 @@ class spell_gen_feign_death_all_flags : public AuraScript
 {
     PrepareAuraScript(spell_gen_feign_death_all_flags);
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->SetDynamicFlag(UNIT_DYNFLAG_DEAD);
         target->SetUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->SetUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
@@ -1812,9 +1807,9 @@ class spell_gen_feign_death_all_flags : public AuraScript
             target->ToCreature()->SetReactState(REACT_PASSIVE);
     }
 
-    void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->RemoveDynamicFlag(UNIT_DYNFLAG_DEAD);
         target->RemoveUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->RemoveUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
@@ -1837,9 +1832,9 @@ class spell_gen_feign_death_no_dyn_flag : public AuraScript
 {
     PrepareAuraScript(spell_gen_feign_death_no_dyn_flag);
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->SetUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->SetUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
@@ -1847,9 +1842,9 @@ class spell_gen_feign_death_no_dyn_flag : public AuraScript
             target->ToCreature()->SetReactState(REACT_PASSIVE);
     }
 
-    void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->RemoveUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->RemoveUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
@@ -1870,9 +1865,9 @@ class spell_gen_feign_death_no_prevent_emotes : public AuraScript
 {
     PrepareAuraScript(spell_gen_feign_death_no_prevent_emotes);
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->SetUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->SetUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
@@ -1880,9 +1875,9 @@ class spell_gen_feign_death_no_prevent_emotes : public AuraScript
             target->ToCreature()->SetReactState(REACT_PASSIVE);
     }
 
-    void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->RemoveUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->RemoveUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
@@ -1899,31 +1894,31 @@ class spell_gen_feign_death_no_prevent_emotes : public AuraScript
 
 enum Teleporting
 {
-    AREA_VIOLET_CITADEL_SPIRE   = 4637,
+    AREA_VIOLET_CITADEL_SPIRE = 4637,
 
-    SPELL_TELEPORT_SPIRE_DOWN   = 59316,
-    SPELL_TELEPORT_SPIRE_UP     = 59314
+    SPELL_TELEPORT_SPIRE_DOWN = 59316,
+    SPELL_TELEPORT_SPIRE_UP = 59314
 };
 
 class spell_gen_teleporting : public SpellScript
 {
     PrepareSpellScript(spell_gen_teleporting);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_TELEPORT_SPIRE_UP, SPELL_TELEPORT_SPIRE_DOWN });
+        return ValidateSpellInfo({SPELL_TELEPORT_SPIRE_UP, SPELL_TELEPORT_SPIRE_DOWN});
     }
 
     void HandleScript(SpellEffIndex /* effIndex */)
     {
-        Unit* target = GetHitUnit();
+        Unit *target = GetHitUnit();
         if (target->GetTypeId() != TYPEID_PLAYER)
             return;
 
         // return from top
         if (target->ToPlayer()->GetAreaId() == AREA_VIOLET_CITADEL_SPIRE)
             target->CastSpell(target, SPELL_TELEPORT_SPIRE_DOWN, true);
-            // teleport atop
+        // teleport atop
         else
             target->CastSpell(target, SPELL_TELEPORT_SPIRE_UP, true);
     }
@@ -1936,9 +1931,9 @@ class spell_gen_teleporting : public SpellScript
 
 enum PvPTrinketTriggeredSpells
 {
-    SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER         = 72752,
-    SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER_WOTF    = 72757,
-    SPELL_PVP_TRINKET                                   = 42292,
+    SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER = 72752,
+    SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER_WOTF = 72757,
+    SPELL_PVP_TRINKET = 42292,
 };
 
 /* 72752 - Will of the Forsaken Cooldown Trigger
@@ -1952,17 +1947,16 @@ class spell_pvp_trinket_wotf_shared_cd : public SpellScript
         return GetCaster()->GetTypeId() == TYPEID_PLAYER;
     }
 
-    bool Validate(SpellInfo const* /*spellEntry*/) override
+    bool Validate(SpellInfo const * /*spellEntry*/) override
     {
-        return ValidateSpellInfo({
-            SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER,
-            SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER_WOTF,
-            SPELL_PVP_TRINKET });
+        return ValidateSpellInfo({SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER,
+                                  SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER_WOTF,
+                                  SPELL_PVP_TRINKET});
     }
 
     void HandleScript()
     {
-        Player* player = GetCaster()->ToPlayer();
+        Player *player = GetCaster()->ToPlayer();
         // This is only needed because spells cast from spell_linked_spell are triggered by default
         // Spell::SendSpellCooldown() skips all spells with TRIGGERED_IGNORE_SPELL_AND_CATEGORY_CD
         player->AddSpellAndCategoryCooldowns(GetSpellInfo(), GetCastItem() ? GetCastItem()->GetEntry() : 0, GetSpell());
@@ -1981,9 +1975,9 @@ class spell_pvp_trinket_wotf_shared_cd : public SpellScript
                 data << uint8(0);
                 data << uint16(0);
                 data << uint16(1);
-                data << uint32(42292); // PvP Trinket spell
-                data << uint16(0);                 // cast item id
-                data << uint16(GetSpellInfo()->GetCategory());                   // spell category
+                data << uint32(42292);                         // PvP Trinket spell
+                data << uint16(0);                             // cast item id
+                data << uint16(GetSpellInfo()->GetCategory()); // spell category
                 data << uint32(0);
                 data << uint32(GetSpellInfo()->CategoryRecoveryTime);
                 player->GetSession()->SendPacket(&data);
@@ -2003,9 +1997,9 @@ class spell_pvp_trinket_wotf_shared_cd : public SpellScript
 
 enum AnimalBloodPoolSpell
 {
-    SPELL_ANIMAL_BLOOD      = 46221,
-    SPELL_SPAWN_BLOOD_POOL  = 63471,
-    FACTION_DETHA_ATTACK    = 942
+    SPELL_ANIMAL_BLOOD = 46221,
+    SPELL_SPAWN_BLOOD_POOL = 63471,
+    FACTION_DETHA_ATTACK = 942
 };
 
 // 46221 - Animal Blood
@@ -2013,21 +2007,21 @@ class spell_gen_animal_blood : public AuraScript
 {
     PrepareAuraScript(spell_gen_animal_blood);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_SPAWN_BLOOD_POOL });
+        return ValidateSpellInfo({SPELL_SPAWN_BLOOD_POOL});
     }
 
-    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         // Remove all auras with spell id 46221, except the one currently being applied
-        while (Aura* aur = GetUnitOwner()->GetOwnedAura(SPELL_ANIMAL_BLOOD, ObjectGuid::Empty, ObjectGuid::Empty, 0, GetAura()))
+        while (Aura *aur = GetUnitOwner()->GetOwnedAura(SPELL_ANIMAL_BLOOD, ObjectGuid::Empty, ObjectGuid::Empty, 0, GetAura()))
             GetUnitOwner()->RemoveOwnedAura(aur);
     }
 
-    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Unit* owner = GetUnitOwner())
+        if (Unit *owner = GetUnitOwner())
         {
             owner->CastSpell(owner, SPELL_SPAWN_BLOOD_POOL, true);
         }
@@ -2047,7 +2041,7 @@ class spell_spawn_blood_pool : public SpellScript
 
     void SetDest(SpellDestination &dest)
     {
-        Unit* caster = GetCaster();
+        Unit *caster = GetCaster();
         LiquidData liquidStatus = caster->GetMap()->GetLiquidData(caster->GetPhaseMask(), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), caster->GetCollisionHeight(), MAP_ALL_LIQUIDS);
 
         float level = liquidStatus.Level > INVALID_HEIGHT ? liquidStatus.Level : caster->GetPositionZ();
@@ -2063,7 +2057,7 @@ class spell_spawn_blood_pool : public SpellScript
 
 enum DivineStormSpell
 {
-    SPELL_DIVINE_STORM      = 53385,
+    SPELL_DIVINE_STORM = 53385,
 };
 
 // 70769 - Divine Storm!
@@ -2076,14 +2070,14 @@ class spell_gen_divine_storm_cd_reset : public SpellScript
         return GetCaster()->GetTypeId() == TYPEID_PLAYER;
     }
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_DIVINE_STORM });
+        return ValidateSpellInfo({SPELL_DIVINE_STORM});
     }
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        Player* caster = GetCaster()->ToPlayer();
+        Player *caster = GetCaster()->ToPlayer();
         if (caster->HasSpellCooldown(SPELL_DIVINE_STORM))
             caster->RemoveSpellCooldown(SPELL_DIVINE_STORM, true);
     }
@@ -2120,7 +2114,7 @@ class spell_gen_profession_research : public SpellScript
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        Player* caster = GetCaster()->ToPlayer();
+        Player *caster = GetCaster()->ToPlayer();
         uint32 spellId = GetSpellInfo()->Id;
 
         // learn random explicit discovery recipe (if any)
@@ -2165,14 +2159,14 @@ class spell_gen_clone : public SpellScript
 
 enum CloneWeaponSpells
 {
-    SPELL_COPY_WEAPON_AURA       = 41054,
-    SPELL_COPY_WEAPON_2_AURA     = 63418,
-    SPELL_COPY_WEAPON_3_AURA     = 69893,
+    SPELL_COPY_WEAPON_AURA = 41054,
+    SPELL_COPY_WEAPON_2_AURA = 63418,
+    SPELL_COPY_WEAPON_3_AURA = 69893,
 
-    SPELL_COPY_OFFHAND_AURA      = 45205,
-    SPELL_COPY_OFFHAND_2_AURA    = 69896,
+    SPELL_COPY_OFFHAND_AURA = 45205,
+    SPELL_COPY_OFFHAND_2_AURA = 69896,
 
-    SPELL_COPY_RANGED_AURA       = 57594
+    SPELL_COPY_RANGED_AURA = 57594
 };
 
 /* 41055, 63416 - Copy Weapon
@@ -2208,17 +2202,15 @@ class spell_gen_clone_weapon_aura : public AuraScript
 {
     PrepareAuraScript(spell_gen_clone_weapon_aura);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_COPY_WEAPON_AURA,
-                SPELL_COPY_WEAPON_2_AURA,
-                SPELL_COPY_WEAPON_3_AURA,
-                SPELL_COPY_OFFHAND_AURA,
-                SPELL_COPY_OFFHAND_2_AURA,
-                SPELL_COPY_RANGED_AURA
-            });
+            {SPELL_COPY_WEAPON_AURA,
+             SPELL_COPY_WEAPON_2_AURA,
+             SPELL_COPY_WEAPON_3_AURA,
+             SPELL_COPY_OFFHAND_AURA,
+             SPELL_COPY_OFFHAND_2_AURA,
+             SPELL_COPY_RANGED_AURA});
     }
 
     bool Load() override
@@ -2227,82 +2219,82 @@ class spell_gen_clone_weapon_aura : public AuraScript
         return true;
     }
 
-    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* caster = GetCaster();
-        Unit* target = GetTarget();
+        Unit *caster = GetCaster();
+        Unit *target = GetTarget();
         if (!caster)
             return;
 
         switch (GetSpellInfo()->Id)
         {
-            case SPELL_COPY_WEAPON_AURA:
-            case SPELL_COPY_WEAPON_2_AURA:
-            case SPELL_COPY_WEAPON_3_AURA:
-                {
-                    prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID);
+        case SPELL_COPY_WEAPON_AURA:
+        case SPELL_COPY_WEAPON_2_AURA:
+        case SPELL_COPY_WEAPON_3_AURA:
+        {
+            prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID);
 
-                    if (Player* player = caster->ToPlayer())
-                    {
-                        if (Item* mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, mainItem->GetEntry());
-                    }
-                    else
-                        target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID));
-                    break;
-                }
-            case SPELL_COPY_OFFHAND_AURA:
-            case SPELL_COPY_OFFHAND_2_AURA:
-                {
-                    prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
+            if (Player *player = caster->ToPlayer())
+            {
+                if (Item *mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
+                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, mainItem->GetEntry());
+            }
+            else
+                target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID));
+            break;
+        }
+        case SPELL_COPY_OFFHAND_AURA:
+        case SPELL_COPY_OFFHAND_2_AURA:
+        {
+            prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
 
-                    if (Player* player = caster->ToPlayer())
-                    {
-                        if (Item* offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, offItem->GetEntry());
-                    }
-                    else
-                        target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1));
-                    break;
-                }
-            case SPELL_COPY_RANGED_AURA:
-                {
-                    prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2);
+            if (Player *player = caster->ToPlayer())
+            {
+                if (Item *offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
+                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, offItem->GetEntry());
+            }
+            else
+                target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1));
+            break;
+        }
+        case SPELL_COPY_RANGED_AURA:
+        {
+            prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2);
 
-                    if (Player* player = caster->ToPlayer())
-                    {
-                        if (Item* rangedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, rangedItem->GetEntry());
-                    }
-                    else
-                        target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2));
-                    break;
-                }
-            default:
-                break;
+            if (Player *player = caster->ToPlayer())
+            {
+                if (Item *rangedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))
+                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, rangedItem->GetEntry());
+            }
+            else
+                target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2));
+            break;
+        }
+        default:
+            break;
         }
     }
 
-    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
 
         switch (GetSpellInfo()->Id)
         {
-            case SPELL_COPY_WEAPON_AURA:
-            case SPELL_COPY_WEAPON_2_AURA:
-            case SPELL_COPY_WEAPON_3_AURA:
-                target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, prevItem);
-                break;
-            case SPELL_COPY_OFFHAND_AURA:
-            case SPELL_COPY_OFFHAND_2_AURA:
-                target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, prevItem);
-                break;
-            case SPELL_COPY_RANGED_AURA:
-                target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, prevItem);
-                break;
-            default:
-                break;
+        case SPELL_COPY_WEAPON_AURA:
+        case SPELL_COPY_WEAPON_2_AURA:
+        case SPELL_COPY_WEAPON_3_AURA:
+            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, prevItem);
+            break;
+        case SPELL_COPY_OFFHAND_AURA:
+        case SPELL_COPY_OFFHAND_2_AURA:
+            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, prevItem);
+            break;
+        case SPELL_COPY_RANGED_AURA:
+            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, prevItem);
+            break;
+        default:
+            break;
         }
     }
 
@@ -2318,7 +2310,7 @@ private:
 
 enum SeaforiumSpells
 {
-    SPELL_PLANT_CHARGES_CREDIT_ACHIEVEMENT  = 60937
+    SPELL_PLANT_CHARGES_CREDIT_ACHIEVEMENT = 60937
 };
 
 // 52408 - Seaforium Blast
@@ -2326,9 +2318,9 @@ class spell_gen_seaforium_blast : public SpellScript
 {
     PrepareSpellScript(spell_gen_seaforium_blast);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_PLANT_CHARGES_CREDIT_ACHIEVEMENT });
+        return ValidateSpellInfo({SPELL_PLANT_CHARGES_CREDIT_ACHIEVEMENT});
     }
 
     bool Load() override
@@ -2340,8 +2332,8 @@ class spell_gen_seaforium_blast : public SpellScript
     void AchievementCredit(SpellEffIndex /*effIndex*/)
     {
         // but in effect handling OriginalCaster can become nullptr
-        if (Unit* originalCaster = GetOriginalCaster())
-            if (GameObject* go = GetHitGObj())
+        if (Unit *originalCaster = GetOriginalCaster())
+            if (GameObject *go = GetHitGObj())
                 if (go->GetGOValue()->Building.Health > 0 && go->GetGOInfo()->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                     originalCaster->CastSpell(originalCaster, SPELL_PLANT_CHARGES_CREDIT_ACHIEVEMENT, true);
     }
@@ -2354,7 +2346,7 @@ class spell_gen_seaforium_blast : public SpellScript
 
 enum FriendOrFowl
 {
-    SPELL_TURKEY_VENGEANCE      = 25285
+    SPELL_TURKEY_VENGEANCE = 25285
 };
 
 // 25281 - Turkey Marker
@@ -2362,9 +2354,9 @@ class spell_gen_turkey_marker : public AuraScript
 {
     PrepareAuraScript(spell_gen_turkey_marker);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_TURKEY_VENGEANCE });
+        return ValidateSpellInfo({SPELL_TURKEY_VENGEANCE});
     }
 
     bool Load() override
@@ -2374,7 +2366,7 @@ class spell_gen_turkey_marker : public AuraScript
         return true;
     }
 
-    void OnPeriodic(AuraEffect const* aurEff)
+    void OnPeriodic(AuraEffect const *aurEff)
     {
         if (GetStackAmount() > stackAmount)
         {
@@ -2411,9 +2403,9 @@ class spell_gen_lifeblood : public AuraScript
 {
     PrepareAuraScript(spell_gen_lifeblood);
 
-    void CalculateAmount(AuraEffect const* aurEff, int32& amount, bool& /*canBeRecalculated*/)
+    void CalculateAmount(AuraEffect const *aurEff, int32 &amount, bool & /*canBeRecalculated*/)
     {
-        if (Unit* owner = GetUnitOwner())
+        if (Unit *owner = GetUnitOwner())
             amount += int32(CalculatePct(owner->GetMaxHealth(), 1.5f / aurEff->GetTotalTicks()));
     }
 
@@ -2447,7 +2439,7 @@ class spell_gen_allow_cast_from_item_only : public SpellScript
 
 enum VehicleScaling
 {
-    SPELL_GEAR_SCALING      = 66668
+    SPELL_GEAR_SCALING = 66668
 };
 
 // 65266, 65635, 65636, 66666, 66667, 66668 - Gear Scaling
@@ -2457,8 +2449,8 @@ class spell_gen_vehicle_scaling : public SpellScript
 
     SpellCastResult CheckSeat()
     {
-        if (Vehicle* veh = GetCaster()->GetVehicle())
-            if (const VehicleSeatEntry* seatEntry = veh->GetSeatForPassenger(GetCaster()))
+        if (Vehicle *veh = GetCaster()->GetVehicle())
+            if (const VehicleSeatEntry *seatEntry = veh->GetSeatForPassenger(GetCaster()))
                 if (seatEntry->m_flags & VEHICLE_SEAT_FLAG_CAN_CONTROL)
                     return SPELL_CAST_OK;
 
@@ -2471,7 +2463,7 @@ class spell_gen_vehicle_scaling : public SpellScript
     }
 };
 
-class spell_gen_vehicle_scaling_aura: public AuraScript
+class spell_gen_vehicle_scaling_aura : public AuraScript
 {
     PrepareAuraScript(spell_gen_vehicle_scaling_aura);
 
@@ -2480,28 +2472,28 @@ class spell_gen_vehicle_scaling_aura: public AuraScript
         return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER && GetOwner()->GetTypeId() == TYPEID_UNIT;
     }
 
-    void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
+    void CalculateAmount(AuraEffect const * /*aurEff*/, int32 &amount, bool & /*canBeRecalculated*/)
     {
-        Unit* caster = GetCaster();
+        Unit *caster = GetCaster();
         float factor;
         uint16 baseItemLevel;
 
         /// @todo Reserach coeffs for different vehicles
         switch (GetId())
         {
-            case SPELL_GEAR_SCALING:
-                factor = 1.0f;
-                baseItemLevel = 205;
-                break;
-            default:
-                factor = 1.0f;
-                baseItemLevel = 170;
-                break;
+        case SPELL_GEAR_SCALING:
+            factor = 1.0f;
+            baseItemLevel = 205;
+            break;
+        default:
+            factor = 1.0f;
+            baseItemLevel = 170;
+            break;
         }
 
         float avgILvl = caster->ToPlayer()->GetAverageItemLevel();
         if (avgILvl < baseItemLevel)
-            return;                     /// @todo Research possibility of scaling down
+            return; /// @todo Research possibility of scaling down
 
         amount = uint16((avgILvl - baseItemLevel) * factor);
     }
@@ -2528,11 +2520,11 @@ class spell_gen_oracle_wolvar_reputation : public SpellScript
 
     void HandleDummy(SpellEffIndex effIndex)
     {
-        Player* player = GetCaster()->ToPlayer();
+        Player *player = GetCaster()->ToPlayer();
         uint32 factionId = GetSpellInfo()->Effects[effIndex].CalcValue();
-        int32  repChange = GetSpellInfo()->Effects[EFFECT_1].CalcValue();
+        int32 repChange = GetSpellInfo()->Effects[EFFECT_1].CalcValue();
 
-        FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionId);
+        FactionEntry const *factionEntry = sFactionStore.LookupEntry(factionId);
 
         if (!factionEntry)
             return;
@@ -2553,11 +2545,11 @@ class spell_gen_oracle_wolvar_reputation : public SpellScript
 
 enum DamageReductionAura
 {
-    SPELL_BLESSING_OF_SANCTUARY         = 20911,
+    SPELL_BLESSING_OF_SANCTUARY = 20911,
     SPELL_GREATER_BLESSING_OF_SANCTUARY = 25899,
-    SPELL_RENEWED_HOPE                  = 63944,
-    SPELL_VIGILANCE                     = 50720,
-    SPELL_DAMAGE_REDUCTION_AURA         = 68066
+    SPELL_RENEWED_HOPE = 63944,
+    SPELL_VIGILANCE = 50720,
+    SPELL_DAMAGE_REDUCTION_AURA = 68066
 };
 
 /* 20911 - Blessing of Sanctuary
@@ -2567,31 +2559,29 @@ class spell_gen_damage_reduction_aura : public AuraScript
 {
     PrepareAuraScript(spell_gen_damage_reduction_aura);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_DAMAGE_REDUCTION_AURA,
-                SPELL_BLESSING_OF_SANCTUARY,
-                SPELL_GREATER_BLESSING_OF_SANCTUARY,
-                SPELL_RENEWED_HOPE,
-                SPELL_VIGILANCE
-            });
+            {SPELL_DAMAGE_REDUCTION_AURA,
+             SPELL_BLESSING_OF_SANCTUARY,
+             SPELL_GREATER_BLESSING_OF_SANCTUARY,
+             SPELL_RENEWED_HOPE,
+             SPELL_VIGILANCE});
     }
 
-    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->CastSpell(target, SPELL_DAMAGE_REDUCTION_AURA, true);
     }
 
-    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         if (target->HasAura(SPELL_DAMAGE_REDUCTION_AURA) && !(target->HasAura(SPELL_BLESSING_OF_SANCTUARY) ||
-                target->HasAura(SPELL_GREATER_BLESSING_OF_SANCTUARY) ||
-                target->HasAura(SPELL_RENEWED_HOPE) ||
-                target->HasAura(SPELL_VIGILANCE)))
+                                                              target->HasAura(SPELL_GREATER_BLESSING_OF_SANCTUARY) ||
+                                                              target->HasAura(SPELL_RENEWED_HOPE) ||
+                                                              target->HasAura(SPELL_VIGILANCE)))
         {
             target->RemoveAurasDueToSpell(SPELL_DAMAGE_REDUCTION_AURA);
         }
@@ -2606,8 +2596,8 @@ class spell_gen_damage_reduction_aura : public AuraScript
 
 enum DummyTrigger
 {
-    SPELL_PERSISTANT_SHIELD_TRIGGERED       = 26470,
-    SPELL_PERSISTANT_SHIELD                 = 26467
+    SPELL_PERSISTANT_SHIELD_TRIGGERED = 26470,
+    SPELL_PERSISTANT_SHIELD = 26467
 };
 
 // 13567 - Dummy Trigger
@@ -2615,17 +2605,17 @@ class spell_gen_dummy_trigger : public SpellScript
 {
     PrepareSpellScript(spell_gen_dummy_trigger);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_PERSISTANT_SHIELD_TRIGGERED, SPELL_PERSISTANT_SHIELD });
+        return ValidateSpellInfo({SPELL_PERSISTANT_SHIELD_TRIGGERED, SPELL_PERSISTANT_SHIELD});
     }
 
     void HandleDummy(SpellEffIndex /* effIndex */)
     {
         int32 damage = GetEffectValue();
-        Unit* caster = GetCaster();
-        if (Unit* target = GetHitUnit())
-            if (SpellInfo const* triggeredByAuraSpell = GetTriggeringSpell())
+        Unit *caster = GetCaster();
+        if (Unit *target = GetHitUnit())
+            if (SpellInfo const *triggeredByAuraSpell = GetTriggeringSpell())
                 if (triggeredByAuraSpell->Id == SPELL_PERSISTANT_SHIELD_TRIGGERED)
                     caster->CastCustomSpell(target, SPELL_PERSISTANT_SHIELD_TRIGGERED, &damage, nullptr, nullptr, true);
     }
@@ -2648,8 +2638,8 @@ class spell_gen_spirit_healer_res : public SpellScript
 
     void HandleDummy(SpellEffIndex /* effIndex */)
     {
-        Player* originalCaster = GetOriginalCaster()->ToPlayer();
-        if (Unit* target = GetHitUnit())
+        Player *originalCaster = GetOriginalCaster()->ToPlayer();
+        if (Unit *target = GetHitUnit())
         {
             WorldPacket data(SMSG_SPIRIT_HEALER_CONFIRM, 8);
             data << target->GetGUID();
@@ -2665,9 +2655,9 @@ class spell_gen_spirit_healer_res : public SpellScript
 
 enum TransporterBackfires
 {
-    SPELL_TRANSPORTER_MALFUNCTION_POLYMORPH     = 23444,
-    SPELL_TRANSPORTER_EVIL_TWIN                 = 23445,
-    SPELL_TRANSPORTER_MALFUNCTION_MISS          = 36902
+    SPELL_TRANSPORTER_MALFUNCTION_POLYMORPH = 23444,
+    SPELL_TRANSPORTER_EVIL_TWIN = 23445,
+    SPELL_TRANSPORTER_MALFUNCTION_MISS = 36902
 };
 
 // 23448 - Transporter Arrival
@@ -2675,25 +2665,23 @@ class spell_gen_gadgetzan_transporter_backfire : public SpellScript
 {
     PrepareSpellScript(spell_gen_gadgetzan_transporter_backfire)
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+        bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_TRANSPORTER_MALFUNCTION_POLYMORPH,
-                SPELL_TRANSPORTER_EVIL_TWIN,
-                SPELL_TRANSPORTER_MALFUNCTION_MISS
-            });
+            {SPELL_TRANSPORTER_MALFUNCTION_POLYMORPH,
+             SPELL_TRANSPORTER_EVIL_TWIN,
+             SPELL_TRANSPORTER_MALFUNCTION_MISS});
     }
 
     void HandleDummy(SpellEffIndex /* effIndex */)
     {
-        Unit* caster = GetCaster();
+        Unit *caster = GetCaster();
         int32 r = irand(0, 119);
-        if (r < 20)                           // Transporter Malfunction - 1/6 polymorph
+        if (r < 20) // Transporter Malfunction - 1/6 polymorph
             caster->CastSpell(caster, SPELL_TRANSPORTER_MALFUNCTION_POLYMORPH, true);
-        else if (r < 100)                     // Evil Twin               - 4/6 evil twin
+        else if (r < 100) // Evil Twin               - 4/6 evil twin
             caster->CastSpell(caster, SPELL_TRANSPORTER_EVIL_TWIN, true);
-        else                                    // Transporter Malfunction - 1/6 miss the target
+        else // Transporter Malfunction - 1/6 miss the target
             caster->CastSpell(caster, SPELL_TRANSPORTER_MALFUNCTION_MISS, true);
     }
 
@@ -2705,8 +2693,8 @@ class spell_gen_gadgetzan_transporter_backfire : public SpellScript
 
 enum GnomishTransporter
 {
-    SPELL_TRANSPORTER_SUCCESS                   = 23441,
-    SPELL_TRANSPORTER_FAILURE                   = 23446
+    SPELL_TRANSPORTER_SUCCESS = 23441,
+    SPELL_TRANSPORTER_FAILURE = 23446
 };
 
 // 23453 - Gnomish Transporter
@@ -2714,9 +2702,9 @@ class spell_gen_gnomish_transporter : public SpellScript
 {
     PrepareSpellScript(spell_gen_gnomish_transporter)
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+        bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_TRANSPORTER_SUCCESS, SPELL_TRANSPORTER_FAILURE });
+        return ValidateSpellInfo({SPELL_TRANSPORTER_SUCCESS, SPELL_TRANSPORTER_FAILURE});
     }
 
     void HandleDummy(SpellEffIndex /* effIndex */)
@@ -2735,10 +2723,10 @@ class spell_gen_gryphon_wyvern_mount_check : public AuraScript
 {
     PrepareAuraScript(spell_gen_gryphon_wyvern_mount_check);
 
-    void HandleEffectPeriodic(AuraEffect const* /*aurEff*/)
+    void HandleEffectPeriodic(AuraEffect const * /*aurEff*/)
     {
-        Unit* target = GetTarget();
-        Unit* owner = target->GetOwner();
+        Unit *target = GetTarget();
+        Unit *owner = target->GetOwner();
 
         if (!owner)
         {
@@ -2756,13 +2744,13 @@ class spell_gen_gryphon_wyvern_mount_check : public AuraScript
 
 enum DalaranDisguiseSpells
 {
-    SPELL_SUNREAVER_DISGUISE_TRIGGER       = 69672,
-    SPELL_SUNREAVER_DISGUISE_FEMALE        = 70973,
-    SPELL_SUNREAVER_DISGUISE_MALE          = 70974,
+    SPELL_SUNREAVER_DISGUISE_TRIGGER = 69672,
+    SPELL_SUNREAVER_DISGUISE_FEMALE = 70973,
+    SPELL_SUNREAVER_DISGUISE_MALE = 70974,
 
     SPELL_SILVER_COVENANT_DISGUISE_TRIGGER = 69673,
-    SPELL_SILVER_COVENANT_DISGUISE_FEMALE  = 70971,
-    SPELL_SILVER_COVENANT_DISGUISE_MALE    = 70972
+    SPELL_SILVER_COVENANT_DISGUISE_FEMALE = 70971,
+    SPELL_SILVER_COVENANT_DISGUISE_MALE = 70972
 };
 
 /* 69673 - Silver Covenant Disguise (spell_gen_silver_covenant_disguise)
@@ -2771,22 +2759,20 @@ class spell_gen_dalaran_disguise : public SpellScript
 {
     PrepareSpellScript(spell_gen_dalaran_disguise);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_SUNREAVER_DISGUISE_TRIGGER,
-                SPELL_SUNREAVER_DISGUISE_FEMALE,
-                SPELL_SUNREAVER_DISGUISE_MALE,
-                SPELL_SILVER_COVENANT_DISGUISE_TRIGGER,
-                SPELL_SILVER_COVENANT_DISGUISE_FEMALE,
-                SPELL_SILVER_COVENANT_DISGUISE_MALE
-            });
+            {SPELL_SUNREAVER_DISGUISE_TRIGGER,
+             SPELL_SUNREAVER_DISGUISE_FEMALE,
+             SPELL_SUNREAVER_DISGUISE_MALE,
+             SPELL_SILVER_COVENANT_DISGUISE_TRIGGER,
+             SPELL_SILVER_COVENANT_DISGUISE_FEMALE,
+             SPELL_SILVER_COVENANT_DISGUISE_MALE});
     }
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        if (Player* player = GetHitPlayer())
+        if (Player *player = GetHitPlayer())
         {
             uint8 gender = player->getGender();
 
@@ -2794,14 +2780,14 @@ class spell_gen_dalaran_disguise : public SpellScript
 
             switch (spellId)
             {
-                case SPELL_SUNREAVER_DISGUISE_TRIGGER:
-                    spellId = gender ? SPELL_SUNREAVER_DISGUISE_FEMALE : SPELL_SUNREAVER_DISGUISE_MALE;
-                    break;
-                case SPELL_SILVER_COVENANT_DISGUISE_TRIGGER:
-                    spellId = gender ? SPELL_SILVER_COVENANT_DISGUISE_FEMALE : SPELL_SILVER_COVENANT_DISGUISE_MALE;
-                    break;
-                default:
-                    break;
+            case SPELL_SUNREAVER_DISGUISE_TRIGGER:
+                spellId = gender ? SPELL_SUNREAVER_DISGUISE_FEMALE : SPELL_SUNREAVER_DISGUISE_MALE;
+                break;
+            case SPELL_SILVER_COVENANT_DISGUISE_TRIGGER:
+                spellId = gender ? SPELL_SILVER_COVENANT_DISGUISE_FEMALE : SPELL_SILVER_COVENANT_DISGUISE_MALE;
+                break;
+            default:
+                break;
             }
 
             GetCaster()->CastSpell(player, spellId, true);
@@ -2839,13 +2825,13 @@ class spell_gen_dalaran_disguise : public SpellScript
 
 enum BreakShieldSpells
 {
-    SPELL_BREAK_SHIELD_DAMAGE_2K                 = 62626,
-    SPELL_BREAK_SHIELD_DAMAGE_10K                = 64590,
+    SPELL_BREAK_SHIELD_DAMAGE_2K = 62626,
+    SPELL_BREAK_SHIELD_DAMAGE_10K = 64590,
 
-    SPELL_BREAK_SHIELD_TRIGGER_FACTION_MOUNTS    = 62575, // Also on ToC5 mounts
+    SPELL_BREAK_SHIELD_TRIGGER_FACTION_MOUNTS = 62575, // Also on ToC5 mounts
     SPELL_BREAK_SHIELD_TRIGGER_CAMPAING_WARHORSE = 64595,
-    SPELL_BREAK_SHIELD_TRIGGER_UNK               = 66480,
-    SPELL_BREAK_SHIELD_TRIGGER_SUNDERING_THURST  = 63825
+    SPELL_BREAK_SHIELD_TRIGGER_UNK = 66480,
+    SPELL_BREAK_SHIELD_TRIGGER_SUNDERING_THURST = 63825
 };
 
 /* 62575, 62626, 64342, 64590, 64595, 64686, 65147, 66480, 68504 - Shield-Breaker
@@ -2856,72 +2842,70 @@ class spell_gen_break_shield : public SpellScript
 {
     PrepareSpellScript(spell_gen_break_shield)
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+        bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_BREAK_SHIELD_DAMAGE_2K,
-                SPELL_BREAK_SHIELD_DAMAGE_10K,
-                SPELL_BREAK_SHIELD_TRIGGER_FACTION_MOUNTS,
-                SPELL_BREAK_SHIELD_TRIGGER_CAMPAING_WARHORSE,
-                SPELL_BREAK_SHIELD_TRIGGER_UNK,
-                SPELL_BREAK_SHIELD_TRIGGER_SUNDERING_THURST
-            });
+            {SPELL_BREAK_SHIELD_DAMAGE_2K,
+             SPELL_BREAK_SHIELD_DAMAGE_10K,
+             SPELL_BREAK_SHIELD_TRIGGER_FACTION_MOUNTS,
+             SPELL_BREAK_SHIELD_TRIGGER_CAMPAING_WARHORSE,
+             SPELL_BREAK_SHIELD_TRIGGER_UNK,
+             SPELL_BREAK_SHIELD_TRIGGER_SUNDERING_THURST});
     }
 
     void HandleScriptEffect(SpellEffIndex effIndex)
     {
-        Unit* target = GetHitUnit();
+        Unit *target = GetHitUnit();
 
         switch (effIndex)
         {
-            case EFFECT_0: // On spells wich trigger the damaging spell (and also the visual)
-                {
-                    uint32 spellId;
+        case EFFECT_0: // On spells wich trigger the damaging spell (and also the visual)
+        {
+            uint32 spellId;
 
-                    switch (GetSpellInfo()->Id)
-                    {
-                        case SPELL_BREAK_SHIELD_TRIGGER_UNK:
-                        case SPELL_BREAK_SHIELD_TRIGGER_CAMPAING_WARHORSE:
-                            spellId = SPELL_BREAK_SHIELD_DAMAGE_10K;
-                            break;
-                        case SPELL_BREAK_SHIELD_TRIGGER_FACTION_MOUNTS:
-                        case SPELL_BREAK_SHIELD_TRIGGER_SUNDERING_THURST:
-                            spellId = SPELL_BREAK_SHIELD_DAMAGE_2K;
-                            break;
-                        default:
-                            return;
-                    }
-
-                    if (Unit* rider = GetCaster()->GetCharmer())
-                        rider->CastSpell(target, spellId, false);
-                    else
-                        GetCaster()->CastSpell(target, spellId, false);
-                    break;
-                }
-            case EFFECT_1: // On damaging spells, for removing a defend layer
-                {
-                    Unit::AuraApplicationMap const& auras = target->GetAppliedAuras();
-                    for (Unit::AuraApplicationMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
-                    {
-                        if (Aura* aura = itr->second->GetBase())
-                        {
-                            SpellInfo const* auraInfo = aura->GetSpellInfo();
-                            if (auraInfo && auraInfo->SpellIconID == 2007 && aura->HasEffectType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN))
-                            {
-                                aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
-                                // Remove dummys from rider (Necessary for updating visual shields)
-                                if (Unit* rider = target->GetCharmer())
-                                    if (Aura* defend = rider->GetAura(aura->GetId()))
-                                        defend->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
-            default:
+            switch (GetSpellInfo()->Id)
+            {
+            case SPELL_BREAK_SHIELD_TRIGGER_UNK:
+            case SPELL_BREAK_SHIELD_TRIGGER_CAMPAING_WARHORSE:
+                spellId = SPELL_BREAK_SHIELD_DAMAGE_10K;
                 break;
+            case SPELL_BREAK_SHIELD_TRIGGER_FACTION_MOUNTS:
+            case SPELL_BREAK_SHIELD_TRIGGER_SUNDERING_THURST:
+                spellId = SPELL_BREAK_SHIELD_DAMAGE_2K;
+                break;
+            default:
+                return;
+            }
+
+            if (Unit *rider = GetCaster()->GetCharmer())
+                rider->CastSpell(target, spellId, false);
+            else
+                GetCaster()->CastSpell(target, spellId, false);
+            break;
+        }
+        case EFFECT_1: // On damaging spells, for removing a defend layer
+        {
+            Unit::AuraApplicationMap const &auras = target->GetAppliedAuras();
+            for (Unit::AuraApplicationMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
+            {
+                if (Aura *aura = itr->second->GetBase())
+                {
+                    SpellInfo const *auraInfo = aura->GetSpellInfo();
+                    if (auraInfo && auraInfo->SpellIconID == 2007 && aura->HasEffectType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN))
+                    {
+                        aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                        // Remove dummys from rider (Necessary for updating visual shields)
+                        if (Unit *rider = target->GetCharmer())
+                            if (Aura *defend = rider->GetAura(aura->GetId()))
+                                defend->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+        default:
+            break;
         }
     }
 
@@ -2965,20 +2949,20 @@ class spell_gen_break_shield : public SpellScript
 
 enum ChargeSpells
 {
-    SPELL_CHARGE_DAMAGE_8K5             = 62874,
-    SPELL_CHARGE_DAMAGE_20K             = 68498,
-    SPELL_CHARGE_DAMAGE_45K             = 64591,
+    SPELL_CHARGE_DAMAGE_8K5 = 62874,
+    SPELL_CHARGE_DAMAGE_20K = 68498,
+    SPELL_CHARGE_DAMAGE_45K = 64591,
 
-    SPELL_CHARGE_CHARGING_EFFECT_8K5    = 63661,
-    SPELL_CHARGE_CHARGING_EFFECT_20K_1  = 68284,
-    SPELL_CHARGE_CHARGING_EFFECT_20K_2  = 68501,
-    SPELL_CHARGE_CHARGING_EFFECT_45K_1  = 62563,
-    SPELL_CHARGE_CHARGING_EFFECT_45K_2  = 66481,
+    SPELL_CHARGE_CHARGING_EFFECT_8K5 = 63661,
+    SPELL_CHARGE_CHARGING_EFFECT_20K_1 = 68284,
+    SPELL_CHARGE_CHARGING_EFFECT_20K_2 = 68501,
+    SPELL_CHARGE_CHARGING_EFFECT_45K_1 = 62563,
+    SPELL_CHARGE_CHARGING_EFFECT_45K_2 = 66481,
 
     SPELL_CHARGE_TRIGGER_FACTION_MOUNTS = 62960,
     SPELL_CHARGE_TRIGGER_TRIAL_CHAMPION = 68282,
 
-    SPELL_CHARGE_MISS_EFFECT            = 62977,
+    SPELL_CHARGE_MISS_EFFECT = 62977,
 };
 
 // 62563, 62874, 62960, 63003, 63010, 63661, 64591, 66481, 68282, 68284, 68321, 68498, 68501 - Charge
@@ -2986,78 +2970,76 @@ class spell_gen_mounted_charge : public SpellScript
 {
     PrepareSpellScript(spell_gen_mounted_charge)
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+        bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_CHARGE_DAMAGE_8K5,
-                SPELL_CHARGE_DAMAGE_20K,
-                SPELL_CHARGE_DAMAGE_45K,
-                SPELL_CHARGE_CHARGING_EFFECT_8K5,
-                SPELL_CHARGE_CHARGING_EFFECT_20K_1,
-                SPELL_CHARGE_CHARGING_EFFECT_20K_2,
-                SPELL_CHARGE_CHARGING_EFFECT_45K_1,
-                SPELL_CHARGE_CHARGING_EFFECT_45K_2,
-                SPELL_CHARGE_TRIGGER_FACTION_MOUNTS,
-                SPELL_CHARGE_TRIGGER_TRIAL_CHAMPION,
-                SPELL_CHARGE_MISS_EFFECT
-            });
+            {SPELL_CHARGE_DAMAGE_8K5,
+             SPELL_CHARGE_DAMAGE_20K,
+             SPELL_CHARGE_DAMAGE_45K,
+             SPELL_CHARGE_CHARGING_EFFECT_8K5,
+             SPELL_CHARGE_CHARGING_EFFECT_20K_1,
+             SPELL_CHARGE_CHARGING_EFFECT_20K_2,
+             SPELL_CHARGE_CHARGING_EFFECT_45K_1,
+             SPELL_CHARGE_CHARGING_EFFECT_45K_2,
+             SPELL_CHARGE_TRIGGER_FACTION_MOUNTS,
+             SPELL_CHARGE_TRIGGER_TRIAL_CHAMPION,
+             SPELL_CHARGE_MISS_EFFECT});
     }
 
     void HandleScriptEffect(SpellEffIndex effIndex)
     {
-        Unit* target = GetHitUnit();
+        Unit *target = GetHitUnit();
 
         switch (effIndex)
         {
-            case EFFECT_0: // On spells wich trigger the damaging spell (and also the visual)
+        case EFFECT_0: // On spells wich trigger the damaging spell (and also the visual)
+        {
+            uint32 spellId;
+
+            switch (GetSpellInfo()->Id)
+            {
+            case SPELL_CHARGE_TRIGGER_TRIAL_CHAMPION:
+                spellId = SPELL_CHARGE_CHARGING_EFFECT_20K_1;
+                break;
+            case SPELL_CHARGE_TRIGGER_FACTION_MOUNTS:
+                spellId = SPELL_CHARGE_CHARGING_EFFECT_8K5;
+                break;
+            default:
+                return;
+            }
+
+            // If target isn't a training dummy there's a chance of failing the charge
+            if (!target->HasUnitFlag(UNIT_FLAG_DISABLE_MOVE) && roll_chance_f(12.5f))
+                spellId = SPELL_CHARGE_MISS_EFFECT;
+
+            if (Unit *vehicle = GetCaster()->GetVehicleBase())
+                vehicle->CastSpell(target, spellId, false);
+            else
+                GetCaster()->CastSpell(target, spellId, false);
+            break;
+        }
+        case EFFECT_1: // On damaging spells, for removing a defend layer
+        case EFFECT_2:
+        {
+            Unit::AuraApplicationMap const &auras = target->GetAppliedAuras();
+            for (Unit::AuraApplicationMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
+            {
+                if (Aura *aura = itr->second->GetBase())
                 {
-                    uint32 spellId;
-
-                    switch (GetSpellInfo()->Id)
+                    SpellInfo const *auraInfo = aura->GetSpellInfo();
+                    if (auraInfo && auraInfo->SpellIconID == 2007 && aura->HasEffectType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN))
                     {
-                        case SPELL_CHARGE_TRIGGER_TRIAL_CHAMPION:
-                            spellId = SPELL_CHARGE_CHARGING_EFFECT_20K_1;
-                            break;
-                        case SPELL_CHARGE_TRIGGER_FACTION_MOUNTS:
-                            spellId = SPELL_CHARGE_CHARGING_EFFECT_8K5;
-                            break;
-                        default:
-                            return;
+                        aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                        // Remove dummys from rider (Necessary for updating visual shields)
+                        if (Unit *rider = target->GetCharmer())
+                            if (Aura *defend = rider->GetAura(aura->GetId()))
+                                defend->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                        break;
                     }
-
-                    // If target isn't a training dummy there's a chance of failing the charge
-                    if (!target->HasUnitFlag(UNIT_FLAG_DISABLE_MOVE) && roll_chance_f(12.5f))
-                        spellId = SPELL_CHARGE_MISS_EFFECT;
-
-                    if (Unit* vehicle = GetCaster()->GetVehicleBase())
-                        vehicle->CastSpell(target, spellId, false);
-                    else
-                        GetCaster()->CastSpell(target, spellId, false);
-                    break;
                 }
-            case EFFECT_1: // On damaging spells, for removing a defend layer
-            case EFFECT_2:
-                {
-                    Unit::AuraApplicationMap const& auras = target->GetAppliedAuras();
-                    for (Unit::AuraApplicationMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
-                    {
-                        if (Aura* aura = itr->second->GetBase())
-                        {
-                            SpellInfo const* auraInfo = aura->GetSpellInfo();
-                            if (auraInfo && auraInfo->SpellIconID == 2007 && aura->HasEffectType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN))
-                            {
-                                aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
-                                // Remove dummys from rider (Necessary for updating visual shields)
-                                if (Unit* rider = target->GetCharmer())
-                                    if (Aura* defend = rider->GetAura(aura->GetId()))
-                                        defend->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
+            }
+            break;
+        }
         }
     }
 
@@ -3067,22 +3049,22 @@ class spell_gen_mounted_charge : public SpellScript
 
         switch (GetSpellInfo()->Id)
         {
-            case SPELL_CHARGE_CHARGING_EFFECT_8K5:
-                spellId = SPELL_CHARGE_DAMAGE_8K5;
-                break;
-            case SPELL_CHARGE_CHARGING_EFFECT_20K_1:
-            case SPELL_CHARGE_CHARGING_EFFECT_20K_2:
-                spellId = SPELL_CHARGE_DAMAGE_20K;
-                break;
-            case SPELL_CHARGE_CHARGING_EFFECT_45K_1:
-            case SPELL_CHARGE_CHARGING_EFFECT_45K_2:
-                spellId = SPELL_CHARGE_DAMAGE_45K;
-                break;
-            default:
-                return;
+        case SPELL_CHARGE_CHARGING_EFFECT_8K5:
+            spellId = SPELL_CHARGE_DAMAGE_8K5;
+            break;
+        case SPELL_CHARGE_CHARGING_EFFECT_20K_1:
+        case SPELL_CHARGE_CHARGING_EFFECT_20K_2:
+            spellId = SPELL_CHARGE_DAMAGE_20K;
+            break;
+        case SPELL_CHARGE_CHARGING_EFFECT_45K_1:
+        case SPELL_CHARGE_CHARGING_EFFECT_45K_2:
+            spellId = SPELL_CHARGE_DAMAGE_45K;
+            break;
+        default:
+            return;
         }
 
-        if (Unit* rider = GetCaster()->GetCharmer())
+        if (Unit *rider = GetCaster()->GetCharmer())
             rider->CastSpell(GetHitUnit(), spellId, false);
         else
             GetCaster()->CastSpell(GetHitUnit(), spellId, false);
@@ -3090,7 +3072,7 @@ class spell_gen_mounted_charge : public SpellScript
 
     void Register() override
     {
-        SpellInfo const* spell = sSpellMgr->AssertSpellInfo(m_scriptSpellId);
+        SpellInfo const *spell = sSpellMgr->AssertSpellInfo(m_scriptSpellId);
 
         if (spell->HasEffect(SPELL_EFFECT_SCRIPT_EFFECT))
             OnEffectHitTarget += SpellEffectFn(spell_gen_mounted_charge::HandleScriptEffect, EFFECT_FIRST_FOUND, SPELL_EFFECT_SCRIPT_EFFECT);
@@ -3112,21 +3094,19 @@ class spell_gen_defend : public AuraScript
 {
     PrepareAuraScript(spell_gen_defend);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_VISUAL_SHIELD_1,
-                SPELL_VISUAL_SHIELD_2,
-                SPELL_VISUAL_SHIELD_3
-            });
+            {SPELL_VISUAL_SHIELD_1,
+             SPELL_VISUAL_SHIELD_2,
+             SPELL_VISUAL_SHIELD_3});
     }
 
-    void RefreshVisualShields(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    void RefreshVisualShields(AuraEffect const *aurEff, AuraEffectHandleModes /*mode*/)
     {
         if (GetCaster())
         {
-            Unit* target = GetTarget();
+            Unit *target = GetTarget();
 
             for (uint8 i = 0; i < GetSpellInfo()->StackAmount; ++i)
                 target->RemoveAurasDueToSpell(SPELL_VISUAL_SHIELD_1 + i);
@@ -3137,23 +3117,23 @@ class spell_gen_defend : public AuraScript
             GetTarget()->RemoveAurasDueToSpell(GetId());
     }
 
-    void RemoveVisualShields(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void RemoveVisualShields(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         for (uint8 i = 0; i < GetSpellInfo()->StackAmount; ++i)
             GetTarget()->RemoveAurasDueToSpell(SPELL_VISUAL_SHIELD_1 + i);
     }
 
-    void RemoveDummyFromDriver(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void RemoveDummyFromDriver(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Unit* caster = GetCaster())
-            if (TempSummon* vehicle = caster->ToTempSummon())
-                if (Unit* rider = vehicle->GetSummonerUnit())
+        if (Unit *caster = GetCaster())
+            if (TempSummon *vehicle = caster->ToTempSummon())
+                if (Unit *rider = vehicle->GetSummonerUnit())
                     rider->RemoveAurasDueToSpell(GetId());
     }
 
     void Register() override
     {
-        SpellInfo const* spell = sSpellMgr->AssertSpellInfo(m_scriptSpellId);
+        SpellInfo const *spell = sSpellMgr->AssertSpellInfo(m_scriptSpellId);
 
         // Defend spells cast by NPCs (add visuals)
         if (spell->Effects[EFFECT_0].ApplyAuraName == SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN)
@@ -3195,7 +3175,7 @@ class spell_gen_throw_shield : public SpellScript
 enum MountedDuelSpells
 {
     SPELL_ON_TOURNAMENT_MOUNT = 63034,
-    SPELL_MOUNTED_DUEL        = 62875
+    SPELL_MOUNTED_DUEL = 62875
 };
 
 // 62863 - Duel
@@ -3203,21 +3183,21 @@ class spell_gen_tournament_duel : public SpellScript
 {
     PrepareSpellScript(spell_gen_tournament_duel);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_ON_TOURNAMENT_MOUNT, SPELL_MOUNTED_DUEL });
+        return ValidateSpellInfo({SPELL_ON_TOURNAMENT_MOUNT, SPELL_MOUNTED_DUEL});
     }
 
     void HandleScriptEffect(SpellEffIndex /*effIndex*/)
     {
-        if (Unit* rider = GetCaster()->GetCharmer())
+        if (Unit *rider = GetCaster()->GetCharmer())
         {
-            if (Player* playerTarget = GetHitPlayer())
+            if (Player *playerTarget = GetHitPlayer())
             {
                 if (playerTarget->HasAura(SPELL_ON_TOURNAMENT_MOUNT) && playerTarget->GetVehicleBase())
                     rider->CastSpell(playerTarget, SPELL_MOUNTED_DUEL, true);
             }
-            else if (Unit* unitTarget = GetHitUnit())
+            else if (Unit *unitTarget = GetHitUnit())
             {
                 if (unitTarget->GetCharmer() && unitTarget->GetCharmer()->GetTypeId() == TYPEID_PLAYER && unitTarget->GetCharmer()->HasAura(SPELL_ON_TOURNAMENT_MOUNT))
                     rider->CastSpell(unitTarget->GetCharmer(), SPELL_MOUNTED_DUEL, true);
@@ -3233,7 +3213,7 @@ class spell_gen_tournament_duel : public SpellScript
 
 enum TournamentMountsSpells
 {
-    SPELL_LANCE_EQUIPPED     = 62853
+    SPELL_LANCE_EQUIPPED = 62853
 };
 
 /* 62774 - Summon Tournament Charger
@@ -3253,9 +3233,9 @@ class spell_gen_summon_tournament_mount : public SpellScript
 {
     PrepareSpellScript(spell_gen_summon_tournament_mount);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_LANCE_EQUIPPED });
+        return ValidateSpellInfo({SPELL_LANCE_EQUIPPED});
     }
 
     SpellCastResult CheckIfLanceEquiped()
@@ -3280,97 +3260,97 @@ class spell_gen_summon_tournament_mount : public SpellScript
 
 enum TournamentPennantSpells
 {
-    SPELL_PENNANT_STORMWIND_ASPIRANT        = 62595,
-    SPELL_PENNANT_STORMWIND_VALIANT         = 62596,
-    SPELL_PENNANT_STORMWIND_CHAMPION        = 62594,
-    SPELL_PENNANT_GNOMEREGAN_ASPIRANT       = 63394,
-    SPELL_PENNANT_GNOMEREGAN_VALIANT        = 63395,
-    SPELL_PENNANT_GNOMEREGAN_CHAMPION       = 63396,
-    SPELL_PENNANT_SEN_JIN_ASPIRANT          = 63397,
-    SPELL_PENNANT_SEN_JIN_VALIANT           = 63398,
-    SPELL_PENNANT_SEN_JIN_CHAMPION          = 63399,
-    SPELL_PENNANT_SILVERMOON_ASPIRANT       = 63401,
-    SPELL_PENNANT_SILVERMOON_VALIANT        = 63402,
-    SPELL_PENNANT_SILVERMOON_CHAMPION       = 63403,
-    SPELL_PENNANT_DARNASSUS_ASPIRANT        = 63404,
-    SPELL_PENNANT_DARNASSUS_VALIANT         = 63405,
-    SPELL_PENNANT_DARNASSUS_CHAMPION        = 63406,
-    SPELL_PENNANT_EXODAR_ASPIRANT           = 63421,
-    SPELL_PENNANT_EXODAR_VALIANT            = 63422,
-    SPELL_PENNANT_EXODAR_CHAMPION           = 63423,
-    SPELL_PENNANT_IRONFORGE_ASPIRANT        = 63425,
-    SPELL_PENNANT_IRONFORGE_VALIANT         = 63426,
-    SPELL_PENNANT_IRONFORGE_CHAMPION        = 63427,
-    SPELL_PENNANT_UNDERCITY_ASPIRANT        = 63428,
-    SPELL_PENNANT_UNDERCITY_VALIANT         = 63429,
-    SPELL_PENNANT_UNDERCITY_CHAMPION        = 63430,
-    SPELL_PENNANT_ORGRIMMAR_ASPIRANT        = 63431,
-    SPELL_PENNANT_ORGRIMMAR_VALIANT         = 63432,
-    SPELL_PENNANT_ORGRIMMAR_CHAMPION        = 63433,
-    SPELL_PENNANT_THUNDER_BLUFF_ASPIRANT    = 63434,
-    SPELL_PENNANT_THUNDER_BLUFF_VALIANT     = 63435,
-    SPELL_PENNANT_THUNDER_BLUFF_CHAMPION    = 63436,
-    SPELL_PENNANT_ARGENT_CRUSADE_ASPIRANT   = 63606,
-    SPELL_PENNANT_ARGENT_CRUSADE_VALIANT    = 63500,
-    SPELL_PENNANT_ARGENT_CRUSADE_CHAMPION   = 63501,
-    SPELL_PENNANT_EBON_BLADE_ASPIRANT       = 63607,
-    SPELL_PENNANT_EBON_BLADE_VALIANT        = 63608,
-    SPELL_PENNANT_EBON_BLADE_CHAMPION       = 63609
+    SPELL_PENNANT_STORMWIND_ASPIRANT = 62595,
+    SPELL_PENNANT_STORMWIND_VALIANT = 62596,
+    SPELL_PENNANT_STORMWIND_CHAMPION = 62594,
+    SPELL_PENNANT_GNOMEREGAN_ASPIRANT = 63394,
+    SPELL_PENNANT_GNOMEREGAN_VALIANT = 63395,
+    SPELL_PENNANT_GNOMEREGAN_CHAMPION = 63396,
+    SPELL_PENNANT_SEN_JIN_ASPIRANT = 63397,
+    SPELL_PENNANT_SEN_JIN_VALIANT = 63398,
+    SPELL_PENNANT_SEN_JIN_CHAMPION = 63399,
+    SPELL_PENNANT_SILVERMOON_ASPIRANT = 63401,
+    SPELL_PENNANT_SILVERMOON_VALIANT = 63402,
+    SPELL_PENNANT_SILVERMOON_CHAMPION = 63403,
+    SPELL_PENNANT_DARNASSUS_ASPIRANT = 63404,
+    SPELL_PENNANT_DARNASSUS_VALIANT = 63405,
+    SPELL_PENNANT_DARNASSUS_CHAMPION = 63406,
+    SPELL_PENNANT_EXODAR_ASPIRANT = 63421,
+    SPELL_PENNANT_EXODAR_VALIANT = 63422,
+    SPELL_PENNANT_EXODAR_CHAMPION = 63423,
+    SPELL_PENNANT_IRONFORGE_ASPIRANT = 63425,
+    SPELL_PENNANT_IRONFORGE_VALIANT = 63426,
+    SPELL_PENNANT_IRONFORGE_CHAMPION = 63427,
+    SPELL_PENNANT_UNDERCITY_ASPIRANT = 63428,
+    SPELL_PENNANT_UNDERCITY_VALIANT = 63429,
+    SPELL_PENNANT_UNDERCITY_CHAMPION = 63430,
+    SPELL_PENNANT_ORGRIMMAR_ASPIRANT = 63431,
+    SPELL_PENNANT_ORGRIMMAR_VALIANT = 63432,
+    SPELL_PENNANT_ORGRIMMAR_CHAMPION = 63433,
+    SPELL_PENNANT_THUNDER_BLUFF_ASPIRANT = 63434,
+    SPELL_PENNANT_THUNDER_BLUFF_VALIANT = 63435,
+    SPELL_PENNANT_THUNDER_BLUFF_CHAMPION = 63436,
+    SPELL_PENNANT_ARGENT_CRUSADE_ASPIRANT = 63606,
+    SPELL_PENNANT_ARGENT_CRUSADE_VALIANT = 63500,
+    SPELL_PENNANT_ARGENT_CRUSADE_CHAMPION = 63501,
+    SPELL_PENNANT_EBON_BLADE_ASPIRANT = 63607,
+    SPELL_PENNANT_EBON_BLADE_VALIANT = 63608,
+    SPELL_PENNANT_EBON_BLADE_CHAMPION = 63609
 };
 
 enum TournamentMounts
 {
-    NPC_STORMWIND_STEED                     = 33217,
-    NPC_IRONFORGE_RAM                       = 33316,
-    NPC_GNOMEREGAN_MECHANOSTRIDER           = 33317,
-    NPC_EXODAR_ELEKK                        = 33318,
-    NPC_DARNASSIAN_NIGHTSABER               = 33319,
-    NPC_ORGRIMMAR_WOLF                      = 33320,
-    NPC_DARK_SPEAR_RAPTOR                   = 33321,
-    NPC_THUNDER_BLUFF_KODO                  = 33322,
-    NPC_SILVERMOON_HAWKSTRIDER              = 33323,
-    NPC_FORSAKEN_WARHORSE                   = 33324,
-    NPC_ARGENT_WARHORSE                     = 33782,
-    NPC_ARGENT_STEED_ASPIRANT               = 33845,
-    NPC_ARGENT_HAWKSTRIDER_ASPIRANT         = 33844
+    NPC_STORMWIND_STEED = 33217,
+    NPC_IRONFORGE_RAM = 33316,
+    NPC_GNOMEREGAN_MECHANOSTRIDER = 33317,
+    NPC_EXODAR_ELEKK = 33318,
+    NPC_DARNASSIAN_NIGHTSABER = 33319,
+    NPC_ORGRIMMAR_WOLF = 33320,
+    NPC_DARK_SPEAR_RAPTOR = 33321,
+    NPC_THUNDER_BLUFF_KODO = 33322,
+    NPC_SILVERMOON_HAWKSTRIDER = 33323,
+    NPC_FORSAKEN_WARHORSE = 33324,
+    NPC_ARGENT_WARHORSE = 33782,
+    NPC_ARGENT_STEED_ASPIRANT = 33845,
+    NPC_ARGENT_HAWKSTRIDER_ASPIRANT = 33844
 };
 
 enum TournamentQuestsAchievements
 {
-    ACHIEVEMENT_CHAMPION_STORMWIND          = 2781,
-    ACHIEVEMENT_CHAMPION_DARNASSUS          = 2777,
-    ACHIEVEMENT_CHAMPION_IRONFORGE          = 2780,
-    ACHIEVEMENT_CHAMPION_GNOMEREGAN         = 2779,
-    ACHIEVEMENT_CHAMPION_THE_EXODAR         = 2778,
-    ACHIEVEMENT_CHAMPION_ORGRIMMAR          = 2783,
-    ACHIEVEMENT_CHAMPION_SEN_JIN            = 2784,
-    ACHIEVEMENT_CHAMPION_THUNDER_BLUFF      = 2786,
-    ACHIEVEMENT_CHAMPION_UNDERCITY          = 2787,
-    ACHIEVEMENT_CHAMPION_SILVERMOON         = 2785,
-    ACHIEVEMENT_ARGENT_VALOR                = 2758,
-    ACHIEVEMENT_CHAMPION_ALLIANCE           = 2782,
-    ACHIEVEMENT_CHAMPION_HORDE              = 2788,
+    ACHIEVEMENT_CHAMPION_STORMWIND = 2781,
+    ACHIEVEMENT_CHAMPION_DARNASSUS = 2777,
+    ACHIEVEMENT_CHAMPION_IRONFORGE = 2780,
+    ACHIEVEMENT_CHAMPION_GNOMEREGAN = 2779,
+    ACHIEVEMENT_CHAMPION_THE_EXODAR = 2778,
+    ACHIEVEMENT_CHAMPION_ORGRIMMAR = 2783,
+    ACHIEVEMENT_CHAMPION_SEN_JIN = 2784,
+    ACHIEVEMENT_CHAMPION_THUNDER_BLUFF = 2786,
+    ACHIEVEMENT_CHAMPION_UNDERCITY = 2787,
+    ACHIEVEMENT_CHAMPION_SILVERMOON = 2785,
+    ACHIEVEMENT_ARGENT_VALOR = 2758,
+    ACHIEVEMENT_CHAMPION_ALLIANCE = 2782,
+    ACHIEVEMENT_CHAMPION_HORDE = 2788,
 
-    QUEST_VALIANT_OF_STORMWIND              = 13593,
-    QUEST_A_VALIANT_OF_STORMWIND            = 13684,
-    QUEST_VALIANT_OF_DARNASSUS              = 13706,
-    QUEST_A_VALIANT_OF_DARNASSUS            = 13689,
-    QUEST_VALIANT_OF_IRONFORGE              = 13703,
-    QUEST_A_VALIANT_OF_IRONFORGE            = 13685,
-    QUEST_VALIANT_OF_GNOMEREGAN             = 13704,
-    QUEST_A_VALIANT_OF_GNOMEREGAN           = 13688,
-    QUEST_VALIANT_OF_THE_EXODAR             = 13705,
-    QUEST_A_VALIANT_OF_THE_EXODAR           = 13690,
-    QUEST_VALIANT_OF_ORGRIMMAR              = 13707,
-    QUEST_A_VALIANT_OF_ORGRIMMAR            = 13691,
-    QUEST_VALIANT_OF_SEN_JIN                = 13708,
-    QUEST_A_VALIANT_OF_SEN_JIN              = 13693,
-    QUEST_VALIANT_OF_THUNDER_BLUFF          = 13709,
-    QUEST_A_VALIANT_OF_THUNDER_BLUFF        = 13694,
-    QUEST_VALIANT_OF_UNDERCITY              = 13710,
-    QUEST_A_VALIANT_OF_UNDERCITY            = 13695,
-    QUEST_VALIANT_OF_SILVERMOON             = 13711,
-    QUEST_A_VALIANT_OF_SILVERMOON           = 13696
+    QUEST_VALIANT_OF_STORMWIND = 13593,
+    QUEST_A_VALIANT_OF_STORMWIND = 13684,
+    QUEST_VALIANT_OF_DARNASSUS = 13706,
+    QUEST_A_VALIANT_OF_DARNASSUS = 13689,
+    QUEST_VALIANT_OF_IRONFORGE = 13703,
+    QUEST_A_VALIANT_OF_IRONFORGE = 13685,
+    QUEST_VALIANT_OF_GNOMEREGAN = 13704,
+    QUEST_A_VALIANT_OF_GNOMEREGAN = 13688,
+    QUEST_VALIANT_OF_THE_EXODAR = 13705,
+    QUEST_A_VALIANT_OF_THE_EXODAR = 13690,
+    QUEST_VALIANT_OF_ORGRIMMAR = 13707,
+    QUEST_A_VALIANT_OF_ORGRIMMAR = 13691,
+    QUEST_VALIANT_OF_SEN_JIN = 13708,
+    QUEST_A_VALIANT_OF_SEN_JIN = 13693,
+    QUEST_VALIANT_OF_THUNDER_BLUFF = 13709,
+    QUEST_A_VALIANT_OF_THUNDER_BLUFF = 13694,
+    QUEST_VALIANT_OF_UNDERCITY = 13710,
+    QUEST_A_VALIANT_OF_UNDERCITY = 13695,
+    QUEST_VALIANT_OF_SILVERMOON = 13711,
+    QUEST_A_VALIANT_OF_SILVERMOON = 13696
 };
 
 // 63034 - Player On Tournament Mount
@@ -3378,47 +3358,45 @@ class spell_gen_on_tournament_mount : public AuraScript
 {
     PrepareAuraScript(spell_gen_on_tournament_mount);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_PENNANT_STORMWIND_ASPIRANT,
-                SPELL_PENNANT_STORMWIND_VALIANT,
-                SPELL_PENNANT_STORMWIND_CHAMPION,
-                SPELL_PENNANT_GNOMEREGAN_ASPIRANT,
-                SPELL_PENNANT_GNOMEREGAN_VALIANT,
-                SPELL_PENNANT_GNOMEREGAN_CHAMPION,
-                SPELL_PENNANT_SEN_JIN_ASPIRANT,
-                SPELL_PENNANT_SEN_JIN_VALIANT,
-                SPELL_PENNANT_SEN_JIN_CHAMPION,
-                SPELL_PENNANT_SILVERMOON_ASPIRANT,
-                SPELL_PENNANT_SILVERMOON_VALIANT,
-                SPELL_PENNANT_SILVERMOON_CHAMPION,
-                SPELL_PENNANT_DARNASSUS_ASPIRANT,
-                SPELL_PENNANT_DARNASSUS_VALIANT,
-                SPELL_PENNANT_DARNASSUS_CHAMPION,
-                SPELL_PENNANT_EXODAR_ASPIRANT,
-                SPELL_PENNANT_EXODAR_VALIANT,
-                SPELL_PENNANT_EXODAR_CHAMPION,
-                SPELL_PENNANT_IRONFORGE_ASPIRANT,
-                SPELL_PENNANT_IRONFORGE_VALIANT,
-                SPELL_PENNANT_IRONFORGE_CHAMPION,
-                SPELL_PENNANT_UNDERCITY_ASPIRANT,
-                SPELL_PENNANT_UNDERCITY_VALIANT,
-                SPELL_PENNANT_UNDERCITY_CHAMPION,
-                SPELL_PENNANT_ORGRIMMAR_ASPIRANT,
-                SPELL_PENNANT_ORGRIMMAR_VALIANT,
-                SPELL_PENNANT_ORGRIMMAR_CHAMPION,
-                SPELL_PENNANT_THUNDER_BLUFF_ASPIRANT,
-                SPELL_PENNANT_THUNDER_BLUFF_VALIANT,
-                SPELL_PENNANT_THUNDER_BLUFF_CHAMPION,
-                SPELL_PENNANT_ARGENT_CRUSADE_ASPIRANT,
-                SPELL_PENNANT_ARGENT_CRUSADE_VALIANT,
-                SPELL_PENNANT_ARGENT_CRUSADE_CHAMPION,
-                SPELL_PENNANT_EBON_BLADE_ASPIRANT,
-                SPELL_PENNANT_EBON_BLADE_VALIANT,
-                SPELL_PENNANT_EBON_BLADE_CHAMPION
-            });
+            {SPELL_PENNANT_STORMWIND_ASPIRANT,
+             SPELL_PENNANT_STORMWIND_VALIANT,
+             SPELL_PENNANT_STORMWIND_CHAMPION,
+             SPELL_PENNANT_GNOMEREGAN_ASPIRANT,
+             SPELL_PENNANT_GNOMEREGAN_VALIANT,
+             SPELL_PENNANT_GNOMEREGAN_CHAMPION,
+             SPELL_PENNANT_SEN_JIN_ASPIRANT,
+             SPELL_PENNANT_SEN_JIN_VALIANT,
+             SPELL_PENNANT_SEN_JIN_CHAMPION,
+             SPELL_PENNANT_SILVERMOON_ASPIRANT,
+             SPELL_PENNANT_SILVERMOON_VALIANT,
+             SPELL_PENNANT_SILVERMOON_CHAMPION,
+             SPELL_PENNANT_DARNASSUS_ASPIRANT,
+             SPELL_PENNANT_DARNASSUS_VALIANT,
+             SPELL_PENNANT_DARNASSUS_CHAMPION,
+             SPELL_PENNANT_EXODAR_ASPIRANT,
+             SPELL_PENNANT_EXODAR_VALIANT,
+             SPELL_PENNANT_EXODAR_CHAMPION,
+             SPELL_PENNANT_IRONFORGE_ASPIRANT,
+             SPELL_PENNANT_IRONFORGE_VALIANT,
+             SPELL_PENNANT_IRONFORGE_CHAMPION,
+             SPELL_PENNANT_UNDERCITY_ASPIRANT,
+             SPELL_PENNANT_UNDERCITY_VALIANT,
+             SPELL_PENNANT_UNDERCITY_CHAMPION,
+             SPELL_PENNANT_ORGRIMMAR_ASPIRANT,
+             SPELL_PENNANT_ORGRIMMAR_VALIANT,
+             SPELL_PENNANT_ORGRIMMAR_CHAMPION,
+             SPELL_PENNANT_THUNDER_BLUFF_ASPIRANT,
+             SPELL_PENNANT_THUNDER_BLUFF_VALIANT,
+             SPELL_PENNANT_THUNDER_BLUFF_CHAMPION,
+             SPELL_PENNANT_ARGENT_CRUSADE_ASPIRANT,
+             SPELL_PENNANT_ARGENT_CRUSADE_VALIANT,
+             SPELL_PENNANT_ARGENT_CRUSADE_CHAMPION,
+             SPELL_PENNANT_EBON_BLADE_ASPIRANT,
+             SPELL_PENNANT_EBON_BLADE_VALIANT,
+             SPELL_PENNANT_EBON_BLADE_CHAMPION});
     }
 
     uint32 _pennantSpellId;
@@ -3429,11 +3407,11 @@ class spell_gen_on_tournament_mount : public AuraScript
         return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;
     }
 
-    void HandleApplyEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleApplyEffect(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Unit* caster = GetCaster())
+        if (Unit *caster = GetCaster())
         {
-            if (Unit* vehicle = caster->GetVehicleBase())
+            if (Unit *vehicle = caster->GetVehicleBase())
             {
                 _pennantSpellId = GetPennatSpellId(caster->ToPlayer(), vehicle);
                 caster->CastSpell(caster, _pennantSpellId, true);
@@ -3441,119 +3419,119 @@ class spell_gen_on_tournament_mount : public AuraScript
         }
     }
 
-    void HandleRemoveEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleRemoveEffect(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Unit* caster = GetCaster())
+        if (Unit *caster = GetCaster())
             caster->RemoveAurasDueToSpell(_pennantSpellId);
     }
 
-    uint32 GetPennatSpellId(Player* player, Unit* mount)
+    uint32 GetPennatSpellId(Player *player, Unit *mount)
     {
         switch (mount->GetEntry())
         {
-            case NPC_ARGENT_STEED_ASPIRANT:
-            case NPC_STORMWIND_STEED:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_STORMWIND))
-                        return SPELL_PENNANT_STORMWIND_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_STORMWIND) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_STORMWIND))
-                        return SPELL_PENNANT_STORMWIND_VALIANT;
-                    else
-                        return SPELL_PENNANT_STORMWIND_ASPIRANT;
-                }
-            case NPC_GNOMEREGAN_MECHANOSTRIDER:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_GNOMEREGAN))
-                        return SPELL_PENNANT_GNOMEREGAN_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_GNOMEREGAN) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_GNOMEREGAN))
-                        return SPELL_PENNANT_GNOMEREGAN_VALIANT;
-                    else
-                        return SPELL_PENNANT_GNOMEREGAN_ASPIRANT;
-                }
-            case NPC_DARK_SPEAR_RAPTOR:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_SEN_JIN))
-                        return SPELL_PENNANT_SEN_JIN_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_SEN_JIN) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_SEN_JIN))
-                        return SPELL_PENNANT_SEN_JIN_VALIANT;
-                    else
-                        return SPELL_PENNANT_SEN_JIN_ASPIRANT;
-                }
-            case NPC_ARGENT_HAWKSTRIDER_ASPIRANT:
-            case NPC_SILVERMOON_HAWKSTRIDER:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_SILVERMOON))
-                        return SPELL_PENNANT_SILVERMOON_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_SILVERMOON) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_SILVERMOON))
-                        return SPELL_PENNANT_SILVERMOON_VALIANT;
-                    else
-                        return SPELL_PENNANT_SILVERMOON_ASPIRANT;
-                }
-            case NPC_DARNASSIAN_NIGHTSABER:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_DARNASSUS))
-                        return SPELL_PENNANT_DARNASSUS_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_DARNASSUS) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_DARNASSUS))
-                        return SPELL_PENNANT_DARNASSUS_VALIANT;
-                    else
-                        return SPELL_PENNANT_DARNASSUS_ASPIRANT;
-                }
-            case NPC_EXODAR_ELEKK:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_THE_EXODAR))
-                        return SPELL_PENNANT_EXODAR_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_THE_EXODAR) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_THE_EXODAR))
-                        return SPELL_PENNANT_EXODAR_VALIANT;
-                    else
-                        return SPELL_PENNANT_EXODAR_ASPIRANT;
-                }
-            case NPC_IRONFORGE_RAM:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_IRONFORGE))
-                        return SPELL_PENNANT_IRONFORGE_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_IRONFORGE) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_IRONFORGE))
-                        return SPELL_PENNANT_IRONFORGE_VALIANT;
-                    else
-                        return SPELL_PENNANT_IRONFORGE_ASPIRANT;
-                }
-            case NPC_FORSAKEN_WARHORSE:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_UNDERCITY))
-                        return SPELL_PENNANT_UNDERCITY_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_UNDERCITY) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_UNDERCITY))
-                        return SPELL_PENNANT_UNDERCITY_VALIANT;
-                    else
-                        return SPELL_PENNANT_UNDERCITY_ASPIRANT;
-                }
-            case NPC_ORGRIMMAR_WOLF:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_ORGRIMMAR))
-                        return SPELL_PENNANT_ORGRIMMAR_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_ORGRIMMAR) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_ORGRIMMAR))
-                        return SPELL_PENNANT_ORGRIMMAR_VALIANT;
-                    else
-                        return SPELL_PENNANT_ORGRIMMAR_ASPIRANT;
-                }
-            case NPC_THUNDER_BLUFF_KODO:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_THUNDER_BLUFF))
-                        return SPELL_PENNANT_THUNDER_BLUFF_CHAMPION;
-                    else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_THUNDER_BLUFF) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_THUNDER_BLUFF))
-                        return SPELL_PENNANT_THUNDER_BLUFF_VALIANT;
-                    else
-                        return SPELL_PENNANT_THUNDER_BLUFF_ASPIRANT;
-                }
-            case NPC_ARGENT_WARHORSE:
-                {
-                    if (player->HasAchieved(ACHIEVEMENT_CHAMPION_ALLIANCE) || player->HasAchieved(ACHIEVEMENT_CHAMPION_HORDE))
-                        return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_CHAMPION : SPELL_PENNANT_ARGENT_CRUSADE_CHAMPION;
-                    else if (player->HasAchieved(ACHIEVEMENT_ARGENT_VALOR))
-                        return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_VALIANT : SPELL_PENNANT_ARGENT_CRUSADE_VALIANT;
-                    else
-                        return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_ASPIRANT : SPELL_PENNANT_ARGENT_CRUSADE_ASPIRANT;
-                }
-            default:
-                return 0;
+        case NPC_ARGENT_STEED_ASPIRANT:
+        case NPC_STORMWIND_STEED:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_STORMWIND))
+                return SPELL_PENNANT_STORMWIND_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_STORMWIND) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_STORMWIND))
+                return SPELL_PENNANT_STORMWIND_VALIANT;
+            else
+                return SPELL_PENNANT_STORMWIND_ASPIRANT;
+        }
+        case NPC_GNOMEREGAN_MECHANOSTRIDER:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_GNOMEREGAN))
+                return SPELL_PENNANT_GNOMEREGAN_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_GNOMEREGAN) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_GNOMEREGAN))
+                return SPELL_PENNANT_GNOMEREGAN_VALIANT;
+            else
+                return SPELL_PENNANT_GNOMEREGAN_ASPIRANT;
+        }
+        case NPC_DARK_SPEAR_RAPTOR:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_SEN_JIN))
+                return SPELL_PENNANT_SEN_JIN_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_SEN_JIN) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_SEN_JIN))
+                return SPELL_PENNANT_SEN_JIN_VALIANT;
+            else
+                return SPELL_PENNANT_SEN_JIN_ASPIRANT;
+        }
+        case NPC_ARGENT_HAWKSTRIDER_ASPIRANT:
+        case NPC_SILVERMOON_HAWKSTRIDER:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_SILVERMOON))
+                return SPELL_PENNANT_SILVERMOON_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_SILVERMOON) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_SILVERMOON))
+                return SPELL_PENNANT_SILVERMOON_VALIANT;
+            else
+                return SPELL_PENNANT_SILVERMOON_ASPIRANT;
+        }
+        case NPC_DARNASSIAN_NIGHTSABER:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_DARNASSUS))
+                return SPELL_PENNANT_DARNASSUS_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_DARNASSUS) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_DARNASSUS))
+                return SPELL_PENNANT_DARNASSUS_VALIANT;
+            else
+                return SPELL_PENNANT_DARNASSUS_ASPIRANT;
+        }
+        case NPC_EXODAR_ELEKK:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_THE_EXODAR))
+                return SPELL_PENNANT_EXODAR_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_THE_EXODAR) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_THE_EXODAR))
+                return SPELL_PENNANT_EXODAR_VALIANT;
+            else
+                return SPELL_PENNANT_EXODAR_ASPIRANT;
+        }
+        case NPC_IRONFORGE_RAM:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_IRONFORGE))
+                return SPELL_PENNANT_IRONFORGE_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_IRONFORGE) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_IRONFORGE))
+                return SPELL_PENNANT_IRONFORGE_VALIANT;
+            else
+                return SPELL_PENNANT_IRONFORGE_ASPIRANT;
+        }
+        case NPC_FORSAKEN_WARHORSE:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_UNDERCITY))
+                return SPELL_PENNANT_UNDERCITY_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_UNDERCITY) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_UNDERCITY))
+                return SPELL_PENNANT_UNDERCITY_VALIANT;
+            else
+                return SPELL_PENNANT_UNDERCITY_ASPIRANT;
+        }
+        case NPC_ORGRIMMAR_WOLF:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_ORGRIMMAR))
+                return SPELL_PENNANT_ORGRIMMAR_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_ORGRIMMAR) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_ORGRIMMAR))
+                return SPELL_PENNANT_ORGRIMMAR_VALIANT;
+            else
+                return SPELL_PENNANT_ORGRIMMAR_ASPIRANT;
+        }
+        case NPC_THUNDER_BLUFF_KODO:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_THUNDER_BLUFF))
+                return SPELL_PENNANT_THUNDER_BLUFF_CHAMPION;
+            else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_THUNDER_BLUFF) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_THUNDER_BLUFF))
+                return SPELL_PENNANT_THUNDER_BLUFF_VALIANT;
+            else
+                return SPELL_PENNANT_THUNDER_BLUFF_ASPIRANT;
+        }
+        case NPC_ARGENT_WARHORSE:
+        {
+            if (player->HasAchieved(ACHIEVEMENT_CHAMPION_ALLIANCE) || player->HasAchieved(ACHIEVEMENT_CHAMPION_HORDE))
+                return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_CHAMPION : SPELL_PENNANT_ARGENT_CRUSADE_CHAMPION;
+            else if (player->HasAchieved(ACHIEVEMENT_ARGENT_VALOR))
+                return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_VALIANT : SPELL_PENNANT_ARGENT_CRUSADE_VALIANT;
+            else
+                return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_ASPIRANT : SPELL_PENNANT_ARGENT_CRUSADE_ASPIRANT;
+        }
+        default:
+            return 0;
         }
     }
 
@@ -3609,9 +3587,9 @@ class spell_gen_tournament_pennant : public AuraScript
         return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;
     }
 
-    void HandleApplyEffect(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleApplyEffect(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Unit* caster = GetCaster())
+        if (Unit *caster = GetCaster())
             if (!caster->GetVehicleBase())
                 caster->RemoveAurasDueToSpell(GetId());
     }
@@ -3630,9 +3608,9 @@ class spell_gen_ds_flush_knockback : public SpellScript
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
         // Here the target is the water spout and determines the position where the player is knocked from
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
         {
-            if (Player* player = GetCaster()->ToPlayer())
+            if (Player *player = GetCaster()->ToPlayer())
             {
                 float horizontalSpeed = 20.0f + (40.0f - GetCaster()->GetDistance(target));
                 float verticalSpeed = 8.0f;
@@ -3669,8 +3647,9 @@ class spell_gen_count_pct_from_max_hp : public SpellScript
 {
     PrepareSpellScript(spell_gen_count_pct_from_max_hp)
 
-public:
-    spell_gen_count_pct_from_max_hp(int32 damagePct = 0) : SpellScript(), _damagePct(damagePct) { }
+        public : spell_gen_count_pct_from_max_hp(int32 damagePct = 0) : SpellScript(), _damagePct(damagePct)
+    {
+    }
 
     void RecalculateDamage()
     {
@@ -3720,7 +3699,7 @@ class spell_gen_despawn_self : public SpellScript
 
 enum GenericBandage
 {
-    SPELL_RECENTLY_BANDAGED     = 11196
+    SPELL_RECENTLY_BANDAGED = 11196
 };
 
 // 23567, 23568, 23569, 23696, 24412, 24413, 24414 - First Aid
@@ -3728,14 +3707,14 @@ class spell_gen_bandage : public SpellScript
 {
     PrepareSpellScript(spell_gen_bandage);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_RECENTLY_BANDAGED });
+        return ValidateSpellInfo({SPELL_RECENTLY_BANDAGED});
     }
 
     SpellCastResult CheckCast()
     {
-        if (Unit* target = GetExplTargetUnit())
+        if (Unit *target = GetExplTargetUnit())
         {
             if (target->HasAura(SPELL_RECENTLY_BANDAGED))
                 return SPELL_FAILED_TARGET_AURASTATE;
@@ -3745,7 +3724,7 @@ class spell_gen_bandage : public SpellScript
 
     void HandleScript()
     {
-        if (Unit* target = GetHitUnit())
+        if (Unit *target = GetHitUnit())
             GetCaster()->CastSpell(target, SPELL_RECENTLY_BANDAGED, true);
     }
 
@@ -3766,19 +3745,19 @@ class spell_gen_paralytic_poison : public AuraScript
 {
     PrepareAuraScript(spell_gen_paralytic_poison);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return (sSpellMgr->GetSpellInfo(SPELL_PARALYSIS));
     }
 
-    void HandleStun(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    void HandleStun(AuraEffect const *aurEff, AuraEffectHandleModes /*mode*/)
     {
         if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
         {
             return;
         }
 
-        GetTarget()->CastSpell((Unit*)nullptr, SPELL_PARALYSIS, true, nullptr, aurEff);
+        GetTarget()->CastSpell((Unit *)nullptr, SPELL_PARALYSIS, true, nullptr, aurEff);
     }
 
     void Register() override
@@ -3791,15 +3770,15 @@ class spell_gen_prevent_emotes : public AuraScript
 {
     PrepareAuraScript(spell_gen_prevent_emotes);
 
-    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
     }
 
-    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
     }
 
@@ -3820,17 +3799,17 @@ class spell_gen_blade_warding : public AuraScript
 {
     PrepareAuraScript(spell_gen_blade_warding);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_GEN_BLADE_WARDING_TRIGGERED });
+        return ValidateSpellInfo({SPELL_GEN_BLADE_WARDING_TRIGGERED});
     }
 
-    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    void HandleProc(AuraEffect const *aurEff, ProcEventInfo &eventInfo)
     {
         PreventDefaultAction();
 
-        Unit* caster = eventInfo.GetActionTarget();
-        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(SPELL_GEN_BLADE_WARDING_TRIGGERED);
+        Unit *caster = eventInfo.GetActionTarget();
+        SpellInfo const *spellInfo = sSpellMgr->GetSpellInfo(SPELL_GEN_BLADE_WARDING_TRIGGERED);
         if (!caster)
         {
             return;
@@ -3853,11 +3832,11 @@ class spell_gen_blade_warding : public AuraScript
 
 enum GenericLifebloom
 {
-    SPELL_HEXLORD_MALACRASS_LIFEBLOOM_FINAL_HEAL        = 43422,
-    SPELL_TUR_RAGEPAW_LIFEBLOOM_FINAL_HEAL              = 52552,
-    SPELL_CENARION_SCOUT_LIFEBLOOM_FINAL_HEAL           = 53692,
-    SPELL_TWISTED_VISAGE_LIFEBLOOM_FINAL_HEAL           = 57763,
-    SPELL_FACTION_CHAMPIONS_DRU_LIFEBLOOM_FINAL_HEAL    = 66094
+    SPELL_HEXLORD_MALACRASS_LIFEBLOOM_FINAL_HEAL = 43422,
+    SPELL_TUR_RAGEPAW_LIFEBLOOM_FINAL_HEAL = 52552,
+    SPELL_CENARION_SCOUT_LIFEBLOOM_FINAL_HEAL = 53692,
+    SPELL_TWISTED_VISAGE_LIFEBLOOM_FINAL_HEAL = 57763,
+    SPELL_FACTION_CHAMPIONS_DRU_LIFEBLOOM_FINAL_HEAL = 66094
 };
 
 /* 43421 - Lifebloom (spell_hexlord_lifebloom)
@@ -3870,14 +3849,14 @@ class spell_gen_lifebloom : public AuraScript
     PrepareAuraScript(spell_gen_lifebloom);
 
 public:
-    spell_gen_lifebloom(uint32 spellId) : AuraScript(), _spellId(spellId) { }
+    spell_gen_lifebloom(uint32 spellId) : AuraScript(), _spellId(spellId) {}
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ _spellId });
+        return ValidateSpellInfo({_spellId});
     }
 
-    void AfterRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    void AfterRemove(AuraEffect const *aurEff, AuraEffectHandleModes /*mode*/)
     {
         // Final heal only on duration end
         if (GetTargetApplication() && GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE && GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_ENEMY_SPELL)
@@ -3900,7 +3879,7 @@ private:
 
 enum SummonElemental
 {
-    SPELL_SUMMON_FIRE_ELEMENTAL  = 8985,
+    SPELL_SUMMON_FIRE_ELEMENTAL = 8985,
     SPELL_SUMMON_EARTH_ELEMENTAL = 19704
 };
 
@@ -3911,24 +3890,24 @@ class spell_gen_summon_elemental : public AuraScript
     PrepareAuraScript(spell_gen_summon_elemental);
 
 public:
-    spell_gen_summon_elemental(uint32 spellId) : AuraScript(), _spellId(spellId) { }
+    spell_gen_summon_elemental(uint32 spellId) : AuraScript(), _spellId(spellId) {}
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ _spellId });
+        return ValidateSpellInfo({_spellId});
     }
 
-    void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void AfterApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (GetCaster())
-            if (Unit* owner = GetCaster()->GetOwner())
+            if (Unit *owner = GetCaster()->GetOwner())
                 owner->CastSpell(owner, _spellId, true);
     }
 
-    void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void AfterRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (GetCaster())
-            if (Unit* owner = GetCaster()->GetOwner())
+            if (Unit *owner = GetCaster()->GetOwner())
                 if (owner->GetTypeId() == TYPEID_PLAYER) /// @todo this check is maybe wrong
                     owner->ToPlayer()->RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT, true);
     }
@@ -3945,59 +3924,59 @@ private:
 
 enum Mounts
 {
-    SPELL_COLD_WEATHER_FLYING           = 54197,
+    SPELL_COLD_WEATHER_FLYING = 54197,
 
     // Magic Broom
-    SPELL_MAGIC_BROOM_60                = 42680,
-    SPELL_MAGIC_BROOM_100               = 42683,
-    SPELL_MAGIC_BROOM_150               = 42667,
-    SPELL_MAGIC_BROOM_280               = 42668,
+    SPELL_MAGIC_BROOM_60 = 42680,
+    SPELL_MAGIC_BROOM_100 = 42683,
+    SPELL_MAGIC_BROOM_150 = 42667,
+    SPELL_MAGIC_BROOM_280 = 42668,
 
     // Headless Horseman's Mount
-    SPELL_HEADLESS_HORSEMAN_MOUNT_60    = 51621,
-    SPELL_HEADLESS_HORSEMAN_MOUNT_100   = 48024,
-    SPELL_HEADLESS_HORSEMAN_MOUNT_150   = 51617,
-    SPELL_HEADLESS_HORSEMAN_MOUNT_280   = 48023,
+    SPELL_HEADLESS_HORSEMAN_MOUNT_60 = 51621,
+    SPELL_HEADLESS_HORSEMAN_MOUNT_100 = 48024,
+    SPELL_HEADLESS_HORSEMAN_MOUNT_150 = 51617,
+    SPELL_HEADLESS_HORSEMAN_MOUNT_280 = 48023,
 
     // Winged Steed of the Ebon Blade
-    SPELL_WINGED_STEED_150              = 54726,
-    SPELL_WINGED_STEED_280              = 54727,
+    SPELL_WINGED_STEED_150 = 54726,
+    SPELL_WINGED_STEED_280 = 54727,
 
     // Big Love Rocket
-    SPELL_BIG_LOVE_ROCKET_0             = 71343,
-    SPELL_BIG_LOVE_ROCKET_60            = 71344,
-    SPELL_BIG_LOVE_ROCKET_100           = 71345,
-    SPELL_BIG_LOVE_ROCKET_150           = 71346,
-    SPELL_BIG_LOVE_ROCKET_310           = 71347,
+    SPELL_BIG_LOVE_ROCKET_0 = 71343,
+    SPELL_BIG_LOVE_ROCKET_60 = 71344,
+    SPELL_BIG_LOVE_ROCKET_100 = 71345,
+    SPELL_BIG_LOVE_ROCKET_150 = 71346,
+    SPELL_BIG_LOVE_ROCKET_310 = 71347,
 
     // Invincible
-    SPELL_INVINCIBLE_60                 = 72281,
-    SPELL_INVINCIBLE_100                = 72282,
-    SPELL_INVINCIBLE_150                = 72283,
-    SPELL_INVINCIBLE_310                = 72284,
+    SPELL_INVINCIBLE_60 = 72281,
+    SPELL_INVINCIBLE_100 = 72282,
+    SPELL_INVINCIBLE_150 = 72283,
+    SPELL_INVINCIBLE_310 = 72284,
 
     // Blazing Hippogryph
-    SPELL_BLAZING_HIPPOGRYPH_150        = 74854,
-    SPELL_BLAZING_HIPPOGRYPH_280        = 74855,
+    SPELL_BLAZING_HIPPOGRYPH_150 = 74854,
+    SPELL_BLAZING_HIPPOGRYPH_280 = 74855,
 
     // Celestial Steed
-    SPELL_CELESTIAL_STEED_60            = 75619,
-    SPELL_CELESTIAL_STEED_100           = 75620,
-    SPELL_CELESTIAL_STEED_150           = 75617,
-    SPELL_CELESTIAL_STEED_280           = 75618,
-    SPELL_CELESTIAL_STEED_310           = 76153,
+    SPELL_CELESTIAL_STEED_60 = 75619,
+    SPELL_CELESTIAL_STEED_100 = 75620,
+    SPELL_CELESTIAL_STEED_150 = 75617,
+    SPELL_CELESTIAL_STEED_280 = 75618,
+    SPELL_CELESTIAL_STEED_310 = 76153,
 
     // X-53 Touring Rocket
-    SPELL_X53_TOURING_ROCKET_150        = 75957,
-    SPELL_X53_TOURING_ROCKET_280        = 75972,
-    SPELL_X53_TOURING_ROCKET_310        = 76154,
+    SPELL_X53_TOURING_ROCKET_150 = 75957,
+    SPELL_X53_TOURING_ROCKET_280 = 75972,
+    SPELL_X53_TOURING_ROCKET_310 = 76154,
 
     // Big Blizzard Bear
-    SPELL_BIG_BLIZZARD_BEAR_60          = 58997,
-    SPELL_BIG_BLIZZARD_BEAR_100         = 58999,
-    SPELL_BIG_BLIZZARD_BEAR_150         = 58999,
-    SPELL_BIG_BLIZZARD_BEAR_280         = 58999,
-    SPELL_BIG_BLIZZARD_BEAR_310         = 58999
+    SPELL_BIG_BLIZZARD_BEAR_60 = 58997,
+    SPELL_BIG_BLIZZARD_BEAR_100 = 58999,
+    SPELL_BIG_BLIZZARD_BEAR_150 = 58999,
+    SPELL_BIG_BLIZZARD_BEAR_280 = 58999,
+    SPELL_BIG_BLIZZARD_BEAR_310 = 58999
 };
 
 /* 58983 - Big Blizzard Bear (spell_big_blizzard_bear)
@@ -4015,9 +3994,9 @@ class spell_gen_mount : public SpellScript
 
 public:
     spell_gen_mount(uint32 mount0, uint32 mount60, uint32 mount100, uint32 mount150, uint32 mount280, uint32 mount310) : SpellScript(),
-        _mount0(mount0), _mount60(mount60), _mount100(mount100), _mount150(mount150), _mount280(mount280), _mount310(mount310) { }
+                                                                                                                         _mount0(mount0), _mount60(mount60), _mount100(mount100), _mount150(mount150), _mount280(mount280), _mount310(mount310) {}
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         if (_mount0 && !sSpellMgr->GetSpellInfo(_mount0))
             return false;
@@ -4038,7 +4017,7 @@ public:
     {
         PreventHitDefaultEffect(effIndex);
 
-        if (Player* target = GetHitPlayer())
+        if (Player *target = GetHitPlayer())
         {
             uint32 petNumber = target->GetTemporaryUnsummonedPetNumber();
             target->SetTemporaryUnsummonedPetNumber(0);
@@ -4052,43 +4031,43 @@ public:
             if (map == 530 || (map == 571 && target->HasSpell(SPELL_COLD_WEATHER_FLYING)))
                 canFly = true;
 
-            AreaTableEntry const* area = sAreaTableStore.LookupEntry(target->GetAreaId());
+            AreaTableEntry const *area = sAreaTableStore.LookupEntry(target->GetAreaId());
             // Xinef: add battlefield check
-            Battlefield* Bf = sBattlefieldMgr->GetBattlefieldToZoneId(target->GetZoneId());
+            Battlefield *Bf = sBattlefieldMgr->GetBattlefieldToZoneId(target->GetZoneId());
             if ((area && canFly && (area->flags & AREA_FLAG_NO_FLY_ZONE)) || (Bf && !Bf->CanFlyIn()))
                 canFly = false;
 
             uint32 mount = 0;
             switch (target->GetBaseSkillValue(SKILL_RIDING))
             {
-                case 0:
-                    mount = _mount0;
-                    break;
-                case 75:
-                    mount = _mount60;
-                    break;
-                case 150:
+            case 0:
+                mount = _mount0;
+                break;
+            case 75:
+                mount = _mount60;
+                break;
+            case 150:
+                mount = _mount100;
+                break;
+            case 225:
+                if (canFly)
+                    mount = _mount150;
+                else
                     mount = _mount100;
-                    break;
-                case 225:
-                    if (canFly)
-                        mount = _mount150;
+                break;
+            case 300:
+                if (canFly)
+                {
+                    if (_mount310 && target->Has310Flyer(false))
+                        mount = _mount310;
                     else
-                        mount = _mount100;
-                    break;
-                case 300:
-                    if (canFly)
-                    {
-                        if (_mount310 && target->Has310Flyer(false))
-                            mount = _mount310;
-                        else
-                            mount = _mount280;
-                    }
-                    else
-                        mount = _mount100;
-                    break;
-                default:
-                    break;
+                        mount = _mount280;
+                }
+                else
+                    mount = _mount100;
+                break;
+            default:
+                break;
             }
 
             if (mount)
@@ -4118,11 +4097,11 @@ private:
 
 enum FoamSword
 {
-    ITEM_FOAM_SWORD_GREEN   = 45061,
-    ITEM_FOAM_SWORD_PINK    = 45176,
-    ITEM_FOAM_SWORD_BLUE    = 45177,
-    ITEM_FOAM_SWORD_RED     = 45178,
-    ITEM_FOAM_SWORD_YELLOW  = 45179
+    ITEM_FOAM_SWORD_GREEN = 45061,
+    ITEM_FOAM_SWORD_PINK = 45176,
+    ITEM_FOAM_SWORD_BLUE = 45177,
+    ITEM_FOAM_SWORD_RED = 45178,
+    ITEM_FOAM_SWORD_YELLOW = 45179
 };
 
 // 64142 - Upper Deck - Create Foam Sword
@@ -4132,9 +4111,9 @@ class spell_gen_upper_deck_create_foam_sword : public SpellScript
 
     void HandleScript(SpellEffIndex effIndex)
     {
-        if (Player* player = GetHitPlayer())
+        if (Player *player = GetHitPlayer())
         {
-            static uint32 const itemId[5] = { ITEM_FOAM_SWORD_GREEN, ITEM_FOAM_SWORD_PINK, ITEM_FOAM_SWORD_BLUE, ITEM_FOAM_SWORD_RED, ITEM_FOAM_SWORD_YELLOW };
+            static uint32 const itemId[5] = {ITEM_FOAM_SWORD_GREEN, ITEM_FOAM_SWORD_PINK, ITEM_FOAM_SWORD_BLUE, ITEM_FOAM_SWORD_RED, ITEM_FOAM_SWORD_YELLOW};
             // player can only have one of these items
             for (uint8 i = 0; i < 5; ++i)
             {
@@ -4154,9 +4133,9 @@ class spell_gen_upper_deck_create_foam_sword : public SpellScript
 
 enum Bonked
 {
-    SPELL_BONKED            = 62991,
+    SPELL_BONKED = 62991,
     SPELL_FOAM_SWORD_DEFEAT = 62994,
-    SPELL_ON_GUARD          = 62972
+    SPELL_ON_GUARD = 62972
 };
 
 // 62991 - Bonked!
@@ -4164,16 +4143,16 @@ class spell_gen_bonked : public SpellScript
 {
     PrepareSpellScript(spell_gen_bonked);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_BONKED, SPELL_FOAM_SWORD_DEFEAT, SPELL_ON_GUARD });
+        return ValidateSpellInfo({SPELL_BONKED, SPELL_FOAM_SWORD_DEFEAT, SPELL_ON_GUARD});
     }
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        if (Player* target = GetHitPlayer())
+        if (Player *target = GetHitPlayer())
         {
-            Aura const* aura = GetHitAura();
+            Aura const *aura = GetHitAura();
             if (!(aura && aura->GetStackAmount() == 3))
             {
                 return;
@@ -4182,9 +4161,9 @@ class spell_gen_bonked : public SpellScript
             target->CastSpell(target, SPELL_FOAM_SWORD_DEFEAT, true);
             target->RemoveAurasDueToSpell(SPELL_BONKED);
 
-            if (Aura const* onGuardAura = target->GetAura(SPELL_ON_GUARD))
+            if (Aura const *onGuardAura = target->GetAura(SPELL_ON_GUARD))
             {
-                if (Item* item = target->GetItemByGuid(onGuardAura->GetCastItemGUID()))
+                if (Item *item = target->GetItemByGuid(onGuardAura->GetCastItemGUID()))
                 {
                     target->DestroyItemCount(item->GetEntry(), 1, true);
                 }
@@ -4203,7 +4182,7 @@ class spell_gen_gift_of_naaru : public AuraScript
 {
     PrepareAuraScript(spell_gen_gift_of_naaru);
 
-    void CalculateAmount(AuraEffect const* aurEff, int32& amount, bool& /*canBeRecalculated*/)
+    void CalculateAmount(AuraEffect const *aurEff, int32 &amount, bool & /*canBeRecalculated*/)
     {
         if (!GetCaster())
             return;
@@ -4211,23 +4190,23 @@ class spell_gen_gift_of_naaru : public AuraScript
         float heal = 0.0f;
         switch (GetSpellInfo()->SpellFamilyName)
         {
-            case SPELLFAMILY_MAGE:
-            case SPELLFAMILY_WARLOCK:
-            case SPELLFAMILY_PRIEST:
-                heal = 1.885f * float(GetCaster()->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask()));
-                break;
-            case SPELLFAMILY_PALADIN:
-            case SPELLFAMILY_SHAMAN:
-                heal = std::max(1.885f * float(GetCaster()->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask())), 1.1f * float(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK)));
-                break;
-            case SPELLFAMILY_WARRIOR:
-            case SPELLFAMILY_HUNTER:
-            case SPELLFAMILY_DEATHKNIGHT:
-                heal = 1.1f * float(std::max(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK)));
-                break;
-            case SPELLFAMILY_GENERIC:
-            default:
-                break;
+        case SPELLFAMILY_MAGE:
+        case SPELLFAMILY_WARLOCK:
+        case SPELLFAMILY_PRIEST:
+            heal = 1.885f * float(GetCaster()->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask()));
+            break;
+        case SPELLFAMILY_PALADIN:
+        case SPELLFAMILY_SHAMAN:
+            heal = std::max(1.885f * float(GetCaster()->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask())), 1.1f * float(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK)));
+            break;
+        case SPELLFAMILY_WARRIOR:
+        case SPELLFAMILY_HUNTER:
+        case SPELLFAMILY_DEATHKNIGHT:
+            heal = 1.1f * float(std::max(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK)));
+            break;
+        case SPELLFAMILY_GENERIC:
+        default:
+            break;
         }
 
         int32 healTick = floor(heal / aurEff->GetTotalTicks());
@@ -4242,8 +4221,8 @@ class spell_gen_gift_of_naaru : public AuraScript
 
 enum Replenishment
 {
-    SPELL_REPLENISHMENT             = 57669,
-    SPELL_INFINITE_REPLENISHMENT    = 61782
+    SPELL_REPLENISHMENT = 57669,
+    SPELL_INFINITE_REPLENISHMENT = 61782
 };
 
 /* 57669 - Replenishment
@@ -4252,15 +4231,15 @@ class spell_gen_replenishment : public SpellScript
 {
     PrepareSpellScript(spell_gen_replenishment);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_REPLENISHMENT, SPELL_INFINITE_REPLENISHMENT });
+        return ValidateSpellInfo({SPELL_REPLENISHMENT, SPELL_INFINITE_REPLENISHMENT});
     }
 
-    void RemoveInvalidTargets(std::list<WorldObject*>& targets)
+    void RemoveInvalidTargets(std::list<WorldObject *> &targets)
     {
         // In arenas Replenishment may only affect the caster
-        if (Player* caster = GetCaster()->ToPlayer())
+        if (Player *caster = GetCaster()->ToPlayer())
         {
             if (caster->InArena())
             {
@@ -4296,18 +4275,18 @@ class spell_gen_replenishment_aura : public AuraScript
         return GetUnitOwner()->GetPower(POWER_MANA);
     }
 
-    void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
+    void CalculateAmount(AuraEffect const * /*aurEff*/, int32 &amount, bool & /*canBeRecalculated*/)
     {
         switch (GetSpellInfo()->Id)
         {
-            case SPELL_REPLENISHMENT:
-                amount = GetUnitOwner()->GetMaxPower(POWER_MANA) * 0.002f;
-                break;
-            case SPELL_INFINITE_REPLENISHMENT:
-                amount = GetUnitOwner()->GetMaxPower(POWER_MANA) * 0.0025f;
-                break;
-            default:
-                break;
+        case SPELL_REPLENISHMENT:
+            amount = GetUnitOwner()->GetMaxPower(POWER_MANA) * 0.002f;
+            break;
+        case SPELL_INFINITE_REPLENISHMENT:
+            amount = GetUnitOwner()->GetMaxPower(POWER_MANA) * 0.0025f;
+            break;
+        default:
+            break;
         }
     }
 
@@ -4319,19 +4298,19 @@ class spell_gen_replenishment_aura : public AuraScript
 
 enum SpectatorCheerTrigger
 {
-    EMOTE_ONE_SHOT_CHEER        = 4,
-    EMOTE_ONE_SHOT_EXCLAMATION  = 5,
-    EMOTE_ONE_SHOT_APPLAUD      = 21
+    EMOTE_ONE_SHOT_CHEER = 4,
+    EMOTE_ONE_SHOT_EXCLAMATION = 5,
+    EMOTE_ONE_SHOT_APPLAUD = 21
 };
 
-uint8 const EmoteArray[3] = { EMOTE_ONE_SHOT_CHEER, EMOTE_ONE_SHOT_EXCLAMATION, EMOTE_ONE_SHOT_APPLAUD };
+uint8 const EmoteArray[3] = {EMOTE_ONE_SHOT_CHEER, EMOTE_ONE_SHOT_EXCLAMATION, EMOTE_ONE_SHOT_APPLAUD};
 
 // 55945 - Spectator - Cheer Trigger
 class spell_gen_spectator_cheer_trigger : public SpellScript
 {
     PrepareSpellScript(spell_gen_spectator_cheer_trigger)
 
-    void HandleDummy(SpellEffIndex /*effIndex*/)
+        void HandleDummy(SpellEffIndex /*effIndex*/)
     {
         GetCaster()->HandleEmoteCommand(EmoteArray[urand(0, 2)]);
     }
@@ -4344,8 +4323,8 @@ class spell_gen_spectator_cheer_trigger : public SpellScript
 
 enum VendorBarkTrigger
 {
-    NPC_AMPHITHEATER_VENDOR     = 30098,
-    SAY_AMPHITHEATER_VENDOR     = 0
+    NPC_AMPHITHEATER_VENDOR = 30098,
+    SAY_AMPHITHEATER_VENDOR = 0
 };
 
 // 56096 - Vendor - Bark Trigger
@@ -4353,9 +4332,9 @@ class spell_gen_vendor_bark_trigger : public SpellScript
 {
     PrepareSpellScript(spell_gen_vendor_bark_trigger)
 
-    void HandleDummy(SpellEffIndex /* effIndex */)
+        void HandleDummy(SpellEffIndex /* effIndex */)
     {
-        if (Creature* vendor = GetCaster()->ToCreature())
+        if (Creature *vendor = GetCaster()->ToCreature())
         {
             if (vendor->GetEntry() == NPC_AMPHITHEATER_VENDOR && vendor->AI())
             {
@@ -4372,7 +4351,7 @@ class spell_gen_vendor_bark_trigger : public SpellScript
 
 enum WhisperGulchYoggSaronWhisper
 {
-    SPELL_YOGG_SARON_WHISPER_DUMMY  = 29072
+    SPELL_YOGG_SARON_WHISPER_DUMMY = 29072
 };
 
 // 27769 - Whisper Gulch: Yogg-Saron Whisper
@@ -4380,15 +4359,15 @@ class spell_gen_whisper_gulch_yogg_saron_whisper : public AuraScript
 {
     PrepareAuraScript(spell_gen_whisper_gulch_yogg_saron_whisper);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_YOGG_SARON_WHISPER_DUMMY });
+        return ValidateSpellInfo({SPELL_YOGG_SARON_WHISPER_DUMMY});
     }
 
-    void HandleEffectPeriodic(AuraEffect const* /*aurEff*/)
+    void HandleEffectPeriodic(AuraEffect const * /*aurEff*/)
     {
         PreventDefaultAction();
-        GetTarget()->CastSpell((Unit*)nullptr, SPELL_YOGG_SARON_WHISPER_DUMMY, true);
+        GetTarget()->CastSpell((Unit *)nullptr, SPELL_YOGG_SARON_WHISPER_DUMMY, true);
     }
 
     void Register() override
@@ -4409,8 +4388,8 @@ class spell_gen_eject_all_passengers : public SpellScript
             return;
         }
 
-        Unit* u = nullptr;
-        if (Vehicle* vehicle = GetHitUnit()->GetVehicleKit())
+        Unit *u = nullptr;
+        if (Vehicle *vehicle = GetHitUnit()->GetVehicleKit())
         {
             u = vehicle->GetPassenger(0);
             vehicle->RemoveAllPassengers();
@@ -4440,7 +4419,7 @@ class spell_gen_eject_passenger : public SpellScript
 {
     PrepareSpellScript(spell_gen_eject_passenger);
 
-    bool Validate(SpellInfo const* spellInfo) override
+    bool Validate(SpellInfo const *spellInfo) override
     {
         if (spellInfo->Effects[EFFECT_0].CalcValue() < 1)
             return false;
@@ -4449,9 +4428,9 @@ class spell_gen_eject_passenger : public SpellScript
 
     void EjectPassenger(SpellEffIndex /*effIndex*/)
     {
-        if (Vehicle* vehicle = GetHitUnit()->GetVehicleKit())
+        if (Vehicle *vehicle = GetHitUnit()->GetVehicleKit())
         {
-            if (Unit* passenger = vehicle->GetPassenger(GetEffectValue() - 1))
+            if (Unit *passenger = vehicle->GetPassenger(GetEffectValue() - 1))
                 passenger->ExitVehicle();
         }
     }
@@ -4483,8 +4462,8 @@ class spell_gen_charmed_unit_spell_cooldown : public SpellScript
 
     void HandleCast()
     {
-        Unit* caster = GetCaster();
-        if (Player* owner = caster->GetCharmerOrOwnerPlayerOrPlayerItself())
+        Unit *caster = GetCaster();
+        if (Player *owner = caster->GetCharmerOrOwnerPlayerOrPlayerItself())
         {
             WorldPacket data;
             caster->BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_NONE, GetSpellInfo()->Id, GetSpellInfo()->RecoveryTime);
@@ -4503,15 +4482,15 @@ class spell_contagion_of_rot : public AuraScript
 {
     PrepareAuraScript(spell_contagion_of_rot);
 
-    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         // 7103 => triggered spell that spreads to others
-        while (Aura* aur = GetUnitOwner()->GetOwnedAura(7103, ObjectGuid::Empty, ObjectGuid::Empty, 0, GetAura()))
+        while (Aura *aur = GetUnitOwner()->GetOwnedAura(7103, ObjectGuid::Empty, ObjectGuid::Empty, 0, GetAura()))
         {
             GetUnitOwner()->RemoveOwnedAura(aur);
         }
         // 7102 => contagion of rot casted by mobs
-        while (Aura* aur = GetUnitOwner()->GetOwnedAura(7102, ObjectGuid::Empty, ObjectGuid::Empty, 0, GetAura()))
+        while (Aura *aur = GetUnitOwner()->GetOwnedAura(7102, ObjectGuid::Empty, ObjectGuid::Empty, 0, GetAura()))
         {
             GetUnitOwner()->RemoveOwnedAura(aur);
         }
@@ -4528,12 +4507,12 @@ class spell_silithyst : public AuraScript
 {
     PrepareAuraScript(spell_silithyst);
 
-    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         GetCaster()->SetPvP(true);
     }
 
-    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (GetCaster()->IsMounted())
         {
@@ -4558,12 +4537,12 @@ class spell_gen_holiday_buff_food : public AuraScript
 {
     PrepareAuraScript(spell_gen_holiday_buff_food);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_WELL_FED });
+        return ValidateSpellInfo({SPELL_WELL_FED});
     }
 
-    void TriggerFoodBuff(AuraEffect* aurEff)
+    void TriggerFoodBuff(AuraEffect *aurEff)
     {
         if (aurEff->GetTickNumber() == 10 && GetUnitOwner())
         {
@@ -4583,7 +4562,7 @@ class spell_gen_arcane_charge : public SpellScript
 
     SpellCastResult CheckRequirement()
     {
-        if (Unit* target = GetExplTargetUnit())
+        if (Unit *target = GetExplTargetUnit())
         {
             if (target->GetCreatureType() != CREATURE_TYPE_DEMON && target->GetCreatureType() != CREATURE_TYPE_UNDEAD)
             {
@@ -4619,12 +4598,12 @@ class spell_gen_remove_impairing_auras : public SpellScript
 
 enum AQSpells
 {
-    SPELL_CONSUME_LEECH_AQ20      = 25373,
+    SPELL_CONSUME_LEECH_AQ20 = 25373,
     SPELL_CONSUME_LEECH_HEAL_AQ20 = 25378,
-    SPELL_CONSUME_SPIT_OUT        = 25383,
+    SPELL_CONSUME_SPIT_OUT = 25383,
 
-    SPELL_HIVEZARA_CATALYST       = 25187,
-    SPELL_VEKNISS_CATALYST        = 26078
+    SPELL_HIVEZARA_CATALYST = 25187,
+    SPELL_VEKNISS_CATALYST = 26078
 };
 
 class spell_gen_consume : public AuraScript
@@ -4632,16 +4611,16 @@ class spell_gen_consume : public AuraScript
     PrepareAuraScript(spell_gen_consume);
 
 public:
-    spell_gen_consume(uint32 spellId1, uint32 spellId2) : AuraScript(), _spellId1(spellId1), _spellId2(spellId2) { }
+    spell_gen_consume(uint32 spellId1, uint32 spellId2) : AuraScript(), _spellId1(spellId1), _spellId2(spellId2) {}
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ _spellId1, _spellId2 });
+        return ValidateSpellInfo({_spellId1, _spellId2});
     }
 
-    void HandleProc(AuraEffect* /*aurEff*/)
+    void HandleProc(AuraEffect * /*aurEff*/)
     {
-        if (Unit* caster = GetCaster())
+        if (Unit *caster = GetCaster())
         {
             if (!caster->IsAlive())
             {
@@ -4653,11 +4632,11 @@ public:
         }
     }
 
-    void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void AfterRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (GetTargetApplication())
         {
-            if (Unit* caster = GetCaster())
+            if (Unit *caster = GetCaster())
             {
                 if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_DEATH)
                 {
@@ -4687,18 +4666,18 @@ class spell_gen_apply_aura_after_expiration : public AuraScript
     PrepareAuraScript(spell_gen_apply_aura_after_expiration);
 
 public:
-    spell_gen_apply_aura_after_expiration(uint32 spellId, uint32 effect, uint32 aura) : AuraScript(), _spellId(spellId), _effect(effect), _aura(aura) { }
+    spell_gen_apply_aura_after_expiration(uint32 spellId, uint32 effect, uint32 aura) : AuraScript(), _spellId(spellId), _effect(effect), _aura(aura) {}
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ _spellId });
+        return ValidateSpellInfo({_spellId});
     }
 
-    void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void AfterRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (GetTargetApplication() && GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
         {
-            if (Unit* caster = GetCaster())
+            if (Unit *caster = GetCaster())
             {
                 caster->CastSpell(GetTarget(), _spellId, true);
             }
@@ -4741,9 +4720,9 @@ class spell_gen_basic_campfire : public SpellScript
 {
     PrepareSpellScript(spell_gen_basic_campfire);
 
-    void ModDest(SpellDestination& dest)
+    void ModDest(SpellDestination &dest)
     {
-        if (Unit* caster = GetCaster())
+        if (Unit *caster = GetCaster())
         {
             if (caster->GetMap()->GetGameObjectFloor(caster->GetPhaseMask(), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ()) == -G3D::finf())
             {
@@ -4755,7 +4734,7 @@ class spell_gen_basic_campfire : public SpellScript
 
     void ModifyCookingSkill(SpellEffIndex /*effIndex*/)
     {
-        if (Player* player = GetCaster()->ToPlayer())
+        if (Player *player = GetCaster()->ToPlayer())
         {
             uint32 SkillValue = player->GetPureSkillValue(SKILL_COOKING);
             int32 chance = SkillGainChance(SkillValue, 75, 50, 25);
@@ -4775,35 +4754,33 @@ enum FreezingCircleSpells
 {
     SPELL_FREEZING_CIRCLE_PIT_OF_SARON_NORMAL = 69574,
     SPELL_FREEZING_CIRCLE_PIT_OF_SARON_HEROIC = 70276,
-    SPELL_FREEZING_CIRCLE                     = 34787,
+    SPELL_FREEZING_CIRCLE = 34787,
 };
 
 class spell_freezing_circle : public SpellScript
 {
     PrepareSpellScript(spell_freezing_circle);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_FREEZING_CIRCLE_PIT_OF_SARON_NORMAL,
-                SPELL_FREEZING_CIRCLE_PIT_OF_SARON_HEROIC,
-                SPELL_FREEZING_CIRCLE
-            });
+            {SPELL_FREEZING_CIRCLE_PIT_OF_SARON_NORMAL,
+             SPELL_FREEZING_CIRCLE_PIT_OF_SARON_HEROIC,
+             SPELL_FREEZING_CIRCLE});
     }
 
     void HandleDamage(SpellEffIndex /*effIndex*/)
     {
-        Unit* caster = GetCaster();
+        Unit *caster = GetCaster();
         uint32 spellId = 0;
-        Map* map = caster->GetMap();
+        Map *map = caster->GetMap();
 
         if (map->IsDungeon())
             spellId = map->IsHeroic() ? SPELL_FREEZING_CIRCLE_PIT_OF_SARON_HEROIC : SPELL_FREEZING_CIRCLE_PIT_OF_SARON_NORMAL;
         else
             spellId = SPELL_FREEZING_CIRCLE;
 
-        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId))
+        if (SpellInfo const *spellInfo = sSpellMgr->GetSpellInfo(spellId))
             SetHitDamage(spellInfo->Effects[EFFECT_0].CalcValue());
     }
 
@@ -4817,23 +4794,23 @@ class spell_freezing_circle : public SpellScript
 enum Threshalisk
 {
     SPELL_THRESHALISK_CHARGE = 35385,
-    SPELL_RUSHING_CHARGE     = 35382,
+    SPELL_RUSHING_CHARGE = 35382,
 };
 
 class spell_gen_threshalisk_charge : public SpellScript
 {
     PrepareSpellScript(spell_gen_threshalisk_charge);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_THRESHALISK_CHARGE });
+        return ValidateSpellInfo({SPELL_THRESHALISK_CHARGE});
     }
 
     void HandleDummy(SpellEffIndex /*effIndex*/)
     {
-        if (Creature* caster = GetCaster()->ToCreature())
+        if (Creature *caster = GetCaster()->ToCreature())
         {
-            if (Unit* victim = caster->GetVictim())
+            if (Unit *victim = caster->GetVictim())
             {
                 if (caster->GetReactState() != REACT_PASSIVE)
                 {
@@ -4852,7 +4829,7 @@ class spell_gen_threshalisk_charge : public SpellScript
 // 37589 - Shriveling Gaze
 enum ShrivelingGaze
 {
-    SPELL_SHRIVELING_GAZE         = 37589,
+    SPELL_SHRIVELING_GAZE = 37589,
     SPELL_SHRIVELING_GAZE_REMOVAL = 30023, // Serverside - Gushing Wound Removal
 };
 
@@ -4860,17 +4837,17 @@ class spell_gen_shriveling_gaze : public AuraScript
 {
     PrepareAuraScript(spell_gen_shriveling_gaze);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_SHRIVELING_GAZE });
+        return ValidateSpellInfo({SPELL_SHRIVELING_GAZE});
     }
 
-    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void HandleApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         ModStackAmount(20);
     }
 
-    void OnPeriodic(AuraEffect const* /*aurEff*/)
+    void OnPeriodic(AuraEffect const * /*aurEff*/)
     {
         PreventDefaultAction();
         ModStackAmount(-1);
@@ -4886,21 +4863,21 @@ class spell_gen_shriveling_gaze : public AuraScript
 // 38048 - Curse of Pain
 enum CurseOfPain
 {
-    SPELL_CURSE_OF_PAIN           = 38048,
+    SPELL_CURSE_OF_PAIN = 38048,
 };
 
 class spell_gen_curse_of_pain : public AuraScript
 {
     PrepareAuraScript(spell_gen_curse_of_pain);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_CURSE_OF_PAIN });
+        return ValidateSpellInfo({SPELL_CURSE_OF_PAIN});
     }
 
-    void OnPeriodic(AuraEffect const* /*aurEff*/)
+    void OnPeriodic(AuraEffect const * /*aurEff*/)
     {
-        Unit* target = GetTarget();
+        Unit *target = GetTarget();
         if (target && target->ToPlayer())
         {
             if (target->GetHealthPct() < 50.f)
