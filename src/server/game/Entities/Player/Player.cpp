@@ -3439,6 +3439,26 @@ void Player::removeSpell(uint32 spell_id, uint8 removeSpecMask, bool onlyTempora
         }
     }
 
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (spellInfo->Effects[i].Effect != SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)
+            continue;
+
+        for (uint8 j = PLAYER_SLOT_START; j < BANK_SLOT_ITEM_END; ++j)
+            if (Item *pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, j))
+            {
+                if (uint32 enchId = pItem->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT))
+                {
+
+                    if (enchId == (uint32)spellInfo->Effects[i].MiscValue)
+                    {
+                        player->ApplyEnchantment(pItem, TEMP_ENCHANTMENT_SLOT, false);
+                        pItem->ClearEnchantment(TEMP_ENCHANTMENT_SLOT);
+                    }
+                }
+            }
+    }
+
     // pussywizard: remove from spell book (can't be replaced by previous rank, because such spells can't be unlearnt)
     if (!onlyTemporary || ((!spellInfo->HasAttribute(SpellAttr0(SPELL_ATTR0_PASSIVE | SPELL_ATTR0_DO_NOT_DISPLAY)) || !spellInfo->HasAnyAura()) && !spellInfo->HasEffect(SPELL_EFFECT_LEARN_SPELL)))
     {
@@ -13537,7 +13557,7 @@ void Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore cons
     }
 }
 
-LootItem *Player::StoreLootItem(uint8 lootSlot, Loot *loot, InventoryResult &msg, bool suppressErrorMsg = false)
+LootItem *Player::StoreLootItem(uint8 lootSlot, Loot *loot, InventoryResult &msg, bool suppressErrorMsg)
 {
     QuestItem *qitem = nullptr;
     QuestItem *ffaitem = nullptr;
@@ -13548,7 +13568,7 @@ LootItem *Player::StoreLootItem(uint8 lootSlot, Loot *loot, InventoryResult &msg
     LootItem *item = loot->LootItemInSlot(lootSlot, this, &qitem, &ffaitem, &conditem);
     if (!item || item->is_looted)
     {
-        if (!sScriptMgr->CanSendErrorAlreadyLooted(this) || !suppressErrorMsg)
+        if (!sScriptMgr->CanSendErrorAlreadyLooted(this) && !suppressErrorMsg)
         {
             SendEquipError(EQUIP_ERR_ALREADY_LOOTED, nullptr, nullptr);
         }

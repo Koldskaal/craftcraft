@@ -392,7 +392,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
     SetInt32Value(index, (uint32)base_attPower);   // UNIT_FIELD_(RANGED)_ATTACK_POWER field
     SetInt32Value(index_mod, (uint32)attPowerMod); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MODS field
     SetFloatValue(index_mult, attPowerMultiplier); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MULTIPLIER field
-    
+
     m_baseRatingValue[CR_HIT_TAKEN_RANGED] = 1;
     ApplyRatingMod(CR_HIT_TAKEN_RANGED, 0, true);
 
@@ -681,7 +681,6 @@ void Player::UpdateSpellCritChance(uint32 school)
     float crit = 0.0f;
     // Crit from Intellect
     crit += GetSpellCritFromIntellect();
-    LOG_DEBUG("module", "School {} | crit {}", school, crit);
     // Increase crit from SPELL_AURA_MOD_SPELL_CRIT_CHANCE
     crit += GetTotalAuraModifierAreaExclusive(SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
     // Increase crit from SPELL_AURA_MOD_CRIT_PCT
@@ -690,7 +689,7 @@ void Player::UpdateSpellCritChance(uint32 school)
     crit += GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL, 1 << school);
     // Increase crit from spell crit ratings
     crit += GetRatingBonusValue(CR_CRIT_SPELL);
-    
+
     // Store crit value
     SetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + school, crit);
 }

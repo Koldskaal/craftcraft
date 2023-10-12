@@ -4129,11 +4129,7 @@ void AuraEffect::HandleAuraLearnSpell(AuraApplication const *aurApp, uint8 mode,
     }
     else 
     {
-        /*if(target->ToPlayer()->HasAura(spellID))
-        {
-            target->ToPlayer()->RemoveAura(spellID);
-        }*/
-        
+
         target->ToPlayer()->removeSpell(spellID, SPEC_MASK_ALL, false);
     }
 
