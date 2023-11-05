@@ -3452,7 +3452,7 @@ void Player::removeSpell(uint32 spell_id, uint8 removeSpecMask, bool onlyTempora
 
                     if (enchId == (uint32)spellInfo->Effects[i].MiscValue)
                     {
-                        player->ApplyEnchantment(pItem, TEMP_ENCHANTMENT_SLOT, false);
+                        ApplyEnchantment(pItem, TEMP_ENCHANTMENT_SLOT, false);
                         pItem->ClearEnchantment(TEMP_ENCHANTMENT_SLOT);
                     }
                 }
