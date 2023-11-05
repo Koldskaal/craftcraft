@@ -79,6 +79,7 @@
 #include "Transport.h"
 #include "UpdateData.h"
 #include "UpdateFieldFlags.h"
+#include "UpdateMask.h"
 #include "Util.h"
 #include "Vehicle.h"
 #include "Weather.h"
@@ -386,8 +387,6 @@ Player::Player(WorldSession *session) : Unit(true), m_mover(this)
     SetPendingBind(0, 0);
 
     _activeCheats = CHEAT_NONE;
-
-    m_creationTime = 0s;
 
     _cinematicMgr = new CinematicMgr(this);
 
@@ -1028,7 +1027,7 @@ void Player::setDeathState(DeathState s, bool /*despawn = false*/)
 
         clearResurrectRequestData();
 
-        // FIXME: is pet dismissed at dying or releasing spirit? if second, add setDeathState(DeathState::Dead) to HandleRepopRequestOpcode and define pet unsummon here with (s == DEAD)
+        // FIXME: is pet dismissed at dying or releasing spirit? if second, add setDeathState(DEAD) to HandleRepopRequestOpcode and define pet unsummon here with (s == DEAD)
         RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT, true);
 
         // save value before aura remove in Unit::setDeathState
@@ -1297,8 +1296,6 @@ uint8 Player::GetChatTag() const
         tag |= CHAT_TAG_DND;
     if (isAFK())
         tag |= CHAT_TAG_AFK;
-    if (IsCommentator())
-        tag |= CHAT_TAG_COM;
     if (IsDeveloper())
         tag |= CHAT_TAG_DEV;
 
@@ -1356,7 +1353,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
         if (GetTransport())
         {
-            m_transport->RemovePassenger(this, true);
+            m_transport->RemovePassenger(this);
+            m_transport = nullptr;
+            m_movementInfo.transport.Reset();
+            m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_ONTRANSPORT);
             RepopAtGraveyard(); // teleport to near graveyard if on transport, looks blizz like :)
         }
 
@@ -1398,7 +1398,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             AddUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT);
         else
         {
-            m_transport->RemovePassenger(this, true);
+            m_transport->RemovePassenger(this);
+            m_transport = nullptr;
+            m_movementInfo.transport.Reset();
+            m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_ONTRANSPORT);
         }
     }
 
@@ -4688,7 +4691,7 @@ void Player::DurabilityLossAll(double percent, bool inventory)
 
 void Player::DurabilityLoss(Item *item, double percent)
 {
-    if (!item || percent == 0.0)
+    if (!item)
         return;
 
     uint32 pMaxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
@@ -5167,15 +5170,7 @@ float Player::GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const
 
 float Player::OCTRegenHPPerSpirit()
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
     // return 0;
-=======
-    // return 0;
->>>>>>> combo points retained and wand flick
-=======
-    // return 0;
->>>>>>> dual classing continued
     uint8 level = GetLevel();
 
     if (level > GT_MAX_LEVEL)
@@ -5201,15 +5196,7 @@ float Player::OCTRegenHPPerSpirit()
 
 float Player::OCTRegenMPPerSpirit()
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
     // return 0;
-=======
-    // return 0;
->>>>>>> combo points retained and wand flick
-=======
-    // return 0;
->>>>>>> dual classing continued
     uint8 level = GetLevel();
     // uint32 pclass = getClass();
 
@@ -5217,10 +5204,7 @@ float Player::OCTRegenMPPerSpirit()
         level = GT_MAX_LEVEL;
 
     //    GtOCTRegenMPEntry     const* baseRatio = sGtOCTRegenMPStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
-<<<<<<< HEAD
     // CRAFTCRAFT paladin regen for all
-=======
->>>>>>> dual classing continued
     GtRegenMPPerSptEntry const *moreRatio = sGtRegenMPPerSptStore.LookupEntry(GT_MAX_LEVEL + level - 1);
     if (!moreRatio)
         return 0.0f;
@@ -5644,15 +5628,14 @@ void Player::SaveRecallPosition()
     m_recallO = GetOrientation();
 }
 
-<<<<<<< HEAD
 void Player::SendMessageToSetInRange(WorldPacket const *data, float dist, bool self, Player const *skipped_rcvr) const
-=======
-void Player::SendMessageToSetInRange(WorldPacket const *data, float dist, bool self, bool includeMargin, Player const *skipped_rcvr) const
->>>>>>> dual classing continued
 {
     if (self)
         GetSession()->SendPacket(data);
 
+    dist += GetObjectSize();
+    // if (includeMargin)
+    //     dist += VISIBILITY_COMPENSATION; // pussywizard: to ensure everyone receives all important packets
     Acore::MessageDistDeliverer notifier(this, data, dist, false, skipped_rcvr);
     Cell::VisitWorldObjects(this, notifier, dist);
 }
@@ -5923,11 +5906,7 @@ float Player::CalculateReputationGain(ReputationSource source, uint32 creatureOr
 }
 
 // Calculates how many reputation points player gains in victim's enemy factions
-<<<<<<< HEAD
 void Player::RewardReputation(Unit *victim)
-=======
-void Player::RewardReputation(Unit *victim, float rate)
->>>>>>> dual classing continued
 {
     if (!victim || victim->GetTypeId() == TYPEID_PLAYER)
         return;
@@ -6772,13 +6751,9 @@ void Player::_ApplyItemBonuses(ItemTemplate const *proto, uint8 slot, bool apply
         case ITEM_MOD_BLOCK_VALUE:
             HandleBaseModValue(SHIELD_BLOCK_VALUE, FLAT_MOD, float(val), apply);
             break;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
         case ITEM_MOD_HOLY_SPELL_DAMAGE:
             ApplySchoolSpellPowerBonus(SPELL_SCHOOL_HOLY, val, apply);
             break;
->>>>>>> lucky hit, aura learn spell
         case ITEM_MOD_FIRE_SPELL_DAMAGE:
             ApplySchoolSpellPowerBonus(SPELL_SCHOOL_FIRE, val, apply);
             break;
@@ -6795,8 +6770,6 @@ void Player::_ApplyItemBonuses(ItemTemplate const *proto, uint8 slot, bool apply
             ApplySchoolSpellPowerBonus(SPELL_SCHOOL_ARCANE, val, apply);
             break;
 
-=======
->>>>>>> dual classing continued
         /// @deprecated item mods
         case ITEM_MOD_SPELL_HEALING_DONE:
         case ITEM_MOD_SPELL_DAMAGE_DONE:
@@ -8134,12 +8107,6 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
 
     // need know merged fishing/corpse loot type for achievements
     loot->loot_type = loot_type;
-
-    if (!sScriptMgr->OnAllowedToLootContainerCheck(this, guid))
-    {
-        SendLootError(guid, LOOT_ERROR_DIDNT_KILL);
-        return;
-    }
 
     if (permission != NONE_PERMISSION)
     {
@@ -11440,11 +11407,7 @@ WorldLocation Player::GetStartPosition() const
     return WorldLocation(mapId, info->positionX, info->positionY, info->positionZ, 0);
 }
 
-<<<<<<< HEAD
 bool Player::HaveAtClient(Object const *u) const
-=======
-bool Player::HaveAtClient(WorldObject const *u) const
->>>>>>> dual classing continued
 {
     if (u == this)
     {
@@ -13217,21 +13180,14 @@ void Player::SetViewpoint(WorldObject *target, bool apply)
         UpdateVisibilityOf(target);
 
         if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
-<<<<<<< HEAD
-            static_cast<Unit *>(target)->AddPlayerToVision(this);
-=======
             ((Unit *)target)->AddPlayerToVision(this);
->>>>>>> dual classing continued
         SetSeer(target);
     }
     else
     {
-<<<<<<< HEAD
-=======
         // must immediately set seer back otherwise may crash
         m_seer = this;
 
->>>>>>> dual classing continued
         LOG_DEBUG("maps", "Player::CreateViewpoint: Player {} remove seer", GetName());
 
         if (!RemoveGuidValue(PLAYER_FARSIGHT, target->GetGUID()))
@@ -13404,8 +13360,6 @@ void Player::SetTitle(CharTitlesEntry const *title, bool lost)
     data << uint32(title->bit_index);
     data << uint32(lost ? 0 : 1); // 1 - earned, 0 - lost
     GetSession()->SendPacket(&data);
-
-    UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_RANK);
 }
 
 uint32 Player::GetRuneBaseCooldown(uint8 index, bool skipGrace)
@@ -13685,17 +13639,8 @@ uint32 Player::CalculateTalentsPoints() const
     return uint32(talentPointsForLevel * sWorld->getRate(RATE_TALENT));
 }
 
-<<<<<<< HEAD
 bool Player::canFlyInZone(uint32 mapid, uint32 zone, SpellInfo const *bySpell)
-=======
-bool Player::canFlyInZone(uint32 mapid, uint32 zone, SpellInfo const *bySpell) const
->>>>>>> dual classing continued
 {
-    if (!sScriptMgr->OnCanPlayerFlyInZone(this, mapid, zone, bySpell))
-    {
-        return false;
-    }
-
     // continent checked in SpellInfo::CheckLocation at cast and area update
     uint32 v_map = GetVirtualMapForMapAndZone(mapid, zone);
     if (v_map == 571 && !bySpell->HasAttribute(SPELL_ATTR7_IGNORES_COLD_WEATHER_FLYING_REQUIREMENT))
@@ -15073,11 +15018,7 @@ void Player::_SaveSecondaryClass(CharacterDatabaseTransaction trans)
 void Player::SetClassSecondary(uint8 _class)
 {
     static const int classToSKilllineIDs[11][3] = {
-<<<<<<< HEAD
         {26, 257, 256},
-=======
-        {26, 257, 256}, 
->>>>>>> dual classing continued
         {267, 184, 594},
         {50, 51, 163},
         {38, 39, 253},
@@ -15086,19 +15027,11 @@ void Player::SetClassSecondary(uint8 _class)
         {373, 374, 375},
         {6, 8, 237},
         {354, 355, 593},
-<<<<<<< HEAD
         {0, 0, 0}, // Empty
         {134, 573, 574}};
 
     if (_class == getClass())
         return;
-=======
-        {0, 0, 0}, // Empty
-        {134, 573, 574}};
-
-    if (_class == getClass())
-        return;
->>>>>>> dual classing continued
     if (_class >= MAX_CLASSES)
         return;
 
@@ -15106,11 +15039,7 @@ void Player::SetClassSecondary(uint8 _class)
     {
         for (size_t i = 0; i < 3; i++)
         {
-<<<<<<< HEAD
             auto skillID = classToSKilllineIDs[m_secondaryClass - 1][i];
-=======
-            auto skillID = classToSKilllineIDs[m_secondaryClass - 1][i];
->>>>>>> dual classing continued
             SetSkill(skillID, 0, 0, 0);
         }
     }
@@ -15118,11 +15047,7 @@ void Player::SetClassSecondary(uint8 _class)
     m_secondaryClass = _class;
     for (size_t i = 0; i < 3; i++)
     {
-<<<<<<< HEAD
         auto skillID = classToSKilllineIDs[m_secondaryClass - 1][i];
-=======
-        auto skillID = classToSKilllineIDs[m_secondaryClass - 1][i];
->>>>>>> dual classing continued
         SetSkill(skillID, 1, 1, 1);
     }
 }

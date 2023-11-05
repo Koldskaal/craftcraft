@@ -2028,7 +2028,7 @@ public:
     void ProcessTerrainStatusUpdate() override;
 
     void SendMessageToSet(WorldPacket const *data, bool self) const override { SendMessageToSetInRange(data, GetVisibilityRange(), self); }                                                // pussywizard!
-    void SendMessageToSetInRange(WorldPacket const *data, float dist, bool self, Player const *skipped_rcvr = nullptr) const override;                                                     // pussywizard!
+    void SendMessageToSetInRange(WorldPacket const *data, float dist, bool self, Player const *skipped_rcvr = nullptr) const override;                                                     // pussywizard!                                                  // pussywizard!
     void SendMessageToSetInRange_OwnTeam(WorldPacket const *data, float dist, bool self) const;                                                                                            // pussywizard!
     void SendMessageToSet(WorldPacket const *data, Player const *skipped_rcvr) const override { SendMessageToSetInRange(data, GetVisibilityRange(), skipped_rcvr != this, skipped_rcvr); } // pussywizard!
 

@@ -378,12 +378,11 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS] =
         &AuraEffect::HandleNoImmediateEffect,                     // 315 SPELL_AURA_UNDERWATER_WALKING todo
         &AuraEffect::HandleNoImmediateEffect,                     // 316 SPELL_AURA_PERIODIC_HASTE implemented in AuraEffect::CalculatePeriodic
         &AuraEffect::HandleAuraLearnSpell,                        // 317 CRAFTCRAFT
-
 };
 
 AuraEffect::AuraEffect(Aura *base, uint8 effIndex, int32 *baseAmount, Unit *caster) : m_base(base), m_spellInfo(base->GetSpellInfo()),
-                                                                                      m_baseAmount(baseAmount ? *baseAmount : m_spellInfo->Effects[effIndex].BasePoints), m_critChance(0),
-                                                                                      m_oldAmount(0), m_isAuraEnabled(true), m_channelData(nullptr), m_spellmod(nullptr), m_periodicTimer(0), m_tickNumber(0), m_effIndex(effIndex),
+                                                                                      m_baseAmount(baseAmount ? *baseAmount : m_spellInfo->Effects[effIndex].BasePoints), m_dieSides(m_spellInfo->Effects[effIndex].DieSides),
+                                                                                      m_critChance(0), m_oldAmount(0), m_isAuraEnabled(true), m_channelData(nullptr), m_spellmod(nullptr), m_periodicTimer(0), m_tickNumber(0), m_effIndex(effIndex),
                                                                                       m_canBeRecalculated(true), m_isPeriodic(false)
 {
     CalculatePeriodic(caster, true, false);
@@ -4123,16 +4122,15 @@ void AuraEffect::HandleAuraLearnSpell(AuraApplication const *aurApp, uint8 mode,
     if (!spellEntry)
         return;
 
-    if(apply)
+    if (apply)
     {
         target->ToPlayer()->learnSpell(spellID);
     }
-    else 
+    else
     {
 
         target->ToPlayer()->removeSpell(spellID, SPEC_MASK_ALL, false);
     }
-
 }
 
 void AuraEffect::HandleModTotalPercentStat(AuraApplication const *aurApp, uint8 mode, bool apply) const

@@ -3852,16 +3852,17 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                 }
             return;
         }
-        /*// Mug Transformation
-        case 41931:
-        {
-            BattlegroundSA *bg = ((BattlegroundSA *)player->GetBattleground());
-            bg->DefendersPortalTeleport(dportal, player);
+            /*// Mug Transformation
+            case 41931:
+            {
+                BattlegroundSA *bg = ((BattlegroundSA *)player->GetBattleground());
+                bg->DefendersPortalTeleport(dportal, player);
+            }
         }
+    return;
     }
-return;
-}
-/*/ / Mug Transformation case 41931:
+    /* Mug Transformation */
+        case 41931:
         {
             if (m_caster->GetTypeId() != TYPEID_PLAYER)
                 return;
@@ -3895,9 +3896,9 @@ return;
             }
             break;
         }
-        * /
-            // Roll Dice - Decahedral Dwarven Dice
-            case 47770:
+
+        // Roll Dice - Decahedral Dwarven Dice
+        case 47770:
         {
             char buf[128];
             const char *gender = "his";
