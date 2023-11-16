@@ -34,6 +34,7 @@
 #include <utility>
 
 #define WORLD_TRIGGER 12999
+#define WORLD_TRIGGER 12999
 
 #define BASE_MINDAMAGE 1.0f
 #define BASE_MAXDAMAGE 2.0f

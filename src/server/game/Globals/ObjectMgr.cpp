@@ -74,6 +74,17 @@ std::string GetScriptsTableNameByType(ScriptsType type)
         break;
     default:
         break;
+    case SCRIPTS_SPELL:
+        res = "spell_scripts";
+        break;
+    case SCRIPTS_EVENT:
+        res = "event_scripts";
+        break;
+    case SCRIPTS_WAYPOINT:
+        res = "waypoint_scripts";
+        break;
+    default:
+        break;
     }
     return res;
 }

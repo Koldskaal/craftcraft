@@ -904,7 +904,11 @@ bool Player::UpdateSkillPro(uint16 SkillId, int32 Chance, uint32 step)
 
         for (size_t i = 0; i < bonusSkillLevelsSize; ++i)
         {
+<<<<<<< HEAD
             // uint32 bsl = bonusSkillLevels[i];
+=======
+            uint32 bsl = bonusSkillLevels[i];
+>>>>>>> ac7ab89b0ea1023378d6c2981d3baafc2e01192e
             if (new_value % 5 == 0)
             {
                 learnSkillRewardedSpells(SkillId, new_value);
