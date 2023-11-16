@@ -27,65 +27,28 @@ services:
       timeout: 10s
       retries: 40
 
-  ac-db-import:
-    container_name: ac-db-import
-    image: acore/ac-wotlk-db-import:${DOCKER_IMAGE_TAG:-master}
-    networks:
-      - ac-network
-    build:
-      context: .
-      target: db-import
-      dockerfile: apps/docker/Dockerfile
-    environment:
-      AC_DATA_DIR: "/azerothcore/env/dist/data"
-      AC_LOGS_DIR: "/azerothcore/env/dist/logs"
-      AC_LOGIN_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_auth"
-      AC_WORLD_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_world"
-      AC_CHARACTER_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_characters"
-    volumes:
-      - ${DOCKER_VOL_ETC:-./env/dist/etc}:/azerothcore/env/dist/etc
-      # [osxfs optimization]: https://stackoverflow.com/a/63437557/1964544
-      - ${DOCKER_VOL_LOGS:-./env/dist/logs}:/azerothcore/env/dist/logs:delegated
-    depends_on:
-      ac-database:
-        condition: service_healthy
-
-  ac-worldserver:
-    container_name: ac-worldserver
-    image: acore/ac-wotlk-worldserver:${DOCKER_IMAGE_TAG:-master}
-    build:
-      context: .
-      target: worldserver
-      dockerfile: apps/docker/Dockerfile
-    networks:
-      - ac-network
-    stdin_open: true
-    tty: true
-    restart: unless-stopped
-    env_file:
-        ${DOCKER_AC_ENV_FILE:-conf/dist/env.ac}
-    environment:
-      AC_DATA_DIR: "/azerothcore/env/dist/data"
-      AC_LOGS_DIR: "/azerothcore/env/dist/logs"
-      AC_LOGIN_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_auth"
-      AC_WORLD_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_world"
-      AC_CHARACTER_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_characters"
-    ports:
-      - ${DOCKER_WORLD_EXTERNAL_PORT:-8085}:8085
-      - ${DOCKER_SOAP_EXTERNAL_PORT:-7878}:7878
-    volumes:
-      - ${DOCKER_VOL_ETC:-./env/dist/etc}:/azerothcore/env/dist/etc
-      # [osxfs optimization]: https://stackoverflow.com/a/63437557/1964544
-      - ${DOCKER_VOL_LOGS:-./env/dist/logs}:/azerothcore/env/dist/logs:delegated
-      # client data
-      - ${DOCKER_VOL_DATA:-ac-client-data}:/azerothcore/env/dist/data/:ro
-    depends_on:
-      ac-database:
-        condition: service_healthy
-      ac-db-import:
-        condition: service_completed_successfully
-      ac-client-data-init:
-        condition: service_completed_successfully
+  # ac-db-import:
+  #   container_name: ac-db-import
+  #   image: acore/ac-wotlk-db-import:${DOCKER_IMAGE_TAG:-master}
+  #   networks:
+  #     - ac-network
+  #   build:
+  #     context: .
+  #     target: db-import
+  #     dockerfile: apps/docker/Dockerfile
+  #   environment:
+  #     AC_DATA_DIR: "/azerothcore/env/dist/data"
+  #     AC_LOGS_DIR: "/azerothcore/env/dist/logs"
+  #     AC_LOGIN_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_auth"
+  #     AC_WORLD_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_world"
+  #     AC_CHARACTER_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_characters"
+  #   volumes:
+  #     - ${DOCKER_VOL_ETC:-./env/dist/etc}:/azerothcore/env/dist/etc
+  #     # [osxfs optimization]: https://stackoverflow.com/a/63437557/1964544
+  #     - ${DOCKER_VOL_LOGS:-./env/dist/logs}:/azerothcore/env/dist/logs:delegated
+  #   depends_on:
+  #     ac-database:
+  #       condition: service_healthy
 
   ac-authserver:
     container_name: ac-authserver
@@ -113,8 +76,8 @@ services:
     depends_on:
       ac-database:
         condition: service_healthy
-      ac-db-import:
-        condition: service_completed_successfully
+      # ac-db-import:
+      #   condition: service_completed_successfully
 
   ac-client-data-init:
     container_name: ac-client-data-init

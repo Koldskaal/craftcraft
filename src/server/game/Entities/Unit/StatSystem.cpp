@@ -113,6 +113,8 @@ bool Player::UpdateStats(Stats stat)
     case STAT_AGILITY:
         UpdateArmor();
         UpdateAllCritPercentages();
+        // CRAFTCRAFT update spell crit
+        UpdateAllSpellCritChances();
         UpdateDodgePercentage();
         break;
     case STAT_STAMINA:
@@ -122,7 +124,7 @@ bool Player::UpdateStats(Stats stat)
         break;
     case STAT_INTELLECT:
         UpdateMaxPower(POWER_MANA);
-        UpdateAllSpellCritChances();
+
         UpdateArmor(); // SPELL_AURA_MOD_RESISTANCE_OF_INTELLECT_PERCENT, only armor currently
         break;
     default:

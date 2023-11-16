@@ -4,7 +4,7 @@ local setclass = "setclass"
 
 local items = { 205016, 205017, 205018, 205019, 205020,
 	205021, 205022, 205023,
-	205024, 205000, 205008, 205014, 205006, 350054 }
+	205024, 205014, 350054 }
 local stacks = { 2516 }
 
 local function summon_stuff(event, player)
@@ -37,6 +37,24 @@ local function PlrMenu(event, player, message)
 			return false
 		end
 	end
+
+	if (words[1] == "ench") then
+		if player:GetGMRank() > 2 then
+			local item = player:GetItemByPos(255, 17) -- Main hand
+			print(item:SetEnchantment(4, 4))
+			return false
+		end
+	end
+
+	if (words[1] == "enchp") then
+		if player:GetGMRank() > 2 then
+			local item = player:GetItemByPos(255, 17) -- Main hand
+			-- player:SendBroadcastMessage(item:GetEnchantmentId(4))
+			player:SendAddonMessage("HALLO", "ASD", 7, player)
+			return false
+		end
+	end
+
 
 	return false
 end
