@@ -62,14 +62,6 @@ void ScriptMgr::OnCreatureRespawned(Creature *creature)
                                      { script->OnCreatureRespawned(creature); });
 }
 
-void ScriptMgr::OnCreatureRespawned(Creature *creature)
-{
-    ASSERT(creature);
-
-    ExecuteScript<AllCreatureScript>([&](AllCreatureScript *script)
-                                     { script->OnCreatureRespawned(creature); });
-}
-
 // bool ScriptMgr::CanCreatureSendListInventory(Player* player, Creature* creature, uint32 vendorEntry)
 //{
 //     auto ret = IsValidBoolScript<AllCreatureScript>([&](AllCreatureScript* script)

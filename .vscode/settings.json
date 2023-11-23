@@ -120,5 +120,8 @@
     "deno.path": "deps/deno/bin/deno",
     "deno.lint": true,
     "cmake.configureOnOpen": true,
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
+        "clang-diagnostic-error"
+    ]
 }

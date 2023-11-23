@@ -74,17 +74,6 @@ std::string GetScriptsTableNameByType(ScriptsType type)
         break;
     default:
         break;
-    case SCRIPTS_SPELL:
-        res = "spell_scripts";
-        break;
-    case SCRIPTS_EVENT:
-        res = "event_scripts";
-        break;
-    case SCRIPTS_WAYPOINT:
-        res = "waypoint_scripts";
-        break;
-    default:
-        break;
     }
     return res;
 }
@@ -10369,4 +10358,193 @@ void ObjectMgr::LoadMailServerTemplates()
 
     LOG_INFO("server.loading", ">> Loaded {} Mail Server Template in {} ms", _serverMailStore.size(), GetMSTimeDiffToNow(oldMSTime));
     LOG_INFO("server.loading", " ");
+}
+
+uint32 ObjectMgr::GetItemTemplateFreeEntry(uint32 offset) const
+{
+    for (size_t i = offset; i < _itemTemplateStoreFast.size(); i++)
+    {
+        if (!_itemTemplateStoreFast[i])
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+uint32 ObjectMgr::CreateItemTemplate(uint8 quality, uint16 itemLevel, const ItemTemplate *copy)
+{
+    static float statCosts[MAX_ITEM_MOD] = {
+        0.5,  // 0	ITEM_MOD_MANA
+        1,    // 1	ITEM_MOD_HEALTH
+        0,    // 2 EMPTY FOR SOME REASON
+        1,    // 3	ITEM_MOD_AGILITY
+        1,    // 4	ITEM_MOD_STRENGTH
+        1,    // 5	ITEM_MOD_INTELLECT
+        1,    // 6	ITEM_MOD_SPIRIT
+        0.67, // 7	ITEM_MOD_STAMINA
+        0,    // 8 EMPTY FOR SOME REASON
+        0,    // 9 EMPTY FOR SOME REASON
+        0,    // 10 EMPTY FOR SOME REASON
+        0,    // 11 EMPTY FOR SOME REASON
+        1,    // 12	ITEM_MOD_DEFENSE_SKILL_RATING
+        1,    // 13	ITEM_MOD_DODGE_RATING
+        1,    // 14	ITEM_MOD_PARRY_RATING
+        1,    // 15	ITEM_MOD_BLOCK_RATING
+        0.67, // 16	ITEM_MOD_HOLY_SPELL_POWER
+        0.67, // 17	ITEM_MOD_FIRE_SPELL_POWER
+        0.67, // 18	ITEM_MOD_NATURE_SPELL_POWER
+        0.67, // 19	ITEM_MOD_FROST_SPELL_POWER
+        0.67, // 20	ITEM_MOD_SHADOW_SPELL_POWER
+        0.67, // 21	ITEM_MOD_ARCANE_SPELL_POWER
+        1,    // 22	ITEM_MOD_COOLDOWN_REDUCTION
+        1,    // 23	ITEM_MOD_HIT_TAKEN_RANGED_RATING
+        1,    // 24	ITEM_MOD_HIT_TAKEN_SPELL_RATING
+        1,    // 25	ITEM_MOD_CRIT_TAKEN_MELEE_RATING
+        1,    // 26	ITEM_MOD_CRIT_TAKEN_RANGED_RATING
+        1,    // 27	ITEM_MOD_CRIT_TAKEN_SPELL_RATING
+        1,    // 28	ITEM_MOD_HASTE_MELEE_RATING
+        1,    // 29	ITEM_MOD_HASTE_RANGED_RATING
+        1,    // 30	ITEM_MOD_HASTE_SPELL_RATING
+        1,    // 31	ITEM_MOD_HIT_RATING
+        1,    // 32	ITEM_MOD_CRIT_RATING
+        1,    // 33	ITEM_MOD_HIT_TAKEN_RATING
+        1,    // 34	ITEM_MOD_CRIT_TAKEN_RATING
+        1,    // 35	ITEM_MOD_RESILIENCE_RATING
+        1,    // 36	ITEM_MOD_HASTE_RATING
+        1,    // 37	ITEM_MOD_EXPERTISE_RATING
+        0.5,  // 38	ITEM_MOD_ATTACK_POWER
+        0.5,  // 39	ITEM_MOD_RANGED_ATTACK_POWER
+        1,    // 40	ITEM_MOD_FERAL_ATTACK_POWER (not used as of 3.3)
+        0.86, // 41	ITEM_MOD_SPELL_HEALING_DONE
+        0.86, // 42	ITEM_MOD_SPELL_DAMAGE_DONE
+        2.5,  // 43	ITEM_MOD_MANA_REGENERATION
+        1,    // 44	ITEM_MOD_ARMOR_PENETRATION_RATING
+        0.86, // 45	ITEM_MOD_SPELL_POWER
+        1,    // 46	ITEM_MOD_ HEALTH_REGEN
+        1,    // 47	ITEM_MOD_SPELL_PENETRATION
+        1,    // 48	ITEM_MOD_BLOCK_VALUE
+    };
+    static ItemTemplateContainer _tempItemCache;
+    uint32 entry = sObjectMgr->GetItemTemplateFreeEntry(100000); // gonna assume enough space in array for now
+
+    float baseBudget = Player::GetItemBudget(copy->Quality, copy->ItemLevel, copy->InventoryType);
+    float newBudget = Player::GetItemBudget(quality, itemLevel, copy->InventoryType);
+
+    ItemTemplate itemTemplate; // _itemTemplateStoreFast[entry];
+
+    itemTemplate.ItemId = entry;
+    itemTemplate.Class = copy->Class;
+    itemTemplate.SubClass = copy->SubClass;
+    itemTemplate.SoundOverrideSubclass = copy->SoundOverrideSubclass;
+    itemTemplate.Name1 = copy->Name1;
+    itemTemplate.DisplayInfoID = copy->DisplayInfoID;
+    itemTemplate.Quality = quality;
+    itemTemplate.Flags = copy->Flags;
+    itemTemplate.Flags2 = copy->Flags2;
+    itemTemplate.BuyCount = copy->BuyCount;
+    itemTemplate.BuyPrice = copy->BuyPrice;
+    itemTemplate.SellPrice = copy->SellPrice;
+    itemTemplate.InventoryType = copy->InventoryType;
+    itemTemplate.AllowableClass = copy->AllowableClass;
+    itemTemplate.AllowableRace = copy->AllowableRace;
+    itemTemplate.ItemLevel = itemLevel;
+    itemTemplate.RequiredLevel = copy->RequiredLevel;
+    itemTemplate.RequiredSkill = copy->RequiredSkill;
+    itemTemplate.RequiredSkillRank = copy->RequiredSkillRank;
+    itemTemplate.RequiredSpell = copy->RequiredSpell;
+    itemTemplate.RequiredHonorRank = copy->RequiredHonorRank;
+    itemTemplate.RequiredCityRank = copy->RequiredCityRank;
+    itemTemplate.RequiredReputationFaction = copy->RequiredReputationFaction;
+    itemTemplate.RequiredReputationRank = copy->RequiredReputationRank;
+    itemTemplate.MaxCount = copy->MaxCount;
+    itemTemplate.Stackable = copy->Stackable;
+    itemTemplate.ContainerSlots = copy->ContainerSlots;
+    itemTemplate.StatsCount = copy->StatsCount;
+
+    for (uint8 i = 0; i < itemTemplate.StatsCount; ++i)
+    {
+        itemTemplate.ItemStat[i].ItemStatType = copy->ItemStat[i].ItemStatType;
+        float statBudget = ((statCosts[copy->ItemStat[i].ItemStatType] * (float)copy->ItemStat[i].ItemStatValue) / baseBudget) * newBudget;
+        LOG_DEBUG("module", "{} {}", pow(statBudget, 2 / 3) / statCosts[copy->ItemStat[i].ItemStatType], pow(statBudget, 2.0 / 3.0));
+        itemTemplate.ItemStat[i].ItemStatValue = static_cast<int32>(pow(statBudget, 2.0 / 3.0) / statCosts[copy->ItemStat[i].ItemStatType]);
+    }
+
+    itemTemplate.ScalingStatDistribution = copy->ScalingStatDistribution;
+    itemTemplate.ScalingStatValue = copy->ScalingStatValue;
+
+    // gotta recalc damage as well
+    for (uint8 i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
+    {
+        itemTemplate.Damage[i].DamageMin = copy->Damage[i].DamageMin;
+        itemTemplate.Damage[i].DamageMax = copy->Damage[i].DamageMax;
+        itemTemplate.Damage[i].DamageType = copy->Damage[i].DamageType;
+    }
+
+    itemTemplate.Armor = copy->Armor;
+    itemTemplate.HolyRes = copy->HolyRes;
+    itemTemplate.FireRes = copy->FireRes;
+    itemTemplate.NatureRes = copy->NatureRes;
+    itemTemplate.FrostRes = copy->FrostRes;
+    itemTemplate.ShadowRes = copy->ShadowRes;
+    itemTemplate.ArcaneRes = copy->ArcaneRes;
+    itemTemplate.Delay = copy->Delay;
+    itemTemplate.AmmoType = copy->AmmoType;
+    itemTemplate.RangedModRange = copy->RangedModRange;
+
+    for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        itemTemplate.Spells[i].SpellId = copy->Spells[i].SpellId;
+        itemTemplate.Spells[i].SpellTrigger = copy->Spells[i].SpellTrigger;
+        itemTemplate.Spells[i].SpellCharges = copy->Spells[i].SpellCharges;
+        itemTemplate.Spells[i].SpellPPMRate = copy->Spells[i].SpellPPMRate;
+        itemTemplate.Spells[i].SpellCooldown = copy->Spells[i].SpellCooldown;
+        itemTemplate.Spells[i].SpellCategory = copy->Spells[i].SpellCategory;
+        itemTemplate.Spells[i].SpellCategoryCooldown = copy->Spells[i].SpellCategoryCooldown;
+    }
+
+    itemTemplate.Bonding = copy->Bonding;
+    itemTemplate.Description = copy->Description;
+    itemTemplate.PageText = copy->PageText;
+    itemTemplate.LanguageID = copy->LanguageID;
+    itemTemplate.PageMaterial = copy->PageMaterial;
+    itemTemplate.StartQuest = copy->StartQuest;
+    itemTemplate.LockID = copy->LockID;
+    itemTemplate.Material = copy->Material;
+    itemTemplate.Sheath = copy->Sheath;
+    itemTemplate.RandomProperty = copy->RandomProperty;
+    itemTemplate.RandomSuffix = copy->RandomSuffix;
+    itemTemplate.Block = copy->Block;
+    itemTemplate.ItemSet = copy->ItemSet;
+    itemTemplate.MaxDurability = copy->MaxDurability;
+    itemTemplate.Area = copy->Area;
+    itemTemplate.Map = copy->Map;
+    itemTemplate.BagFamily = copy->BagFamily;
+    itemTemplate.TotemCategory = copy->TotemCategory;
+
+    for (uint8 i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
+    {
+        itemTemplate.Socket[i].Color = copy->Socket[i].Color;
+        itemTemplate.Socket[i].Content = copy->Socket[i].Content;
+    }
+
+    itemTemplate.socketBonus = copy->socketBonus;
+    itemTemplate.GemProperties = copy->GemProperties;
+    itemTemplate.RequiredDisenchantSkill = copy->RequiredDisenchantSkill;
+    itemTemplate.ArmorDamageModifier = copy->ArmorDamageModifier;
+    itemTemplate.Duration = copy->Duration;
+    itemTemplate.ItemLimitCategory = copy->ItemLimitCategory;
+    itemTemplate.HolidayId = copy->HolidayId;
+    itemTemplate.ScriptId = copy->ScriptId;
+    itemTemplate.DisenchantID = copy->DisenchantID;
+    itemTemplate.FoodType = copy->FoodType;
+    itemTemplate.MinMoneyLoot = copy->MinMoneyLoot;
+    itemTemplate.MaxMoneyLoot = copy->MaxMoneyLoot;
+    itemTemplate.FlagsCu = copy->FlagsCu;
+
+    _tempItemCache[entry] = itemTemplate;
+    auto itStoreFast = const_cast<std::vector<ItemTemplate *> *>(sObjectMgr->GetItemTemplateStoreFast());
+    (*itStoreFast)[entry] = &_tempItemCache[entry];
+    return entry;
 }

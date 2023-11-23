@@ -147,7 +147,8 @@ static uint32 copseReclaimDelay[MAX_DEATH_COUNT] = {30, 60, 120};
 #ifdef _MSC_VER
 #pragma warning(disable : 4355)
 #endif
-Player::Player(WorldSession *session) : Unit(true), m_mover(this)
+Player::Player(WorldSession *session) : Unit(true),
+                                        m_mover(this)
 {
 #ifdef _MSC_VER
 #pragma warning(default : 4355)
@@ -16431,4 +16432,11 @@ void Player::SendSystemMessage(std::string_view msg, bool escapeCharacters)
 bool Player::IsLuckyHit()
 {
     return urand(uint32(0), uint32(100)) < GetUInt32Value(PLAYER_EXPERTISE);
+}
+
+void Player::SetItemUpgrade(uint32 itemGUID, uint8 newQuality, uint16 newItemLevel)
+{
+    ItemUpgradeData &data = m_itemUpgradeMap[itemGUID];
+    data.quality = newQuality;
+    data.itemLevel = newItemLevel;
 }
