@@ -10988,16 +10988,15 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
         catrecTime = catrec ? catrec : 0; // 25 + 60
         recTime = rec ? rec : catrecTime; // 60
     }
-
     // category spells
     if (cat && catrec > 0)
     {
-        if (!itemId)
+        if (!itemId && needsCooldownPacket)
         {
             RemoveSpellCooldown(spellInfo->Id, true);
         }
         _AddSpellCooldown(spellInfo->Id, 0, itemId, recTime, true, true);
-        if (needsCooldownPacket && !itemId)
+        if (needsCooldownPacket)
         {
             WorldPacket data;
             BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_INCLUDE_GCD, spellInfo->Id, recTime);
@@ -11046,12 +11045,12 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
         // self spell cooldown
         if (recTime > 0)
         {
-            if (!itemId)
+            if (!itemId && needsCooldownPacket)
             {
                 RemoveSpellCooldown(spellInfo->Id, true);
             }
             _AddSpellCooldown(spellInfo->Id, 0, itemId, recTime, true, true);
-            if (needsCooldownPacket && !itemId)
+            if (needsCooldownPacket)
             {
 
                 WorldPacket data;
@@ -11109,7 +11108,9 @@ void Player::SendCooldownEvent(SpellInfo const *spellInfo, uint32 itemId /*= 0*/
 {
     // start cooldowns at server side, if any
     if (setCooldown)
+    {
         AddSpellAndCategoryCooldowns(spellInfo, itemId, spell);
+    }
 
     // Send activate cooldown timer (possible 0) at client side
     WorldPacket data(SMSG_COOLDOWN_EVENT, 4 + 8);

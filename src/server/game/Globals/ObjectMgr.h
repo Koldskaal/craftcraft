@@ -780,8 +780,6 @@ public:
     CreatureAddon const *GetCreatureTemplateAddon(uint32 entry);
     CreatureMovementData const *GetCreatureMovementOverride(ObjectGuid::LowType spawnId) const;
     ItemTemplate const *GetItemTemplate(uint32 entry);
-    uint32 GetItemTemplateFreeEntry(uint32 offset = 0) const;
-    uint32 CreateItemTemplate(uint8 quality, uint16 itemLevel, const ItemTemplate *copy);
     [[nodiscard]] ItemTemplateContainer const *GetItemTemplateStore() const { return &_itemTemplateStore; }
     [[nodiscard]] std::vector<ItemTemplate *> const *GetItemTemplateStoreFast() const { return &_itemTemplateStoreFast; }
 

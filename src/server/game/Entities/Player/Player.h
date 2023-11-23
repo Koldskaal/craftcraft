@@ -1297,65 +1297,6 @@ public:
     static bool IsBagPos(uint16 pos);
     static bool IsBankPos(uint16 pos) { return IsBankPos(pos >> 8, pos & 255); }
     static bool IsBankPos(uint8 bag, uint8 slot);
-    // CRAFTCRAFT item Budget
-    static float GetItemBudget(uint8 quality, uint32 itemLevel, uint8 inventoryType)
-    {
-        static float quality_mult[MAX_ITEM_QUALITY] = {
-            0,     // Grey
-            0.3,   // White
-            0.5,   // Green
-            0.625, // Blue
-            0.77,  // Purple
-            0,     // ORANGE
-            0,     // LIGHT YELLOW
-            0      // Heirlooms
-        };
-
-        static float quality_flat[MAX_ITEM_QUALITY] = {
-            0,  // Grey
-            -1, // White
-            -1, // Green
-            -1, // Blue
-            -1, // Purple
-            0,  // ORANGE
-            0,  // LIGHT YELLOW
-            0   // Heirlooms
-        };
-
-        static float inventory_mult[MAX_INVTYPE] = {
-            0,    // 0	Non equipable
-            1,    // 1	Head
-            0.55, // 2	Neck
-            0.77, // 3	Shoulder
-            0,    // 4	Shirt
-            1,    // 5	Chest (see also Robe = 20)
-            0.77, // 6	Waist
-            1,    // 7	Legs
-            0.77, // 8	Feet
-            0.55, // 9	Wrists
-            0.77, // 10	Hands
-            0.55, // 11	Finger
-            0.7,  // 12	Trinket
-            0.42, // 13	One-Hand (not to confuse with Off-Hand = 22)
-            0.55, // 14	Shield (class = armor, not weapon even if in weapon slot)
-            0.3,  // 15	Ranged (Bows) (see also Ranged right = 26)
-            0.55, // 16	Back
-            1,    // 17	Two-Hand
-            0,    // 18	Bag
-            0,    // 19	Tabard
-            1,    // 20	Robe (see also Chest = 5)
-            0.42, // 21	Main hand
-            0.42, // 22	Off Hand weapons (see also One-Hand = 13)
-            0.55, // 23	Held in Off-Hand (tome, cane, flowers, torches, orbs etc... See also Off-Hand = 22) (class = armor, not weapon even if in weapon slot)
-            0,    // 24	Ammo
-            0.3,  // 25	Thrown
-            0.3,  // 26	Ranged right (Wands, Guns) (see also Ranged = 15)
-            0,    // 27	Quiver
-            0.3,  // 28	Relic (class = armor, not weapon even if in weapon slot)
-        };
-
-        return pow((quality_mult[quality] * itemLevel + quality_flat[quality]) * inventory_mult[inventoryType], 1.5f);
-    }
     bool IsValidPos(uint16 pos, bool explicit_pos) { return IsValidPos(pos >> 8, pos & 255, explicit_pos); }
     bool IsValidPos(uint8 bag, uint8 slot, bool explicit_pos);
     [[nodiscard]] uint8 GetBankBagSlotCount() const { return GetByteValue(PLAYER_BYTES_2, 2); }

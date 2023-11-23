@@ -3445,6 +3445,7 @@ SpellCastResult Spell::prepare(SpellCastTargets const *targets, AuraEffect const
 {
     if (m_CastItem)
     {
+        LOG_DEBUG("module", "casting {}", m_CastItem->GetTemplate()->Name1);
         m_castItemGUID = m_CastItem->GetGUID();
     }
     else
@@ -3923,7 +3924,7 @@ void Spell::_cast(bool skipCheck)
     }
 
     // CRAFTCRAFT OLD SEND COOLDOWN
-    // SendSpellCooldown();
+    SendSpellCooldown();
 
     // CAST SPELL
     if (modOwner)

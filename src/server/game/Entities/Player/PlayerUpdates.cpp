@@ -1490,14 +1490,14 @@ void Player::UpdatePvP(bool state, bool _override)
 
 void Player::UpdatePotionCooldown(Spell *spell)
 {
-    // no potion used i combat or still in combat
-    if (!GetLastPotionId() || IsInCombat())
+    if (!GetLastPotionId())
         return;
-
     // Call not from spell cast, send cooldown event for item spells if no in
     // combat
     if (!spell)
     {
+        // no potion used i combat or still in combat
+
         // spell/item pair let set proper cooldown (except not existed charged
         // spell cooldown spellmods for potions)
         if (ItemTemplate const *proto =
@@ -1512,10 +1512,10 @@ void Player::UpdatePotionCooldown(Spell *spell)
     // from spell cases (m_lastPotionId set in Spell::SendSpellCooldown)
     else
     {
+        // return;
         if (spell->IsIgnoringCooldowns())
             return;
-
-        SendCooldownEvent(spell->m_spellInfo, m_lastPotionId, spell);
+        SendCooldownEvent(spell->m_spellInfo, GetLastPotionId(), spell);
     }
 
     SetLastPotionId(0);
