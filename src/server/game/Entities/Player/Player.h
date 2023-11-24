@@ -1119,9 +1119,9 @@ public:
     // CRAFTCRAFT secondary class
     void SetClassSecondary(uint8 _class);
     // CRAFTCRAFT upgrade items
-    void SetItemUpgrade(uint32 itemGUID, uint8 newQuality, uint16 newItemLevel);
     ItemUpgradeMap *GetItemUpgradeMap() { return &m_itemUpgradeMap; };
     bool IsItemUpgraderEmpty() { return m_itemUpgradeMap.empty(); };
+    void UpgradeItem(uint32 itemGUID, uint8 newQuality, uint16 newItemLevel);
 
     static bool BuildEnumData(PreparedQueryResult result, WorldPacket *data);
 

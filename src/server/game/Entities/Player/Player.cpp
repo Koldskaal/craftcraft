@@ -16439,10 +16439,3 @@ bool Player::IsLuckyHit()
 {
     return urand(uint32(0), uint32(100)) < GetUInt32Value(PLAYER_EXPERTISE);
 }
-
-void Player::SetItemUpgrade(uint32 itemGUID, uint8 newQuality, uint16 newItemLevel)
-{
-    ItemUpgradeData &data = m_itemUpgradeMap[itemGUID];
-    data.quality = newQuality;
-    data.itemLevel = newItemLevel;
-}

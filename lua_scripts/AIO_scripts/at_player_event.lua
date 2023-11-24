@@ -1,6 +1,5 @@
 local AIO = AIO or require("AIO")
 
-local HandlePingPong
 if AIO.AddAddon() then
     function CastAOE(player, spellid)
         if (player:HasSpell(spellid)) then
