@@ -10968,12 +10968,12 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
         }
 
         // CRAFTCRAFT CDR
-        if (!itemId)
-        {
-            rec *= 100.0f / (100.0f + GetBaseRating(CR_HIT_TAKEN_MELEE));
-            catrec *= 100.0f / (100.0f + GetBaseRating(CR_HIT_TAKEN_MELEE));
-            needsCooldownPacket = true;
-        }
+        // if (!itemId)
+        // {
+        //     rec *= 100.0f / (100.0f + GetBaseRating(CR_HIT_TAKEN_MELEE));
+        //     catrec *= 100.0f / (100.0f + GetBaseRating(CR_HIT_TAKEN_MELEE));
+        //     needsCooldownPacket = true;
+        // }
 
         // replace negative cooldowns by 0
         if (rec < 0)
@@ -11068,7 +11068,6 @@ void Player::_AddSpellCooldown(uint32 spellid, uint16 categoryId, uint32 itemid,
     sc.category = categoryId;
     sc.itemid = itemid;
     sc.maxduration = end_time;
-    ;
     sc.sendToSpectator = false;
     sc.needSendToClient = needSendToClient;
 
@@ -11095,6 +11094,12 @@ void Player::ModifySpellCooldown(uint32 spellId, int32 cooldown)
     if (itr == m_spellCooldowns.end())
         return;
 
+    // CRAFTCRAFT exception for applying cdr to items
+    if (cooldown == 0)
+    {
+        // LOG_DEBUG("module", "{} reduced", spellId);
+        cooldown = itr->second.maxduration * 100.0f / (100.0f + GetBaseRating(CR_HIT_TAKEN_MELEE)) - itr->second.maxduration;
+    }
     itr->second.end += cooldown;
 
     WorldPacket data(SMSG_MODIFY_COOLDOWN, 4 + 8 + 4);

@@ -1507,12 +1507,13 @@ void Player::UpdatePotionCooldown(Spell *spell)
                     proto->Spells[idx].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE)
                     if (SpellInfo const *spellInfo =
                             sSpellMgr->GetSpellInfo(proto->Spells[idx].SpellId))
+                    {
                         SendCooldownEvent(spellInfo, GetLastPotionId());
+                    }
     }
     // from spell cases (m_lastPotionId set in Spell::SendSpellCooldown)
     else
     {
-        // return;
         if (spell->IsIgnoringCooldowns())
             return;
         SendCooldownEvent(spell->m_spellInfo, GetLastPotionId(), spell);

@@ -924,7 +924,7 @@ local function Abilities_onLevelChange(event, player, oldLevel)
     local talentSkills = TALENTSKILL[class]
 
     if classSkills then
-        for i = oldLevel + 1, level do
+        for i = 1, level do
             local levelSkills = classSkills[i] or {}
             for _, skillId in ipairs(levelSkills) do
                 if not player:HasSpell(skillId) then -- If the player doesn't already know the skill try to reduce the amount of queries in console
@@ -934,17 +934,19 @@ local function Abilities_onLevelChange(event, player, oldLevel)
         end
     end
     if teamSkills then
-        for i = oldLevel + 1, level do
+        for i = 1, level do
             local levelSkills = teamSkills[i] or {}
             for _, skillId in ipairs(levelSkills) do
-                player:LearnSpell(skillId)
+                if not player:HasSpell(skillId) then
+                    player:LearnSpell(skillId)
+                end
             end
         end
     end
     if talentSkills then
         for spellId, t in pairs(talentSkills) do
             if player:HasSpell(spellId) then
-                for i = oldLevel + 1, level do
+                for i = 1, level do
                     local levelSkills = t[i] or {}
                     for _, skillId in ipairs(levelSkills) do
                         player:LearnSpell(skillId)
@@ -992,6 +994,8 @@ end
 local function Abilities_onLogin(event, player)
     player:SendBroadcastMessage("This server is running the |cff4CFF00" ..
         FILE_NAME .. "|r module loaded.")
+
+    Abilities_onLevelChange(1, player, 0)
 end
 
 local function Abilities_onFirstLogin(event, player)

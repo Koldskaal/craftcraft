@@ -3445,7 +3445,6 @@ SpellCastResult Spell::prepare(SpellCastTargets const *targets, AuraEffect const
 {
     if (m_CastItem)
     {
-        LOG_DEBUG("module", "casting {}", m_CastItem->GetTemplate()->Name1);
         m_castItemGUID = m_CastItem->GetGUID();
     }
     else
@@ -4503,7 +4502,11 @@ void Spell::finish(bool ok)
 
     // potions disabled by client, send event "not in combat" if need
     if (m_caster->GetTypeId() == TYPEID_PLAYER && !m_triggeredByAuraSpell)
+    {
         m_caster->ToPlayer()->UpdatePotionCooldown(this);
+        // CRAFTCRAFT CDR (NEW)
+        m_caster->ToPlayer()->ModifySpellCooldown(m_spellInfo->Id, 0);
+    }
 
     // Take mods after trigger spell (needed for 14177 to affect 48664)
     // mods are taken only on succesfull cast and independantly from targets of the spell
