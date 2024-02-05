@@ -182,7 +182,6 @@ void Player::ApplySpellPowerBonus(int32 amount, bool apply)
 void Player::ApplySchoolSpellPowerBonus(SpellSchools spellSchool, int32 amount, bool apply)
 {
     apply = _ModifyUInt32(apply, m_schoolSpellPower[spellSchool], amount);
-    LOG_DEBUG("module", "spell bonus apllyied: {} {}", apply, m_schoolSpellPower[spellSchool]);
     // For speed just update for client
     // ApplyModUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, amount, apply);
     // for (int i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
@@ -585,7 +584,6 @@ void Player::UpdateAllCritPercentages()
     SetBaseModValue(CRIT_PERCENTAGE, PCT_MOD, value);
     SetBaseModValue(OFFHAND_CRIT_PERCENTAGE, PCT_MOD, value);
     SetBaseModValue(RANGED_CRIT_PERCENTAGE, PCT_MOD, value);
-    LOG_DEBUG("module", "melee | crit {}", value);
 
     UpdateCritPercentage(BASE_ATTACK);
     UpdateCritPercentage(OFF_ATTACK);

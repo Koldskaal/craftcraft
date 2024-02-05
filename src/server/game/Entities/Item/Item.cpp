@@ -349,7 +349,7 @@ void Item::SaveToDB(CharacterDatabaseTransaction trans)
         uint8 index = 0;
         CharacterDatabasePreparedStatement *stmt = CharacterDatabase.GetPreparedStatement(uState == ITEM_NEW ? CHAR_REP_ITEM_INSTANCE : CHAR_UPD_ITEM_INSTANCE);
         // CRAFTCRAFT item upgrader
-        if (GetOwner()->GetItemUpgradeMap()->contains(GetGUID().GetCounter()))
+        if (GetOwner() && GetOwner()->GetItemUpgradeMap() && GetOwner()->GetItemUpgradeMap()->contains(GetGUID().GetCounter()))
             stmt->SetData(index, GetOwner()->GetItemUpgradeMap()->at(GetGUID().GetCounter()).originalEntry);
         else
             stmt->SetData(index, GetEntry());

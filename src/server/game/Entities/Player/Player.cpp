@@ -11027,7 +11027,6 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
                 {
                     continue;
                 }
-
                 _AddSpellCooldown(i_scset->second, cat, itemId, catrecTime, !spellInfo->IsCooldownStartedOnEvent() && catrec && rec && catrec != rec);
                 forcedCategoryCooldowns[i_scset->second] = catrecTime;
             }
@@ -11063,6 +11062,7 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const *spellInfo, uint32 ite
 // CRAFTCRAFT CDR
 void Player::_AddSpellCooldown(uint32 spellid, uint16 categoryId, uint32 itemid, uint32 end_time, bool needSendToClient, bool forceSendToSpectator)
 {
+
     SpellCooldown sc;
     sc.end = GameTime::GetGameTimeMS().count() + end_time;
     sc.category = categoryId;
@@ -11090,14 +11090,13 @@ void Player::AddSpellCooldown(uint32 spellid, uint32 itemid, uint32 end_time, bo
 
 void Player::ModifySpellCooldown(uint32 spellId, int32 cooldown)
 {
-    SpellCooldowns::iterator itr = m_spellCooldowns.find(spellId);
+    SpellCooldowns::iterator itr = GetSpellCooldownMap().find(spellId);
     if (itr == m_spellCooldowns.end())
         return;
 
     // CRAFTCRAFT exception for applying cdr to items
     if (cooldown == 0)
     {
-        // LOG_DEBUG("module", "{} reduced", spellId);
         cooldown = itr->second.maxduration * 100.0f / (100.0f + GetBaseRating(CR_HIT_TAKEN_MELEE)) - itr->second.maxduration;
     }
     itr->second.end += cooldown;

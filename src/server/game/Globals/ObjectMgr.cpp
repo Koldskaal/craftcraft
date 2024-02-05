@@ -916,11 +916,6 @@ void ObjectMgr::LoadCreatureTemplateAddons()
                 // continue;
             }
 
-            if (entry == 9698)
-            {
-                LOG_DEBUG("module", "{}", spellInfo->Id);
-            }
-
             creatureAddon.auras.push_back(spellInfo->Id);
         }
 

@@ -4076,6 +4076,12 @@ void Spell::_cast(bool skipCheck)
 
     SendSpellCooldown();
 
+    if (m_caster->GetTypeId() == TYPEID_PLAYER && !m_triggeredByAuraSpell)
+    {
+        // CRAFTCRAFT CDR (NEW)
+        m_caster->ToPlayer()->ModifySpellCooldown(m_spellInfo->Id, 0);
+    }
+
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
         if (m_caster->ToPlayer()->GetCommandStatus(CHEAT_COOLDOWN))
             m_caster->ToPlayer()->RemoveSpellCooldown(m_spellInfo->Id, true);
@@ -4504,8 +4510,6 @@ void Spell::finish(bool ok)
     if (m_caster->GetTypeId() == TYPEID_PLAYER && !m_triggeredByAuraSpell)
     {
         m_caster->ToPlayer()->UpdatePotionCooldown(this);
-        // CRAFTCRAFT CDR (NEW)
-        m_caster->ToPlayer()->ModifySpellCooldown(m_spellInfo->Id, 0);
     }
 
     // Take mods after trigger spell (needed for 14177 to affect 48664)
@@ -7435,6 +7439,9 @@ SpellCastResult Spell::CheckItems()
             // xinef: required level has to be checked also! Exploit fix
             if (targetItem->GetTemplate()->ItemLevel < m_spellInfo->BaseLevel || (targetItem->GetTemplate()->RequiredLevel && targetItem->GetTemplate()->RequiredLevel < m_spellInfo->BaseLevel))
                 return SPELL_FAILED_LOWLEVEL;
+
+            if (targetItem->GetTemplate()->RequiredLevel > m_spellInfo->MaxLevel)
+                return SPELL_FAILED_HIGHLEVEL;
 
             bool isItemUsable = false;
             for (uint8 e = 0; e < MAX_ITEM_PROTO_SPELLS; ++e)
