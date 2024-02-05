@@ -18,8 +18,8 @@
 #ifndef __UNIT_H
 #define __UNIT_H
 
-#include "EventProcessor.h"
 #include "EnumFlag.h"
+#include "EventProcessor.h"
 #include "FollowerRefMgr.h"
 #include "FollowerReference.h"
 #include "HostileRefMgr.h"
@@ -387,7 +387,7 @@ enum UnitMoveType
 extern float baseMoveSpeed[MAX_MOVE_TYPE];
 extern float playerBaseMoveSpeed[MAX_MOVE_TYPE];
 
-enum WeaponAttackType
+enum WeaponAttackType : uint8
 {
     BASE_ATTACK = 0,
     OFF_ATTACK = 1,
@@ -426,7 +426,7 @@ enum CombatRating
 
 #define MAX_COMBAT_RATING 25
 
-enum DamageEffectType
+enum DamageEffectType : uint8
 {
     DIRECT_DAMAGE = 0,       // used for normal weapon damage (not for class abilities or spells)
     SPELL_DIRECT_DAMAGE = 1, // spell/class abilities damage
@@ -1456,6 +1456,8 @@ public:
     void setClassSecondary(uint8 _class);
     [[nodiscard]] uint32 getClassMask() const { return 1 << (getClass() - 1) | 1 << (getClassSecondary() - 1); }
     [[nodiscard]] uint8 getGender() const { return GetByteValue(UNIT_FIELD_BYTES_0, 2); }
+    [[nodiscard]] DisplayRace GetDisplayRaceFromModelId(uint32 modelId) const;
+    [[nodiscard]] DisplayRace GetDisplayRace() const { return GetDisplayRaceFromModelId(GetDisplayId()); };
 
     [[nodiscard]] float GetStat(Stats stat) const { return float(GetUInt32Value(static_cast<uint16>(UNIT_FIELD_STAT0) + stat)); }
     void SetStat(Stats stat, int32 val) { SetStatInt32Value(static_cast<uint16>(UNIT_FIELD_STAT0) + stat, val); }
@@ -2015,7 +2017,7 @@ public:
     AuraApplication *GetAuraApplicationOfRankedSpell(uint32 spellId, ObjectGuid casterGUID = ObjectGuid::Empty, ObjectGuid itemCasterGUID = ObjectGuid::Empty, uint8 reqEffMask = 0, AuraApplication *except = nullptr) const;
     [[nodiscard]] Aura *GetAuraOfRankedSpell(uint32 spellId, ObjectGuid casterGUID = ObjectGuid::Empty, ObjectGuid itemCasterGUID = ObjectGuid::Empty, uint8 reqEffMask = 0) const;
 
-    void GetDispellableAuraList(Unit *caster, uint32 dispelMask, DispelChargesList &dispelList);
+    void GetDispellableAuraList(Unit *caster, uint32 dispelMask, DispelChargesList &dispelList, SpellInfo const *dispelSpell);
 
     [[nodiscard]] bool HasAuraEffect(uint32 spellId, uint8 effIndex, ObjectGuid caster = ObjectGuid::Empty) const;
     [[nodiscard]] uint32 GetAuraCount(uint32 spellId) const;
@@ -2167,7 +2169,7 @@ public:
     // common function for visibility checks for player/creatures with detection code
     [[nodiscard]] uint32 GetPhaseByAuras() const;
     void SetPhaseMask(uint32 newPhaseMask, bool update) override; // overwrite WorldObject::SetPhaseMask
-    void UpdateObjectVisibility(bool forced = true) override;
+    void UpdateObjectVisibility(bool forced = true, bool fromUpdate = false) override;
 
     SpellImmuneList m_spellImmune[MAX_SPELL_IMMUNITY];
     uint32 m_lastSanctuaryTime;
@@ -2477,6 +2479,14 @@ public:
     void AddPointedBy(SafeUnitPointer *sup) { SafeUnitPointerSet.insert(sup); }
     void RemovePointedBy(SafeUnitPointer *sup) { SafeUnitPointerSet.erase(sup); }
     static void HandleSafeUnitPointersOnDelete(Unit *thisUnit);
+    // Relocation Nofier optimization
+    Position m_last_notify_position;
+    uint32 m_last_notify_mstime;
+    uint16 m_delayed_unit_relocation_timer;
+    uint16 m_delayed_unit_ai_notify_timer;
+    bool bRequestForcedVisibilityUpdate;
+    void ExecuteDelayedUnitRelocationEvent();
+    void ExecuteDelayedUnitAINotifyEvent();
 
     // cooldowns
     [[nodiscard]] virtual bool HasSpellCooldown(uint32 /*spell_id*/) const { return false; }
@@ -2642,7 +2652,7 @@ private:
     uint32 m_state; // Even derived shouldn't modify
     uint32 m_CombatTimer;
     uint32 m_lastManaUse; // msecs
-    TimeTrackerSmall m_splineSyncTimer;
+    // TimeTrackerSmall m_movesplineTimer;
 
     Diminishing m_Diminishing;
     // Manage all Units that are threatened by us
@@ -2724,17 +2734,6 @@ namespace Acore
         bool const _ascending;
     };
 }
-
-class ConflagrateAuraStateDelayEvent : public BasicEvent
-{
-public:
-    ConflagrateAuraStateDelayEvent(Unit *owner, ObjectGuid casterGUID) : BasicEvent(), m_owner(owner), m_casterGUID(casterGUID) {}
-    bool Execute(uint64 e_time, uint32 p_time) override;
-
-private:
-    Unit *m_owner;
-    ObjectGuid m_casterGUID;
-};
 
 class RedirectSpellEvent : public BasicEvent
 {

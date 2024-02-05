@@ -15,13 +15,6 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Scripts for spells with SPELLFAMILY_GENERIC which cannot be included in AI script file
- * of creature using it or can't be bound to any player class.
- * Ordered alphabetically using scriptname.
- * Scriptnames of files in this file should be prefixed with "spell_gen_"
- */
-
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
 #include "Battleground.h"
@@ -29,18 +22,25 @@
 #include "Cell.h"
 #include "CellImpl.h"
 #include "Chat.h"
+#include "CreatureScript.h"
 #include "GameTime.h"
 #include "GridNotifiers.h"
 #include "Group.h"
 #include "Pet.h"
 #include "ReputationMgr.h"
-#include "ScriptMgr.h"
 #include "SkillDiscovery.h"
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
+#include "SpellScriptLoader.h"
 #include "Unit.h"
 #include "Vehicle.h"
 #include <array>
+/*
+ * Scripts for spells with SPELLFAMILY_GENERIC which cannot be included in AI script file
+ * of creature using it or can't be bound to any player class.
+ * Ordered alphabetically using scriptname.
+ * Scriptnames of files in this file should be prefixed with "spell_gen_"
+ */
 
 /// @todo: this import is not necessary for compilation and marked as unused by the IDE
 //  however, for some reasons removing it would cause a damn linking issue
@@ -655,7 +655,6 @@ class spell_gen_area_aura_select_players : public AuraScript
    54847 - Mojo Volley       (spell_gen_select_target_count_15_2)
    59452 - Mojo Volley       (spell_gen_select_target_count_15_2)
    46008 - Negative Energy   (spell_gen_select_target_count_15_5)
-   38017 - Wave A - 1                 (spell_gen_select_target_count_7_1)
    40851 - Disgruntled                (spell_gen_select_target_count_7_1)
    45680 - Shadow Bolt                (spell_gen_select_target_count_7_1)
    45976 - Open Portal                (spell_gen_select_target_count_7_1)
@@ -1947,7 +1946,7 @@ class spell_pvp_trinket_wotf_shared_cd : public SpellScript
         return GetCaster()->GetTypeId() == TYPEID_PLAYER;
     }
 
-    bool Validate(SpellInfo const * /*spellEntry*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
         return ValidateSpellInfo({SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER,
                                   SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER_WOTF,
@@ -4897,33 +4896,33 @@ enum SpiritofCompetition
 {
     // Spells
     SPELL_SPIRIT_OF_COMPETITION_PARTICIPANT_EFFECT = 48056,
-    SPELL_SPIRIT_OF_COMPETITION_WINNER_EFFECT      = 48057,
+    SPELL_SPIRIT_OF_COMPETITION_WINNER_EFFECT = 48057,
     // Mail
-    MAIL_THE_COMPETITIORS_TABARD                   = 195,
-    MAIL_A_GOLD_MEDALLION                          = 196,
+    MAIL_THE_COMPETITIORS_TABARD = 195,
+    MAIL_A_GOLD_MEDALLION = 196,
     // NPC
-    NPC_SPIRIT_OF_COMPETITION                      = 27217,
+    NPC_SPIRIT_OF_COMPETITION = 27217,
     // Items
-    ITEM_COMPETITORS_TABARD                        = 36941,
-    ITEM_GOLD_MEDALLION                            = 37297,
+    ITEM_COMPETITORS_TABARD = 36941,
+    ITEM_GOLD_MEDALLION = 37297,
 };
 
 class spell_gen_spirit_of_competition_participant : public SpellScript
 {
     PrepareSpellScript(spell_gen_spirit_of_competition_participant);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_SPIRIT_OF_COMPETITION_PARTICIPANT_EFFECT });
+        return ValidateSpellInfo({SPELL_SPIRIT_OF_COMPETITION_PARTICIPANT_EFFECT});
     }
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        if (Player* player = GetHitPlayer())
+        if (Player *player = GetHitPlayer())
         {
             player->CastSpell(player, SPELL_SPIRIT_OF_COMPETITION_PARTICIPANT_EFFECT, true);
 
-            Item* item = Item::CreateItem(ITEM_COMPETITORS_TABARD, 1);
+            Item *item = Item::CreateItem(ITEM_COMPETITORS_TABARD, 1);
             if (!item)
                 return;
 
@@ -4945,18 +4944,18 @@ class spell_gen_spirit_of_competition_winner : public SpellScript
 {
     PrepareSpellScript(spell_gen_spirit_of_competition_winner);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_SPIRIT_OF_COMPETITION_WINNER_EFFECT });
+        return ValidateSpellInfo({SPELL_SPIRIT_OF_COMPETITION_WINNER_EFFECT});
     }
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        if (Player* player = GetHitPlayer())
+        if (Player *player = GetHitPlayer())
         {
             player->CastSpell(player, SPELL_SPIRIT_OF_COMPETITION_WINNER_EFFECT, true);
 
-            Item* item = Item::CreateItem(ITEM_GOLD_MEDALLION, 1);
+            Item *item = Item::CreateItem(ITEM_GOLD_MEDALLION, 1);
             if (!item)
                 return;
 
@@ -4978,16 +4977,16 @@ class spell_gen_spirit_of_competition_winner : public SpellScript
 enum Valthalak
 {
     SPELL_INSTILL_LORD_VALTHALAK_SPIRIT = 27360,
-    NPC_LORD_VALTHALAK                  = 16042
+    NPC_LORD_VALTHALAK = 16042
 };
 
 class spell_gen_valthalak_amulet : public SpellScript
 {
     PrepareSpellScript(spell_gen_valthalak_amulet)
 
-    SpellCastResult CheckCast()
+        SpellCastResult CheckCast()
     {
-        if (Unit* target = GetExplTargetUnit())
+        if (Unit *target = GetExplTargetUnit())
             if (target->GetEntry() == NPC_LORD_VALTHALAK && target->isDead())
                 return SPELL_CAST_OK;
 
@@ -5009,9 +5008,9 @@ class spell_gen_planting_scourge_banner : public SpellScript
 {
     PrepareSpellScript(spell_gen_planting_scourge_banner)
 
-    SpellCastResult CheckCast()
+        SpellCastResult CheckCast()
     {
-        if (GameObject* tent = GetCaster()->FindNearestGameObject(GO_COMMAND_TENT, 20.0f))
+        if (GameObject *tent = GetCaster()->FindNearestGameObject(GO_COMMAND_TENT, 20.0f))
             if (tent->GetGoState() != GO_STATE_READY) // If tent is burned down
                 return SPELL_CAST_OK;
 
@@ -5034,14 +5033,14 @@ class spell_gen_jubling_cooldown : public SpellScript
 {
     PrepareSpellScript(spell_gen_jubling_cooldown);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_JUBLING_COOLDOWN_1_WEEK });
+        return ValidateSpellInfo({SPELL_JUBLING_COOLDOWN_1_WEEK});
     }
 
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
-        if (Player* target = GetHitPlayer())
+        if (Player *target = GetHitPlayer())
         {
             target->CastSpell(target, SPELL_JUBLING_COOLDOWN_1_WEEK); // 1 week
         }
@@ -5056,7 +5055,7 @@ class spell_gen_jubling_cooldown : public SpellScript
 // 12699 - Yeh'kinya's Bramble
 enum YehkinyaBramble
 {
-    NPC_VALE_SCREECHER       = 5307,
+    NPC_VALE_SCREECHER = 5307,
     NPC_ROGUE_VALE_SCREECHER = 5308
 };
 
@@ -5064,9 +5063,9 @@ class spell_gen_yehkinya_bramble : public SpellScript
 {
     PrepareSpellScript(spell_gen_yehkinya_bramble)
 
-    SpellCastResult CheckCast()
+        SpellCastResult CheckCast()
     {
-        if (Unit* target = GetExplTargetUnit())
+        if (Unit *target = GetExplTargetUnit())
             if ((target->GetEntry() == NPC_VALE_SCREECHER || target->GetEntry() == NPC_ROGUE_VALE_SCREECHER) && target->isDead())
                 return SPELL_CAST_OK;
 
@@ -5090,14 +5089,14 @@ class spell_gen_choking_vines : public AuraScript
 {
     PrepareAuraScript(spell_gen_choking_vines);
 
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const * /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_CHOKING_VINES, SPELL_CHOKING_WOUND });
+        return ValidateSpellInfo({SPELL_CHOKING_VINES, SPELL_CHOKING_WOUND});
     }
 
-    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnApply(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (Unit* target = GetTarget())
+        if (Unit *target = GetTarget())
         {
             if (GetStackAmount() == GetSpellInfo()->StackAmount) // 5 stacks
             {

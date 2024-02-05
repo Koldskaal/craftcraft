@@ -15,6 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "AllCreatureScript.h"
 #include "ScriptMgr.h"
 #include "ScriptMgrMacros.h"
 
@@ -72,5 +73,12 @@ void ScriptMgr::OnCreatureRespawned(Creature *creature)
 //     if (ret && *ret)
 //         return false;
 //
-//     return true;
-// }
+//    return true;
+//}
+
+AllCreatureScript::AllCreatureScript(const char *name) : ScriptObject(name)
+{
+    ScriptRegistry<AllCreatureScript>::AddScript(this);
+}
+
+template class AC_GAME_API ScriptRegistry<AllCreatureScript>;

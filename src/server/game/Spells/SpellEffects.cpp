@@ -385,10 +385,6 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                         damage += damage / 4;
                 }
             }
-            // Immolate - hidden delay for conflagrate
-            else if (m_spellInfo->SpellFamilyFlags[0] & 0x4)
-            {
-            }
             // Conflagrate - consumes Immolate or Shadowflame
             else if (m_spellInfo->TargetAuraState == AURA_STATE_CONFLAGRATE)
             {
@@ -810,23 +806,6 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
                 m_caster->CastSpell(m_caster, 65047, true); // Mirror Image
 
             break;
-        }
-        // Vanish (not exist)
-        case 18461:
-        {
-            unitTarget->RemoveMovementImpairingAuras(true);
-            unitTarget->RemoveAurasByType(SPELL_AURA_MOD_STALKED);
-
-            // See if we already are stealthed. If so, we're done.
-            if (unitTarget->HasAura(1784))
-                return;
-
-            // Reset cooldown on stealth if needed
-            if (unitTarget->GetTypeId() == TYPEID_PLAYER && unitTarget->ToPlayer()->HasSpellCooldown(1784))
-                unitTarget->ToPlayer()->RemoveSpellCooldown(1784);
-
-            unitTarget->CastSpell(unitTarget, 1784, true);
-            return;
         }
         // Demonic Empowerment -- succubus
         case 54437:
@@ -2568,7 +2547,7 @@ void Spell::EffectDispel(SpellEffIndex effIndex)
     uint32 dispelMask = SpellInfo::GetDispelMask(DispelType(dispel_type));
 
     DispelChargesList dispel_list;
-    unitTarget->GetDispellableAuraList(m_caster, dispelMask, dispel_list);
+    unitTarget->GetDispellableAuraList(m_caster, dispelMask, dispel_list, m_spellInfo);
     if (dispel_list.empty())
         return;
 
@@ -4064,7 +4043,7 @@ void Spell::EffectSanctuary(SpellEffIndex /*effIndex*/)
     }
 
     UnitList targets;
-    Acore::AnyUnfriendlyUnitInObjectRangeCheck u_check(unitTarget, unitTarget, unitTarget->GetVisibilityRange());
+    Acore::AnyUnfriendlyUnitInObjectRangeCheck u_check(unitTarget, unitTarget, unitTarget->GetVisibilityRange()); // no VISIBILITY_COMPENSATION, distance is enough
     Acore::UnitListSearcher<Acore::AnyUnfriendlyUnitInObjectRangeCheck> searcher(unitTarget, targets, u_check);
     Cell::VisitAllObjects(unitTarget, searcher, unitTarget->GetVisibilityRange());
     for (UnitList::iterator iter = targets.begin(); iter != targets.end(); ++iter)
@@ -4099,16 +4078,6 @@ void Spell::EffectSanctuary(SpellEffIndex /*effIndex*/)
 
     // Xinef: Set last sanctuary time
     unitTarget->m_lastSanctuaryTime = GameTime::GetGameTimeMS().count();
-
-    // Vanish allows to remove all threat and cast regular stealth so other spells can be used
-    if (m_caster->GetTypeId() == TYPEID_PLAYER && m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_VANISH))
-    {
-        m_caster->ToPlayer()->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
-
-        // Clean Escape
-        if (m_caster->HasAura(23582))
-            m_caster->CastSpell(m_caster, 23583, true);
-    }
 }
 
 void Spell::EffectAddComboPoints(SpellEffIndex /*effIndex*/)
@@ -4801,7 +4770,7 @@ void Spell::EffectForceDeselect(SpellEffIndex /*effIndex*/)
     WorldPacket data(SMSG_CLEAR_TARGET, 8);
     data << m_caster->GetGUID();
 
-    float dist = m_caster->GetVisibilityRange();
+    float dist = m_caster->GetVisibilityRange() + VISIBILITY_COMPENSATION;
     Acore::MessageDistDelivererToHostile notifier(m_caster, &data, dist);
     Cell::VisitWorldObjects(m_caster, notifier, dist);
 
@@ -4826,7 +4795,7 @@ void Spell::EffectForceDeselect(SpellEffIndex /*effIndex*/)
             return;
 
         UnitList targets;
-        Acore::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_caster, m_caster, m_caster->GetVisibilityRange());
+        Acore::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_caster, m_caster, m_caster->GetVisibilityRange()); // no VISIBILITY_COMPENSATION, distance is enough
         Acore::UnitListSearcher<Acore::AnyUnfriendlyUnitInObjectRangeCheck> searcher(m_caster, targets, u_check);
         Cell::VisitAllObjects(m_caster, searcher, m_caster->GetVisibilityRange());
         for (UnitList::iterator iter = targets.begin(); iter != targets.end(); ++iter)
@@ -4942,7 +4911,6 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
         Player *player = m_caster->ToPlayer();
         if (player)
         {
-            sScriptMgr->AnticheatSetSkipOnePacketForASH(player, true);
             // charge changes fall time
             player->SetFallInformation(GameTime::GetGameTime().count(), m_caster->GetPositionZ());
 
@@ -4969,22 +4937,12 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
             sScriptMgr->AnticheatSetUnderACKmount(player);
         }
     }
-
-    if (effectHandleMode == SPELL_EFFECT_HANDLE_HIT_TARGET && m_caster->ToPlayer())
-    {
-        sScriptMgr->AnticheatSetSkipOnePacketForASH(m_caster->ToPlayer(), true);
-    }
 }
 
 void Spell::EffectChargeDest(SpellEffIndex /*effIndex*/)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_LAUNCH)
         return;
-
-    if (m_caster->ToPlayer())
-    {
-        sScriptMgr->AnticheatSetSkipOnePacketForASH(m_caster->ToPlayer(), true);
-    }
 
     if (m_targets.HasDst())
     {
@@ -5177,7 +5135,6 @@ void Spell::EffectPullTowards(SpellEffIndex effIndex)
 
     if (unitTarget->GetTypeId() == TYPEID_PLAYER)
     {
-        sScriptMgr->AnticheatSetSkipOnePacketForASH(unitTarget->ToPlayer(), true);
         sScriptMgr->AnticheatSetUnderACKmount(unitTarget->ToPlayer());
     }
 }
