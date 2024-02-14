@@ -15,11 +15,26 @@ local function sortedKeys(query, sortFunction)
     return keys
 end
 
+local function CacheAllMats()
+    for key, value in pairs(MAT_BRACKETS) do
+        if key ~= "crc" then
+            table.sort(value.materials)
+            for _, mat in pairs(value.materials) do
+                GameTooltip:SetOwner(UIParent, "ANCHOR_RIGHT");
+                GameTooltip:SetHyperlink("item:" ..
+                    mat .. ":0:0:0:0:0:0:0")
+            end
+        end
+    end
+
+    GameTooltip:Hide()
+end
 
 local function SetBracketMaterials(player, brackets, crc)
     MAT_BRACKETS = brackets
     MAT_BRACKETS["crc"] = crc
     print("Received mat brackets")
+    CacheAllMats()
 end
 
 local function SetBracketMaterialCosts(player, mat_costs, crc)
@@ -30,27 +45,18 @@ local function SetBracketMaterialCosts(player, mat_costs, crc)
     print(crc)
 end
 
+
+
 MAT_BRACKETS = MAT_BRACKETS or {}
 MAT_COSTS = MAT_COSTS or {}
 AIO.AddSavedVar("MAT_BRACKETS")
 AIO.AddSavedVar("MAT_COSTS")
-
+CacheAllMats()
 
 
 AIO.Msg():Add("RequestBracketMaterials", MAT_BRACKETS["crc"],
     MAT_COSTS["crc"]):Send()
 
-local function StringHash(text)
-    local counter = 1
-    local len = string.len(text)
-    for i = 1, len, 3 do
-        counter = math.fmod(counter * 8161, 4294967279) + -- 2^32 - 17: Prime!
-            (string.byte(text, i) * 16776193) +
-            ((string.byte(text, i + 1) or (len - i + 256)) * 8372226) +
-            ((string.byte(text, i + 2) or (len - i + 256)) * 3932164)
-    end
-    return math.fmod(counter, 4294967291) -- 2^32 - 5: Prime (and different from the prime in the loop)
-end
 
 local mat_inventory_mult = {
     0,    --0	Non equipable
@@ -92,74 +98,98 @@ local quality_mult_mat = {
     1,    --Purple
 };
 
-local function generateBudgetMats(
-    itemLevel,
-    mult,
-    inventoryType
-)
-    print(mat_inventory_mult[inventoryType + 1], mult, itemLevel)
-    return (
-        math.max(
-            (itemLevel * mult + 2) * mat_inventory_mult[inventoryType + 1],
-            0
-        ) ^ 2
-    );
-end
+local BASE_MAT_COUNT = 20;
+
+ITEM_INVTYPE_IDS = {
+    ["INVTYPE_NON_EQUIP"] = 0,
+    ["INVTYPE_HEAD"] = 1,
+    ["INVTYPE_NECK"] = 2,
+    ["INVTYPE_SHOULDER"] = 3,
+    ["INVTYPE_BODY"] = 4,
+    ["INVTYPE_CHEST"] = 5,
+    ["INVTYPE_WAIST"] = 6,
+    ["INVTYPE_LEGS"] = 7,
+    ["INVTYPE_FEET"] = 8,
+    ["INVTYPE_WRIST"] = 9,
+    ["INVTYPE_HAND"] = 10,
+    ["INVTYPE_FINGER"] = 11,
+    ["INVTYPE_TRINKET"] = 12,
+    ["INVTYPE_WEAPON"] = 13,
+    ["INVTYPE_SHIELD"] = 14,
+    ["INVTYPE_RANGED"] = 15,
+    ["INVTYPE_CLOAK"] = 16,
+    ["INVTYPE_2HWEAPON"] = 17,
+    ["INVTYPE_BAG"] = 18,
+    ["INVTYPE_TABARD"] = 19,
+    ["INVTYPE_ROBE"] = 20,
+    ["INVTYPE_WEAPONMAINHAND"] = 21,
+    ["INVTYPE_WEAPONOFFHAND"] = 22,
+    ["INVTYPE_HOLDABLE"] = 23,
+    ["INVTYPE_THROWN"] = 24,
+    ["INVTYPE_AMMO"] = 25,
+    ["INVTYPE_RANGEDRIGHT"] = 26,
+    ["INVTYPE_QUIVER"] = 27,
+    ["INVTYPE_RELIC"] = 28,
+}
 
 
-
-local function GenerateMaterialRequirements(seed, itemLvl, quality, inventoryType)
-    -- - ilvl 10 -> ilvl 65
-    -- - Mats:
-    -- - tier 1
-    -- - tier 2
-    -- - tier 3
-    -- - tier 4
-    -- - tier 5
-    local budget = generateBudgetMats(itemLvl, quality_mult_mat[quality + 1],
-        inventoryType)
-    local budgetPerMat = budget / #MAT_BRACKETS;
+function GenerateMaterialRequirements(seed, itemLvl, quality, inventoryType,
+                                      targetilvl)
     local new_mats = {}
-    print(budgetPerMat, budget)
+    local current_ilvl = itemLvl
 
     for i = 1, #MAT_BRACKETS, 1 do
-        local mats = MAT_BRACKETS[i]["materials"]
-        table.sort(mats)
+        local max_ilvl = MAT_BRACKETS[i]["max_level"] + 6
+        local ilvl_diff = MAT_BRACKETS[i]["max_level"] -
+            MAT_BRACKETS[i]["min_level"]
 
-        local mat_cost = MAT_COSTS[mats[seed % #mats + 1]]
-        if (not mat_cost) then mat_cost = 1 end
+        if (current_ilvl >= targetilvl) then return new_mats end
+        if current_ilvl < max_ilvl then
+            local mats = MAT_BRACKETS[i]["materials"]
+            -- table.sort(mats)
 
-        local count = math.floor(budgetPerMat ^ (1 / 2) / mat_cost + 0.5)
-        table.insert(new_mats,
-            { material = mats[seed % #mats + 1], count = count })
+            local mat_cost = MAT_COSTS[mats[seed % #mats + 1]]
+            if (not mat_cost) then mat_cost = 1 end
+            local ratio = math.min(10, max_ilvl - itemLvl) / ilvl_diff
+            local count = math.floor(ratio * BASE_MAT_COUNT *
+                -- quality_mult_mat[quality + 1] * -- temporary removed
+                mat_inventory_mult[inventoryType + 1] / mat_cost + 0.5)
+            table.insert(new_mats,
+                { material = mats[seed % #mats + 1], count = count })
+
+            current_ilvl = max_ilvl
+        end
     end
 
     return new_mats
 end
 
-function CastItemUpgrade(bagId, slotId, desiredQuality,
-                         desiredItemLevel)
-    -- local itemID = GetContainerItemID(bagId, slotId)
-    local mats = GenerateMaterialRequirements(100000, 65, 1, 1)
-
-    for key, value in pairs(mats) do
-        print(value["material"], value
-            ["count"])
-        -- print("Materials: " .. value["material"] .. " | Cost: " .. value
-        -- ["count"])
-    end
-
-
-    AIO.Msg():Add("CastItemUpgrade", bagId, slotId, desiredQuality,
-        desiredItemLevel):Send()
+function CastItemUpgrade(bagId, slotId, desiredItemLevel, desiredQuality)
+    AIO.Msg():Add("CastItemUpgrade", bagId, slotId, desiredItemLevel,
+        desiredQuality):Send()
 end
 
---GenerateMaterialRequirements(StringHash("string"), 65, 2, 1)
--- print()
--- print(#MAT_COSTS)
--- for index, value in pairs(MAT_COSTS) do
---     print(index, value)
--- end -- DOESNT WORK YET
+function NextItemUpgrade(itemlvl, quality)
+    local resItemLvl = itemlvl
+    if itemlvl < 25 then
+        resItemLvl = 25
+    elseif itemlvl < 35 then
+        resItemLvl = 35
+    elseif itemlvl < 45 then
+        resItemLvl = 45
+    elseif itemlvl < 55 then
+        resItemLvl = 55
+    elseif itemlvl < 65 then
+        resItemLvl = 65
+        if quality < 3 then
+            quality = quality + 1
+        end
+    end
+
+    if quality > 4 then quality = 4 end
+
+    return resItemLvl, quality;
+end
 
 AIO.RegisterEvent("SetBracketMaterials", SetBracketMaterials)
 AIO.RegisterEvent("SetBracketMaterialsCosts", SetBracketMaterialCosts)
