@@ -18,6 +18,7 @@ local function summon_stuff(event, player)
 end
 
 local function PlrMenu(event, player, message)
+	if player:GetGMRank() <= 2 then return end
 	local words = {}
 	for word in message:gmatch("%w+") do table.insert(words, word) end
 
@@ -26,7 +27,7 @@ local function PlrMenu(event, player, message)
 		if player:GetGMRank() > 2 then
 			player:SetSecondaryClass(tonumber(words[2]))
 			player:SendServerResponse("DualClass", 1, player:GetSecondaryClass())
-			print(words[2])
+			-- print(words[2])
 			return false
 		end
 	end
@@ -40,8 +41,23 @@ local function PlrMenu(event, player, message)
 
 	if (words[1] == "ench") then
 		if player:GetGMRank() > 2 then
-			local item = player:GetItemByPos(255, 17) -- Main hand
-			print(item:SetEnchantment(4, 4))
+			local item = player:GetItemByPos(255, 4) -- Chest
+			local enchant = 155
+			if words[2] then
+				enchant = tonumber(words[2])
+			end
+
+			for i = 0, 6, 1 do
+				item:ClearEnchantment(i)
+				-- local success = item:SetEnchantment(3868, i)
+			end
+			for i = 2, 5, 1 do
+				-- item:ClearEnchantment(i)
+				local success = item:SetEnchantment(enchant + i, i)
+			end
+			-- local success = item:SetEnchantment(180009, 6)
+			-- print(success) -- 170000 2, 3, 4 are viable slots
+			-- print(item:GetName())
 			return false
 		end
 	end
@@ -53,6 +69,11 @@ local function PlrMenu(event, player, message)
 			player:SendAddonMessage("HALLO", "ASD", 7, player)
 			return false
 		end
+	end
+
+	if (words[1] == "durr") then
+		player:DurabilityRepairAll(false)
+		player:DurabilityPointsLossAll(tonumber(words[2]))
 	end
 
 

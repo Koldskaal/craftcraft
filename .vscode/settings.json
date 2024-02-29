@@ -126,6 +126,10 @@
     ],
     "Lua.diagnostics.globals": [
         "WorldDBQuery",
-        "GetItemInfo"
+        "GetItemInfo",
+        "getItem",
+        "weightedRandom",
+        "randomArray",
+        "getRateBracket"
     ]
 }

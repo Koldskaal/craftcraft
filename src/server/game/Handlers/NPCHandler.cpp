@@ -174,7 +174,7 @@ void WorldSession::SendTrainerList(ObjectGuid guid, const std::string &strTitle)
         data << uint32(tSpell->reqSkillValue);
         // prev + req or req + 0
         uint8 maxReq = 0;
-        
+
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             if (!tSpell->learnedSpell[i])
@@ -389,7 +389,8 @@ void WorldSession::SendSpiritResurrect()
 {
     _player->ResurrectPlayer(0.5f, true);
 
-    _player->DurabilityLossAll(0.25f, true);
+    // CRAFTCRAFT durability change
+    // _player->DurabilityLossAll(0.25f, true);
 
     // get corpse nearest graveyard
     GraveyardStruct const *corpseGrave = nullptr;

@@ -8,46 +8,6 @@ end
 local crc32 = require("crc32lua").crc32
 local Smallfolk = Smallfolk or require("smallfolk")
 
-local mat_inventory_mult = {
-    0,    --0	Non equipable
-    1,    --1	Head
-    0.55, --2	Neck
-    0.77, --3	Shoulder
-    0,    --4	Shirt
-    1,    --5	Chest (see also Robe = 20)
-    0.77, --6	Waist
-    1,    --7	Legs
-    0.77, --8	Feet
-    0.55, --9	Wrists
-    0.77, --10	Hands
-    0.55, --11	Finger
-    0.7,  --12	Trinket
-    0.8,  --13	One-Hand (not to confuse with Off-Hand = 22)
-    0.8,  --14	Shield (class = armor, not weapon even if in weapon slot)
-    1,    --15	Ranged (Bows) (see also Ranged right = 26)
-    0.55, --16	Back
-    1.2,  --17	Two-Hand
-    0,    --18	Bag
-    0,    --19	Tabard
-    1,    --20	Robe (see also Chest = 5)
-    0.8,  --21	Main hand
-    0.8,  --22	Off Hand weapons (see also One-Hand = 13)
-    0.8,  --23	Held in Off-Hand (tome, cane, flowers, torches, orbs etc... See also Off-Hand = 22) (class = armor, not weapon even if in weapon slot)
-    0,    --24	Ammo
-    0.8,  --25	Thrown
-    1,    --26	Ranged right (Wands, Guns) (see also Ranged = 15)
-    0,    --27	Quiver
-    0.3,  --28	Relic (class = armor, not weapon even if in weapon slot)
-}
-
-local quality_mult_mat = {
-    0,    --Grey
-    0.3,  --White
-    0.5,  --Green
-    0.75, --Blue
-    1,    --Purple
-};
-
 local brackets = {
     [1] = {
         bracket = "lvl_bracket1",
@@ -82,40 +42,6 @@ local brackets = {
 }
 
 local mat_costs = {}
-
-local function generateBudgetMats(
-    itemLevel,
-    mult,
-    inventoryType
-)
-    return (
-        math.max(
-            (itemLevel * mult + 2) * mat_inventory_mult[inventoryType + 1],
-            0
-        ) ^ 2
-    );
-end
-
-local function GenerateMaterialRequirements(seed, itemLvl, quality, inventoryType)
-    local budget = generateBudgetMats(itemLvl, quality_mult_mat[quality + 1],
-        inventoryType)
-    local budgetPerMat = budget / #MAT_BRACKETS;
-    local new_mats = {}
-
-    for i = 1, #MAT_BRACKETS, 1 do
-        local mats = MAT_BRACKETS[i]["materials"]
-        table.sort(mats)
-
-        local mat_cost = MAT_COSTS[mats[seed % #mats + 1]]
-        if (not mat_cost) then mat_cost = 1 end
-
-        local count = math.floor(budgetPerMat ^ (1 / 2) / mat_cost + 0.5)
-        table.insert(new_mats,
-            { material = mats[seed % #mats + 1], count = count })
-    end
-
-    return new_mats
-end
 
 -- Brackets are split by 10 lvls. 1-20 is split into two as well
 local function sortedKeys(query, sortFunction)
@@ -189,15 +115,16 @@ local function CastItemUpgrade(player, bagId, slotId, desiredItemLevel,
     end
     if (bagId == -1) then return end
 
-    local item = player:GetItemByPos(bagId, slotId - 1)
+    local item = player:GetItemByPos(bagId, slotId - 1);
 
-    if item:GetItemLevel() >= player:GetLevel() + 5 then
-        player:SendBroadcastMessage(
-            "Your level is too low to upgrade this item. (temp message)")
+    if (item:GetItemLevel() == desiredItemLevel and item:GetQuality() == desiredQuality) then
+        return;
+    end
+    if item:GetItemLevel() > desiredItemLevel then -- ignore downgrade
         return
     end
 
-    if desiredItemLevel >= player:GetLevel() + 5 then
+    if desiredItemLevel > player:GetLevel() + 5 then
         player:SendBroadcastMessage(
             "Your level is too low to upgrade this item this far.")
         return

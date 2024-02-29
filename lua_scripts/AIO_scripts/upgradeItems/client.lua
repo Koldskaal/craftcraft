@@ -1,6 +1,5 @@
 local AIO = AIO or require("AIO")
 
-
 if AIO.AddAddon() then
     return
 end
@@ -13,6 +12,20 @@ local function sortedKeys(query, sortFunction)
     end
     table.sort(keys, sortFunction)
     return keys
+end
+
+local function lshift(x, by)
+    return x * 2 ^ by
+end
+
+function StringHash(str)
+    local h = 5381;
+
+    for c in str:gmatch "." do
+        h = ((lshift(h, 2) + h) + string.byte(c)) % 4294967295
+    end
+    -- print(string.format("%.f", h))
+    return h
 end
 
 local function CacheAllMats()
@@ -133,10 +146,11 @@ ITEM_INVTYPE_IDS = {
 }
 
 
-function GenerateMaterialRequirements(seed, itemLvl, quality, inventoryType,
+function GenerateMaterialRequirements(name, itemLvl, quality, inventoryType,
                                       targetilvl)
     local new_mats = {}
     local current_ilvl = itemLvl
+    local seed = StringHash(name);
 
     for i = 1, #MAT_BRACKETS, 1 do
         local max_ilvl = MAT_BRACKETS[i]["max_level"] + 6
@@ -147,15 +161,15 @@ function GenerateMaterialRequirements(seed, itemLvl, quality, inventoryType,
         if current_ilvl < max_ilvl then
             local mats = MAT_BRACKETS[i]["materials"]
             -- table.sort(mats)
-
-            local mat_cost = MAT_COSTS[mats[seed % #mats + 1]]
+            local index = seed % #mats + 1;
+            local mat_cost = MAT_COSTS[mats[index]]
             if (not mat_cost) then mat_cost = 1 end
             local ratio = math.min(10, max_ilvl - itemLvl) / ilvl_diff
             local count = math.floor(ratio * BASE_MAT_COUNT *
                 -- quality_mult_mat[quality + 1] * -- temporary removed
                 mat_inventory_mult[inventoryType + 1] / mat_cost + 0.5)
             table.insert(new_mats,
-                { material = mats[seed % #mats + 1], count = count })
+                { material = mats[index], count = count })
 
             current_ilvl = max_ilvl
         end
