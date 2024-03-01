@@ -1353,7 +1353,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             m_transport = nullptr;
             m_movementInfo.transport.Reset();
             m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_ONTRANSPORT);
-            RepopAtGraveyard();                             // teleport to near graveyard if on transport, looks blizz like :)
+            RepopAtGraveyard(); // teleport to near graveyard if on transport, looks blizz like :)
         }
 
         SendTransferAborted(mapid, TRANSFER_ABORT_INSUF_EXPAN_LVL, mEntry->Expansion());
@@ -2323,7 +2323,7 @@ void Player::UninviteFromGroup()
 
     if (group->IsCreated())
     {
-        if (group->GetMembersCount() <= 1)                       // group has just 1 member => disband
+        if (group->GetMembersCount() <= 1) // group has just 1 member => disband
         {
             group->Disband(true);
             group = nullptr; // gets deleted in disband
@@ -4748,8 +4748,9 @@ void Player::DurabilityPointsLoss(Item *item, int32 points)
     int32 pOldDurability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
     int32 pNewDurability = pOldDurability - points;
 
-    if (pNewDurability < 0)
-        pNewDurability = 0;
+    // CRAFTCRAFT durability change
+    if (pNewDurability < 1)
+        pNewDurability = 1;
     else if (pNewDurability > pMaxDurability)
         pNewDurability = pMaxDurability;
 
@@ -5632,7 +5633,7 @@ void Player::SaveRecallPosition()
     m_recallO = GetOrientation();
 }
 
-void Player::SendMessageToSetInRange(WorldPacket const* data, float dist, bool self, bool includeMargin, Player const* skipped_rcvr) const
+void Player::SendMessageToSetInRange(WorldPacket const *data, float dist, bool self, bool includeMargin, Player const *skipped_rcvr) const
 {
     if (self)
         GetSession()->SendPacket(data);
@@ -9437,7 +9438,7 @@ void Player::Whisper(std::string_view text, Language language, Player *target, b
     }
 }
 
-void Player::Whisper(uint32 textId, Player* target, bool isBossWhisper)
+void Player::Whisper(uint32 textId, Player *target, bool isBossWhisper)
 {
     if (!target)
         return;
@@ -11417,7 +11418,7 @@ WorldLocation Player::GetStartPosition() const
     return WorldLocation(mapId, info->positionX, info->positionY, info->positionZ, 0);
 }
 
-bool Player::HaveAtClient(WorldObject const* u) const
+bool Player::HaveAtClient(WorldObject const *u) const
 {
     if (u == this)
     {
@@ -13190,12 +13191,12 @@ void Player::SetViewpoint(WorldObject *target, bool apply)
         UpdateVisibilityOf(target);
 
         if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
-            ((Unit*)target)->AddPlayerToVision(this);
+            ((Unit *)target)->AddPlayerToVision(this);
         SetSeer(target);
     }
     else
     {
-        //must immediately set seer back otherwise may crash
+        // must immediately set seer back otherwise may crash
         m_seer = this;
 
         LOG_DEBUG("maps", "Player::CreateViewpoint: Player {} remove seer", GetName());
@@ -14267,7 +14268,7 @@ bool Player::CanResummonPet(uint32 spellid)
     }
     else if (getClass() == CLASS_MAGE)
     {
-        if (HasSpell(31687) && HasAura(70937))  //Has [Summon Water Elemental] spell and [Glyph of Eternal Water].
+        if (HasSpell(31687) && HasAura(70937)) // Has [Summon Water Elemental] spell and [Glyph of Eternal Water].
             return true;
     }
     else if (getClass() == CLASS_HUNTER)

@@ -4,9 +4,7 @@ if AIO.AddAddon() then
     return
 end
 local handler = AIO.AddHandlers("random_enchant", {})
-ENCH_CACHE = ENCH_CACHE or {}
 
-AIO.AddSavedVar("ENCH_CACHE")
 
 function handler.SetEnchantInfo(player, info)
     for i = 1, 3, 1 do
@@ -23,3 +21,7 @@ end
 function RollRandomEnchant(bagId, slotId, slot)
     AIO.Handle("random_enchant", "RollEnchant", bagId, slotId, slot);
 end
+
+ENCH_CACHE = ENCH_CACHE or {}
+
+AIO.AddSavedVar("ENCH_CACHE")

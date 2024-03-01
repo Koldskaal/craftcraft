@@ -1,6 +1,7 @@
 require("SMH")
 local command = "gimme"
 local setclass = "setclass"
+local AIO = AIO or require("AIO")
 
 local items = { 205016, 205017, 205018, 205019, 205020,
 	205021, 205022, 205023,
@@ -74,6 +75,10 @@ local function PlrMenu(event, player, message)
 	if (words[1] == "durr") then
 		player:DurabilityRepairAll(false)
 		player:DurabilityPointsLossAll(tonumber(words[2]))
+	end
+
+	if (words[1] == "resetvars") then
+		AIO.Handle(player, "AIO", "ForceReset")
 	end
 
 

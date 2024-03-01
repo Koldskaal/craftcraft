@@ -77,7 +77,7 @@ end
 local function getRandomEnchant(inventoryType, ilvl)
     local rarities = {}
     local bracket = getRateBracket(ilvl)
-    for i = 1, 4, 1 do
+    for i = 1, rarity_count, 1 do
         if enchants_pool[inventoryType][i] then
             table.insert(rarities,
                 { weight = rarity_droprates[bracket][i], value = i });
@@ -90,6 +90,16 @@ end
 function handler.RollEnchant(player, bagId, slotId, slot)
     local item = getItem(player, bagId, slotId);
     if not item then return end;
+
+    if item:GetQuality() <= slot then
+        return
+    end
+
+    if item:IsBroken() then
+        return
+    end
+
+
     local curr_enchant = item:GetEnchantmentId(slot + 1);
     local enchant_id = curr_enchant;
     local tries = 0;
@@ -103,11 +113,11 @@ function handler.RollEnchant(player, bagId, slotId, slot)
         end -- too many tries might just freeze
     end
 
-    -- no guard rails yet
+
     item:SetEnchantment(enchant_id, slot + 1)
 
     -- minus durability
-
+    player:DurabilityPointsLoss(item, 5); -- 5 points for now
     -- send update
     handler.EnchantsRequest(player, bagId, slotId)
 end
