@@ -467,6 +467,34 @@ bool LootItem::AllowedForPlayer(Player const *player, ObjectGuid source) const
         return false;
     }
 
+    // CRAFTCRAFT // Don't allow to loot soulbound recipes that the player has already looted
+    if (pProto->Class == ITEM_CLASS_RECIPE && pProto->Bonding == BIND_WHEN_PICKED_UP)
+    {
+        for (uint8 i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+            if (Item *pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+                if (pItem->GetTemplate()->ItemId == pProto->ItemId)
+                    return false;
+
+        for (int i = BANK_SLOT_ITEM_START; i < BANK_SLOT_BAG_END; ++i)
+            if (Item *pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+                if (pItem->GetTemplate()->ItemId == pProto->ItemId)
+                    return false;
+
+        for (uint8 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
+            if (Bag *pBag = player->GetBagByPos(i))
+                for (uint32 j = 0; j < pBag->GetBagSize(); ++j)
+                    if (Item *pItem = pBag->GetItemByPos(j))
+                        if (pItem->GetTemplate()->ItemId == pProto->ItemId)
+                            return false;
+
+        for (uint8 i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; ++i)
+            if (Bag *pBag = player->GetBagByPos(i))
+                for (uint32 j = 0; j < pBag->GetBagSize(); ++j)
+                    if (Item *pItem = pBag->GetItemByPos(j))
+                        if (pItem->GetTemplate()->ItemId == pProto->ItemId)
+                            return false;
+    }
+
     // check quest requirements
     if (!(pProto->FlagsCu & ITEM_FLAGS_CU_IGNORE_QUEST_STATUS) && ((needs_quest || (pProto->StartQuest && player->GetQuestStatus(pProto->StartQuest) != QUEST_STATUS_NONE)) && !player->HasQuestForItem(itemid)))
     {

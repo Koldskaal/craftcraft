@@ -18201,6 +18201,7 @@ void Unit::Kill(Unit *killer, Unit *victim, bool durabilityLoss, WeaponAttackTyp
 
     if (!spiritOfRedemption)
     {
+        sScriptMgr->OnUnitBeforeJustDied(victim, killer);
         LOG_DEBUG("entities.unit", "SET DeathState::JustDied");
         victim->setDeathState(DeathState::JustDied);
     }

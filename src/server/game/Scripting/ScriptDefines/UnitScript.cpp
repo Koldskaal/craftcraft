@@ -19,16 +19,16 @@
 #include "ScriptMgr.h"
 #include "ScriptMgrMacros.h"
 
-uint32 ScriptMgr::DealDamage(Unit* AttackerUnit, Unit* pVictim, uint32 damage, DamageEffectType damagetype)
+uint32 ScriptMgr::DealDamage(Unit *AttackerUnit, Unit *pVictim, uint32 damage, DamageEffectType damagetype)
 {
     if (ScriptRegistry<UnitScript>::ScriptPointerList.empty())
     {
         return damage;
     }
 
-    for (auto const& [scriptID, script] : ScriptRegistry<UnitScript>::ScriptPointerList)
+    for (auto const &[scriptID, script] : ScriptRegistry<UnitScript>::ScriptPointerList)
     {
-        auto const& dmg = script->DealDamage(AttackerUnit, pVictim, damage, damagetype);
+        auto const &dmg = script->DealDamage(AttackerUnit, pVictim, damage, damagetype);
         if (dmg != damage)
         {
             return damage;
@@ -38,76 +38,58 @@ uint32 ScriptMgr::DealDamage(Unit* AttackerUnit, Unit* pVictim, uint32 damage, D
     return damage;
 }
 
-void ScriptMgr::OnHeal(Unit* healer, Unit* reciever, uint32& gain)
+void ScriptMgr::OnHeal(Unit *healer, Unit *reciever, uint32 &gain)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnHeal(healer, reciever, gain);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnHeal(healer, reciever, gain); });
 }
 
-void ScriptMgr::OnDamage(Unit* attacker, Unit* victim, uint32& damage)
+void ScriptMgr::OnDamage(Unit *attacker, Unit *victim, uint32 &damage)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnDamage(attacker, victim, damage);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnDamage(attacker, victim, damage); });
 }
 
-void ScriptMgr::ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo)
+void ScriptMgr::ModifyPeriodicDamageAurasTick(Unit *target, Unit *attacker, uint32 &damage, SpellInfo const *spellInfo)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->ModifyPeriodicDamageAurasTick(target, attacker, damage, spellInfo);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->ModifyPeriodicDamageAurasTick(target, attacker, damage, spellInfo); });
 }
 
-void ScriptMgr::ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage)
+void ScriptMgr::ModifyMeleeDamage(Unit *target, Unit *attacker, uint32 &damage)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->ModifyMeleeDamage(target, attacker, damage);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->ModifyMeleeDamage(target, attacker, damage); });
 }
 
-void ScriptMgr::ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo)
+void ScriptMgr::ModifySpellDamageTaken(Unit *target, Unit *attacker, int32 &damage, SpellInfo const *spellInfo)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->ModifySpellDamageTaken(target, attacker, damage, spellInfo);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->ModifySpellDamageTaken(target, attacker, damage, spellInfo); });
 }
 
-void ScriptMgr::ModifyHealReceived(Unit* target, Unit* healer, uint32& heal, SpellInfo const* spellInfo)
+void ScriptMgr::ModifyHealReceived(Unit *target, Unit *healer, uint32 &heal, SpellInfo const *spellInfo)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->ModifyHealReceived(target, healer, heal, spellInfo);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->ModifyHealReceived(target, healer, heal, spellInfo); });
 }
 
-void ScriptMgr::OnBeforeRollMeleeOutcomeAgainst(Unit const* attacker, Unit const* victim, WeaponAttackType attType, int32& attackerMaxSkillValueForLevel, int32& victimMaxSkillValueForLevel, int32& attackerWeaponSkill, int32& victimDefenseSkill, int32& crit_chance, int32& miss_chance, int32& dodge_chance, int32& parry_chance, int32& block_chance)
+void ScriptMgr::OnBeforeRollMeleeOutcomeAgainst(Unit const *attacker, Unit const *victim, WeaponAttackType attType, int32 &attackerMaxSkillValueForLevel, int32 &victimMaxSkillValueForLevel, int32 &attackerWeaponSkill, int32 &victimDefenseSkill, int32 &crit_chance, int32 &miss_chance, int32 &dodge_chance, int32 &parry_chance, int32 &block_chance)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnBeforeRollMeleeOutcomeAgainst(attacker, victim, attType, attackerMaxSkillValueForLevel, victimMaxSkillValueForLevel, attackerWeaponSkill, victimDefenseSkill, crit_chance, miss_chance, dodge_chance, parry_chance, block_chance);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnBeforeRollMeleeOutcomeAgainst(attacker, victim, attType, attackerMaxSkillValueForLevel, victimMaxSkillValueForLevel, attackerWeaponSkill, victimDefenseSkill, crit_chance, miss_chance, dodge_chance, parry_chance, block_chance); });
 }
 
-void ScriptMgr::OnAuraRemove(Unit* unit, AuraApplication* aurApp, AuraRemoveMode mode)
+void ScriptMgr::OnAuraRemove(Unit *unit, AuraApplication *aurApp, AuraRemoveMode mode)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnAuraRemove(unit, aurApp, mode);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnAuraRemove(unit, aurApp, mode); });
 }
 
-bool ScriptMgr::IfNormalReaction(Unit const* unit, Unit const* target, ReputationRank& repRank)
+bool ScriptMgr::IfNormalReaction(Unit const *unit, Unit const *target, ReputationRank &repRank)
 {
-    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript* script)
-    {
-        return !script->IfNormalReaction(unit, target, repRank);
-    });
+    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript *script)
+                                             { return !script->IfNormalReaction(unit, target, repRank); });
 
     if (ret && *ret)
     {
@@ -117,12 +99,10 @@ bool ScriptMgr::IfNormalReaction(Unit const* unit, Unit const* target, Reputatio
     return true;
 }
 
-bool ScriptMgr::IsNeedModSpellDamagePercent(Unit const* unit, AuraEffect* auraEff, float& doneTotalMod, SpellInfo const* spellProto)
+bool ScriptMgr::IsNeedModSpellDamagePercent(Unit const *unit, AuraEffect *auraEff, float &doneTotalMod, SpellInfo const *spellProto)
 {
-    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript* script)
-    {
-        return !script->IsNeedModSpellDamagePercent(unit, auraEff, doneTotalMod, spellProto);
-    });
+    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript *script)
+                                             { return !script->IsNeedModSpellDamagePercent(unit, auraEff, doneTotalMod, spellProto); });
 
     if (ret && *ret)
     {
@@ -132,12 +112,10 @@ bool ScriptMgr::IsNeedModSpellDamagePercent(Unit const* unit, AuraEffect* auraEf
     return true;
 }
 
-bool ScriptMgr::IsNeedModMeleeDamagePercent(Unit const* unit, AuraEffect* auraEff, float& doneTotalMod, SpellInfo const* spellProto)
+bool ScriptMgr::IsNeedModMeleeDamagePercent(Unit const *unit, AuraEffect *auraEff, float &doneTotalMod, SpellInfo const *spellProto)
 {
-    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript* script)
-    {
-        return !script->IsNeedModMeleeDamagePercent(unit, auraEff, doneTotalMod, spellProto);
-    });
+    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript *script)
+                                             { return !script->IsNeedModMeleeDamagePercent(unit, auraEff, doneTotalMod, spellProto); });
 
     if (ret && *ret)
     {
@@ -147,12 +125,10 @@ bool ScriptMgr::IsNeedModMeleeDamagePercent(Unit const* unit, AuraEffect* auraEf
     return true;
 }
 
-bool ScriptMgr::IsNeedModHealPercent(Unit const* unit, AuraEffect* auraEff, float& doneTotalMod, SpellInfo const* spellProto)
+bool ScriptMgr::IsNeedModHealPercent(Unit const *unit, AuraEffect *auraEff, float &doneTotalMod, SpellInfo const *spellProto)
 {
-    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript* script)
-    {
-        return !script->IsNeedModHealPercent(unit, auraEff, doneTotalMod, spellProto);
-    });
+    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript *script)
+                                             { return !script->IsNeedModHealPercent(unit, auraEff, doneTotalMod, spellProto); });
 
     if (ret && *ret)
     {
@@ -162,12 +138,10 @@ bool ScriptMgr::IsNeedModHealPercent(Unit const* unit, AuraEffect* auraEff, floa
     return true;
 }
 
-bool ScriptMgr::CanSetPhaseMask(Unit const* unit, uint32 newPhaseMask, bool update)
+bool ScriptMgr::CanSetPhaseMask(Unit const *unit, uint32 newPhaseMask, bool update)
 {
-    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript* script)
-    {
-        return !script->CanSetPhaseMask(unit, newPhaseMask, update);
-    });
+    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript *script)
+                                             { return !script->CanSetPhaseMask(unit, newPhaseMask, update); });
 
     if (ret && *ret)
     {
@@ -177,12 +151,10 @@ bool ScriptMgr::CanSetPhaseMask(Unit const* unit, uint32 newPhaseMask, bool upda
     return true;
 }
 
-bool ScriptMgr::IsCustomBuildValuesUpdate(Unit const* unit, uint8 updateType, ByteBuffer& fieldBuffer, Player const* target, uint16 index)
+bool ScriptMgr::IsCustomBuildValuesUpdate(Unit const *unit, uint8 updateType, ByteBuffer &fieldBuffer, Player const *target, uint16 index)
 {
-    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript* script)
-    {
-        return script->IsCustomBuildValuesUpdate(unit, updateType, fieldBuffer, target, index);
-    });
+    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript *script)
+                                             { return script->IsCustomBuildValuesUpdate(unit, updateType, fieldBuffer, target, index); });
 
     if (ret && *ret)
     {
@@ -192,9 +164,10 @@ bool ScriptMgr::IsCustomBuildValuesUpdate(Unit const* unit, uint8 updateType, By
     return false;
 }
 
-bool ScriptMgr::OnBuildValuesUpdate(Unit const* unit, uint8 updateType, ByteBuffer& fieldBuffer, Player* target, uint16 index)
+bool ScriptMgr::OnBuildValuesUpdate(Unit const *unit, uint8 updateType, ByteBuffer &fieldBuffer, Player *target, uint16 index)
 {
-    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript* script) { return script->OnBuildValuesUpdate(unit, updateType, fieldBuffer, target, index); });
+    auto ret = IsValidBoolScript<UnitScript>([&](UnitScript *script)
+                                             { return script->OnBuildValuesUpdate(unit, updateType, fieldBuffer, target, index); });
 
     if (ret && *ret)
     {
@@ -204,56 +177,50 @@ bool ScriptMgr::OnBuildValuesUpdate(Unit const* unit, uint8 updateType, ByteBuff
     return false;
 }
 
-void ScriptMgr::OnUnitUpdate(Unit* unit, uint32 diff)
+void ScriptMgr::OnUnitUpdate(Unit *unit, uint32 diff)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnUnitUpdate(unit, diff);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnUnitUpdate(unit, diff); });
 }
 
-void ScriptMgr::OnDisplayIdChange(Unit* unit, uint32 displayId)
+void ScriptMgr::OnDisplayIdChange(Unit *unit, uint32 displayId)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnDisplayIdChange(unit, displayId);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnDisplayIdChange(unit, displayId); });
 }
 
-void ScriptMgr::OnUnitEnterEvadeMode(Unit* unit, uint8 evadeReason)
+void ScriptMgr::OnUnitEnterEvadeMode(Unit *unit, uint8 evadeReason)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnUnitEnterEvadeMode(unit, evadeReason);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnUnitEnterEvadeMode(unit, evadeReason); });
 }
 
-void ScriptMgr::OnUnitEnterCombat(Unit* unit, Unit* victim)
+void ScriptMgr::OnUnitEnterCombat(Unit *unit, Unit *victim)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnUnitEnterCombat(unit, victim);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnUnitEnterCombat(unit, victim); });
 }
 
-void ScriptMgr::OnUnitDeath(Unit* unit, Unit* killer)
+void ScriptMgr::OnUnitDeath(Unit *unit, Unit *killer)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnUnitDeath(unit, killer);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnUnitDeath(unit, killer); });
 }
 
-void ScriptMgr::OnAuraApply(Unit* unit, Aura* aura)
+// CRAFTCRAFT before just died event
+void ScriptMgr::OnUnitBeforeJustDied(Unit *unit, Unit *killer)
 {
-    ExecuteScript<UnitScript>([&](UnitScript* script)
-    {
-        script->OnAuraApply(unit, aura);
-    });
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnUnitBeforeJustDied(unit, killer); });
 }
 
-UnitScript::UnitScript(const char* name, bool addToScripts) :
-    ScriptObject(name)
+void ScriptMgr::OnAuraApply(Unit *unit, Aura *aura)
+{
+    ExecuteScript<UnitScript>([&](UnitScript *script)
+                              { script->OnAuraApply(unit, aura); });
+}
+
+UnitScript::UnitScript(const char *name, bool addToScripts) : ScriptObject(name)
 {
     if (addToScripts)
         ScriptRegistry<UnitScript>::AddScript(this);

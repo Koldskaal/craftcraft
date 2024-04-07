@@ -81,6 +81,11 @@ local function PlrMenu(event, player, message)
 		AIO.Handle(player, "AIO", "ForceReset")
 	end
 
+	if (words[1] == "save") then
+		player:SaveToDB();
+		player:SendBroadcastMessage("Player saved to db ")
+	end
+
 
 	return false
 end

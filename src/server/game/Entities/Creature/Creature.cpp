@@ -2064,6 +2064,7 @@ void Creature::Respawn(bool force)
             InitializeReactState();
 
             m_respawnedTime = GameTime::GetGameTime().count();
+            sScriptMgr->OnCreatureRespawned(this);
         }
         m_respawnedTime = GameTime::GetGameTime().count();
         // xinef: relocate notifier, fixes npc appearing in corpse position after forced respawn (instead of spawn)

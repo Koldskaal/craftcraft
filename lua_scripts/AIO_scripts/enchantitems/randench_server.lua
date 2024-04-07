@@ -106,6 +106,12 @@ function handler.RollEnchant(player, bagId, slotId, slot)
     while curr_enchant == enchant_id do
         enchant_id = getRandomEnchant(item:GetInventoryType(),
             item:GetItemLevel());
+        if enchant_id == curr_enchant then -- you hit the same. legendary guaranteed *wink*
+            -- easter egg
+            enchant_id = randomArray(enchants_pool[item:GetInventoryType()]
+            [rarity_count])
+        end
+
         tries = tries + 1;
         if tries >= 100 then
             print("too many tries")
@@ -120,4 +126,21 @@ function handler.RollEnchant(player, bagId, slotId, slot)
     player:DurabilityPointsLoss(item, 5); -- 5 points for now
     -- send update
     handler.EnchantsRequest(player, bagId, slotId)
+end
+
+function handler.SelfRepair(player, bagId, slotId)
+    local item = getItem(player, bagId, slotId);
+    if not item then return end;
+    if item:GetUInt32Value(60) == item:GetMaxDurability() then return end
+
+    local cost = player:DurabilityRepair(bit32.bor(
+        bit32.lshift(item:GetBagSlot(), 8), item:GetSlot()))
+
+    if cost == 0 then
+        local packet = CreatePacket(0x1A5, (8 + 4 + 4 + 1)) -- too expensive packet
+        packet:WriteGUID(player:GetGUID());
+        packet:WriteULong(0);
+        packet:WriteUByte(2);
+        player:SendPacket(packet, true);
+    end
 end

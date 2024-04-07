@@ -23,7 +23,7 @@
 /data/sql/custom/*
 /src/server/scripts/Custom/*
 !/src/server/scripts/Custom/README.md
-
+/logs
 /*.override.yml
 /*.override.yaml
 

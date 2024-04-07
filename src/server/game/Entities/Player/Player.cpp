@@ -4799,7 +4799,6 @@ uint32 Player::DurabilityRepair(uint16 pos, bool cost, float discountMod, bool g
     uint32 TotalCost = 0;
     if (!item)
         return TotalCost;
-
     uint32 maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
     if (!maxDurability)
         return TotalCost;
@@ -4813,23 +4812,25 @@ uint32 Player::DurabilityRepair(uint16 pos, bool cost, float discountMod, bool g
         {
             ItemTemplate const *ditemProto = item->GetTemplate();
 
-            DurabilityCostsEntry const *dcost = sDurabilityCostsStore.LookupEntry(ditemProto->ItemLevel);
-            if (!dcost)
-            {
-                LOG_ERROR("entities.player", "RepairDurability: Wrong item lvl {}", ditemProto->ItemLevel);
-                return TotalCost;
-            }
+            // DurabilityCostsEntry const *dcost = sDurabilityCostsStore.LookupEntry(ditemProto->ItemLevel);
+            // if (!dcost)
+            // {
+            //     LOG_ERROR("entities.player", "RepairDurability: Wrong item lvl {}", ditemProto->ItemLevel);
+            //     return TotalCost;
+            // }
 
-            uint32 dQualitymodEntryId = (ditemProto->Quality + 1) * 2;
-            DurabilityQualityEntry const *dQualitymodEntry = sDurabilityQualityStore.LookupEntry(dQualitymodEntryId);
-            if (!dQualitymodEntry)
-            {
-                LOG_ERROR("entities.player", "RepairDurability: Wrong dQualityModEntry {}", dQualitymodEntryId);
-                return TotalCost;
-            }
+            // uint32 dQualitymodEntryId = (ditemProto->Quality + 1) * 2;
+            // DurabilityQualityEntry const *dQualitymodEntry = sDurabilityQualityStore.LookupEntry(dQualitymodEntryId);
+            // if (!dQualitymodEntry)
+            // {
+            //     LOG_ERROR("entities.player", "RepairDurability: Wrong dQualityModEntry {}", dQualitymodEntryId);
+            //     return TotalCost;
+            // }
 
-            uint32 dmultiplier = dcost->multiplier[ItemSubClassToDurabilityMultiplierId(ditemProto->Class, ditemProto->SubClass)];
-            uint32 costs = uint32(LostDurability * dmultiplier * double(dQualitymodEntry->quality_mod));
+            // uint32 dmultiplier = dcost->multiplier[ItemSubClassToDurabilityMultiplierId(ditemProto->Class, ditemProto->SubClass)];
+            // uint32 costs = uint32(LostDurability * dmultiplier * double(dQualitymodEntry->quality_mod));
+            // CRAFTCRAFT durability repair simplify
+            uint32 costs = uint32(ditemProto->MaxDurability * ditemProto->ItemLevel * 2);
 
             costs = uint32(costs * discountMod * sWorld->getRate(RATE_REPAIRCOST));
 
@@ -4850,8 +4851,6 @@ uint32 Player::DurabilityRepair(uint16 pos, bool cost, float discountMod, bool g
 
                 if (!guild->HandleMemberWithdrawMoney(GetSession(), costs, true))
                     return TotalCost;
-
-                TotalCost = costs;
             }
             else if (!HasEnoughMoney(costs))
             {
@@ -4860,11 +4859,39 @@ uint32 Player::DurabilityRepair(uint16 pos, bool cost, float discountMod, bool g
             }
             else
                 ModifyMoney(-int32(costs));
+
+            TotalCost = costs;
         }
     }
 
     item->SetUInt32Value(ITEM_FIELD_DURABILITY, maxDurability);
     item->SetState(ITEM_CHANGED, this);
+
+    // CRAFTCRAFT remove enchants on repair
+    size_t socketCount = 0;
+    if (item->HasSocket())
+    {
+        for (size_t i = 0; i < 3; i++)
+        {
+            if (item->GetTemplate()->Socket[i].Color)
+            {
+                socketCount++;
+            }
+        }
+
+        if (item->GetEnchantmentId(EnchantmentSlot(PRISMATIC_ENCHANTMENT_SLOT)))
+        {
+            socketCount++;
+        }
+    }
+
+    for (size_t i = 0; i < 3; i++)
+    {
+        if (i >= socketCount)
+        {
+            item->ClearEnchantment((EnchantmentSlot)((int)SOCK_ENCHANTMENT_SLOT + i));
+        }
+    }
 
     // reapply mods for total broken and repaired item if equipped
     if (IsEquipmentPos(pos) && !curDurability)

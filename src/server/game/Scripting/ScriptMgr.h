@@ -551,6 +551,9 @@ public: /* UnitScript */
     void OnUnitEnterCombat(Unit *unit, Unit *victim);
     void OnUnitDeath(Unit *unit, Unit *killer);
 
+    // CRAFTCRAFT
+    void OnUnitBeforeJustDied(Unit *unit, Unit *killer);
+
 public: /* MovementHandlerScript */
     void OnPlayerMove(Player *player, MovementInfo movementInfo, uint32 opcode);
 
